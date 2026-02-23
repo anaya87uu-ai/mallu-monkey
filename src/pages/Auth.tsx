@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cat, Mail, Lock, User, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,24 +7,52 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [isSignup, setIsSignup] = useState(searchParams.get("mode") === "signup");
   const [loading, setLoading] = useState(false);
   const [gender, setGender] = useState("boy");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      toast.success(isSignup ? "Account created! Check your email to verify." : "Logged in!");
+
+    try {
+      if (isSignup) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { display_name: displayName, gender },
+          },
+        });
+        if (error) throw error;
+        toast.success("Account created! Check your email to verify.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        toast.success("Logged in!");
+        navigate("/chat");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Authentication failed");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const handleGuest = () => {
     toast.success("Joined as guest! Some features may be limited.");
+    navigate("/chat");
   };
 
   return (
@@ -65,7 +93,13 @@ const Auth = () => {
                   <label className="text-sm font-medium mb-2 block">Display Name</label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input required placeholder="Your display name" className="pl-10 glass border-border/50 bg-muted/30 focus:border-primary/50" />
+                    <Input
+                      required
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Your display name"
+                      className="pl-10 glass border-border/50 bg-muted/30 focus:border-primary/50"
+                    />
                   </div>
                 </div>
               )}
@@ -74,7 +108,14 @@ const Auth = () => {
                 <label className="text-sm font-medium mb-2 block">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input required type="email" placeholder="you@example.com" className="pl-10 glass border-border/50 bg-muted/30 focus:border-primary/50" />
+                  <Input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="pl-10 glass border-border/50 bg-muted/30 focus:border-primary/50"
+                  />
                 </div>
               </div>
 
@@ -82,7 +123,15 @@ const Auth = () => {
                 <label className="text-sm font-medium mb-2 block">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input required type="password" placeholder="••••••••" className="pl-10 glass border-border/50 bg-muted/30 focus:border-primary/50" />
+                  <Input
+                    required
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    minLength={6}
+                    className="pl-10 glass border-border/50 bg-muted/30 focus:border-primary/50"
+                  />
                 </div>
               </div>
 
