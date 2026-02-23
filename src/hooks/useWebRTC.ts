@@ -4,6 +4,8 @@ const ICE_SERVERS: RTCConfiguration = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     { urls: "stun:stun1.l.google.com:19302" },
+    { urls: "stun:stun2.l.google.com:19302" },
+    { urls: "stun:stun3.l.google.com:19302" },
   ],
 };
 
@@ -32,11 +34,23 @@ export function useWebRTC(): WebRTCHook {
   const localStreamRef = useRef<MediaStream | null>(null);
   const iceCandidateCallbackRef = useRef<((c: RTCIceCandidateInit) => void) | null>(null);
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
+  const remoteStreamRef = useRef<MediaStream>(new MediaStream());
 
   const ensurePC = useCallback(() => {
-    if (pcRef.current) return pcRef.current;
+    if (pcRef.current && pcRef.current.signalingState !== "closed") {
+      return pcRef.current;
+    }
+
+    // Close any stale connection
+    if (pcRef.current) {
+      pcRef.current.close();
+    }
 
     const pc = new RTCPeerConnection(ICE_SERVERS);
+
+    // Reset remote stream
+    remoteStreamRef.current = new MediaStream();
+    setRemoteStream(null);
 
     pc.onicecandidate = (e) => {
       if (e.candidate && iceCandidateCallbackRef.current) {
@@ -44,17 +58,27 @@ export function useWebRTC(): WebRTCHook {
       }
     };
 
-    const remote = new MediaStream();
-    setRemoteStream(remote);
+    pc.oniceconnectionstatechange = () => {
+      console.log("[WebRTC] ICE state:", pc.iceConnectionState);
+      if (pc.iceConnectionState === "failed") {
+        console.warn("[WebRTC] ICE failed, restarting...");
+        pc.restartIce();
+      }
+    };
 
     pc.ontrack = (e) => {
-      e.streams[0]?.getTracks().forEach((track) => {
-        remote.addTrack(track);
-      });
+      console.log("[WebRTC] Got remote track:", e.track.kind);
+      const remote = remoteStreamRef.current;
+      // Avoid duplicate tracks
+      const existing = remote.getTracks().find(t => t.id === e.track.id);
+      if (!existing) {
+        remote.addTrack(e.track);
+      }
+      // Force React state update with new MediaStream reference
       setRemoteStream(new MediaStream(remote.getTracks()));
     };
 
-    // Add local tracks
+    // Add local tracks immediately
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => {
         pc.addTrack(track, localStreamRef.current!);
@@ -69,17 +93,24 @@ export function useWebRTC(): WebRTCHook {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
       });
       localStreamRef.current = stream;
       setLocalStream(stream);
     } catch (err) {
       console.error("Failed to get media devices:", err);
-      // Try audio only
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: false,
-          audio: true,
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
         });
         localStreamRef.current = stream;
         setLocalStream(stream);
@@ -98,7 +129,10 @@ export function useWebRTC(): WebRTCHook {
   const createOffer = useCallback(async () => {
     const pc = ensurePC();
     try {
-      const offer = await pc.createOffer();
+      const offer = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true,
+      });
       await pc.setLocalDescription(offer);
       return offer;
     } catch (err) {
@@ -112,26 +146,47 @@ export function useWebRTC(): WebRTCHook {
       const pc = ensurePC();
       try {
         if (signal.type === "offer") {
+          // If we already have a local offer, use "rollback" to avoid collision
+          if (pc.signalingState === "have-local-offer") {
+            console.log("[WebRTC] Glare detected, rolling back local offer");
+            await pc.setLocalDescription({ type: "rollback" });
+          }
           await pc.setRemoteDescription(new RTCSessionDescription(signal));
           // Flush pending candidates
           for (const c of pendingCandidatesRef.current) {
-            await pc.addIceCandidate(new RTCIceCandidate(c));
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(c));
+            } catch (e) {
+              console.warn("[WebRTC] Failed to add buffered candidate:", e);
+            }
           }
           pendingCandidatesRef.current = [];
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
           return answer;
         } else if (signal.type === "answer") {
-          await pc.setRemoteDescription(new RTCSessionDescription(signal));
-          // Flush pending candidates
-          for (const c of pendingCandidatesRef.current) {
-            await pc.addIceCandidate(new RTCIceCandidate(c));
+          if (pc.signalingState === "have-local-offer") {
+            await pc.setRemoteDescription(new RTCSessionDescription(signal));
+            // Flush pending candidates
+            for (const c of pendingCandidatesRef.current) {
+              try {
+                await pc.addIceCandidate(new RTCIceCandidate(c));
+              } catch (e) {
+                console.warn("[WebRTC] Failed to add buffered candidate:", e);
+              }
+            }
+            pendingCandidatesRef.current = [];
+          } else {
+            console.warn("[WebRTC] Ignoring answer in state:", pc.signalingState);
           }
-          pendingCandidatesRef.current = [];
           return null;
         } else if (signal.candidate) {
-          if (pc.remoteDescription) {
-            await pc.addIceCandidate(new RTCIceCandidate(signal));
+          if (pc.remoteDescription && pc.remoteDescription.type) {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(signal));
+            } catch (e) {
+              console.warn("[WebRTC] Failed to add ICE candidate:", e);
+            }
           } else {
             pendingCandidatesRef.current.push(signal);
           }
@@ -148,6 +203,7 @@ export function useWebRTC(): WebRTCHook {
   const closeConnection = useCallback(() => {
     pcRef.current?.close();
     pcRef.current = null;
+    remoteStreamRef.current = new MediaStream();
     setRemoteStream(null);
     pendingCandidatesRef.current = [];
   }, []);
