@@ -225,13 +225,13 @@ const Chat = () => {
       </div>
 
       {/* Controls */}
-      <div className="p-4">
-        <div className="glass-card p-4 flex items-center justify-center gap-3 max-w-lg mx-auto">
+      <div className="p-3 md:p-4">
+        <div className="glass-card p-3 md:p-4 flex items-center justify-center gap-2 md:gap-3 max-w-lg mx-auto flex-wrap">
           <Button
             variant="outline"
             size="icon"
             onClick={rtc.toggleMute}
-            className={`rounded-full w-12 h-12 glass border-border/50 ${
+            className={`rounded-full w-11 h-11 md:w-12 md:h-12 glass border-border/50 ${
               rtc.isMuted
                 ? "bg-destructive/20 border-destructive/50 text-destructive"
                 : ""
@@ -248,7 +248,7 @@ const Chat = () => {
             variant="outline"
             size="icon"
             onClick={rtc.toggleCamera}
-            className={`rounded-full w-12 h-12 glass border-border/50 ${
+            className={`rounded-full w-11 h-11 md:w-12 md:h-12 glass border-border/50 ${
               rtc.isCamOff
                 ? "bg-destructive/20 border-destructive/50 text-destructive"
                 : ""
@@ -265,7 +265,7 @@ const Chat = () => {
             variant="outline"
             size="icon"
             onClick={() => setChatOpen(!chatOpen)}
-            className={`rounded-full w-12 h-12 glass border-border/50 ${
+            className={`rounded-full w-11 h-11 md:w-12 md:h-12 glass border-border/50 ${
               chatOpen
                 ? "bg-primary/20 border-primary/50 text-primary"
                 : ""
@@ -277,7 +277,7 @@ const Chat = () => {
           {!isConnected && !isSearching && (
             <Button
               onClick={handleStart}
-              className="rounded-full h-12 px-6 bg-gradient-to-r from-primary to-secondary glow-primary"
+              className="rounded-full h-11 md:h-12 px-5 md:px-6 bg-gradient-to-r from-primary to-secondary glow-primary text-sm md:text-base"
             >
               <Users className="w-5 h-5 mr-2" /> Find Stranger
             </Button>
@@ -286,7 +286,7 @@ const Chat = () => {
           {isConnected && (
             <Button
               onClick={handleSkip}
-              className="rounded-full h-12 px-6 bg-gradient-to-r from-primary to-secondary glow-primary"
+              className="rounded-full h-11 md:h-12 px-5 md:px-6 bg-gradient-to-r from-primary to-secondary glow-primary text-sm md:text-base"
             >
               <SkipForward className="w-5 h-5 mr-2" /> Skip
             </Button>
@@ -295,7 +295,7 @@ const Chat = () => {
           {(isConnected || isSearching) && (
             <Button
               onClick={handleEnd}
-              className="rounded-full w-12 h-12 bg-destructive hover:bg-destructive/90"
+              className="rounded-full w-11 h-11 md:w-12 md:h-12 bg-destructive hover:bg-destructive/90"
               size="icon"
             >
               <Phone className="w-5 h-5 rotate-[135deg]" />
