@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useStrangerMatch } from "@/hooks/useStrangerMatch";
 import { useWebRTC } from "@/hooks/useWebRTC";
 
@@ -83,9 +83,12 @@ const Chat = () => {
 
   const handleStart = async () => {
     if (!cameraReady) {
-      // getUserMedia must be called directly from a user gesture
-      await rtc.startLocalStream();
-      setCameraReady(true);
+      try {
+        await rtc.startLocalStream();
+        setCameraReady(true);
+      } catch (err) {
+        console.error("Media access error:", err);
+      }
     }
     match.startSearching();
   };
@@ -123,7 +126,7 @@ const Chat = () => {
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center mx-auto mb-3">
                   <Video className="w-8 h-8 text-primary" />
                 </div>
-                <p className="text-sm text-muted-foreground">Starting camera...</p>
+                <p className="text-sm text-muted-foreground">Camera off</p>
               </div>
             </div>
           )}
