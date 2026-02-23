@@ -27,9 +27,8 @@ const Chat = () => {
   const match = useStrangerMatch();
   const rtc = useWebRTC();
 
-  // Start camera on mount
+  // Cleanup on unmount only
   useEffect(() => {
-    rtc.startLocalStream().then(() => setCameraReady(true));
     return () => rtc.stopLocalStream();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -88,8 +87,12 @@ const Chat = () => {
     }
   }, [match.state, match.channelName, rtc, match]);
 
-  const handleStart = () => {
-    if (!cameraReady) return;
+  const handleStart = async () => {
+    if (!cameraReady) {
+      // getUserMedia must be called directly from a user gesture
+      await rtc.startLocalStream();
+      setCameraReady(true);
+    }
     match.startSearching();
   };
 
@@ -182,10 +185,9 @@ const Chat = () => {
                     </p>
                     <Button
                       onClick={handleStart}
-                      disabled={!cameraReady}
                       className="bg-gradient-to-r from-primary to-secondary glow-primary"
                     >
-                      {cameraReady ? "Find a Stranger" : "Starting camera..."}
+                      Find a Stranger
                     </Button>
                   </div>
                 )}
@@ -281,7 +283,6 @@ const Chat = () => {
           {!isConnected && !isSearching && (
             <Button
               onClick={handleStart}
-              disabled={!cameraReady}
               className="rounded-full h-12 px-6 bg-gradient-to-r from-primary to-secondary glow-primary"
             >
               <Users className="w-5 h-5 mr-2" /> Find Stranger
