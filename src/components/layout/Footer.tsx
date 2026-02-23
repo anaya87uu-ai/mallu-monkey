@@ -23,6 +23,8 @@ const Footer = () => (
             <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Home</Link>
             <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">About</Link>
             <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">Contact Us</Link>
+            <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">Terms & Conditions</Link>
+            <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link>
           </div>
         </div>
 
