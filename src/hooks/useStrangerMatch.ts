@@ -7,6 +7,7 @@ interface MatchHook {
   state: MatchState;
   strangerSessionId: string | null;
   channelName: string | null;
+  isInitiator: boolean;
   startSearching: () => void;
   stopSearching: () => void;
   skip: () => void;
@@ -18,6 +19,7 @@ export function useStrangerMatch(): MatchHook {
   const [state, setState] = useState<MatchState>("idle");
   const [strangerSessionId, setStrangerSessionId] = useState<string | null>(null);
   const [channelName, setChannelName] = useState<string | null>(null);
+  const [isInitiator, setIsInitiator] = useState(false);
 
   const sessionIdRef = useRef(crypto.randomUUID());
   const lobbyRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
@@ -39,7 +41,7 @@ export function useStrangerMatch(): MatchHook {
     setChannelName(null);
   }, []);
 
-  const joinSignalingChannel = useCallback((name: string, strangerId: string) => {
+  const joinSignalingChannel = useCallback((name: string, strangerId: string, initiator: boolean) => {
     if (signalingRef.current) {
       supabase.removeChannel(signalingRef.current);
     }
@@ -59,6 +61,7 @@ export function useStrangerMatch(): MatchHook {
         setState("connected");
         setStrangerSessionId(strangerId);
         setChannelName(name);
+        setIsInitiator(initiator);
       }
     });
 
@@ -88,23 +91,17 @@ export function useStrangerMatch(): MatchHook {
       if (allUsers.length > 0) {
         // Sort to ensure both sides agree on who initiates
         const sorted = [sessionIdRef.current, allUsers[0]].sort();
-        const isInitiator = sorted[0] === sessionIdRef.current;
         const strangerId = allUsers[0];
         const chName = `match-${sorted[0]}-${sorted[1]}`;
+        const isInitiator = sorted[0] === sessionIdRef.current;
 
         matchedRef.current = true;
         setState("matched");
 
-        // Small delay for the non-initiator to ensure channel readiness
-        setTimeout(
-          () => {
-            // Leave lobby
-            supabase.removeChannel(lobby);
-            lobbyRef.current = null;
-            joinSignalingChannel(chName, strangerId);
-          },
-          isInitiator ? 200 : 600
-        );
+        // Both join signaling channel immediately, no delay
+        supabase.removeChannel(lobby);
+        lobbyRef.current = null;
+        joinSignalingChannel(chName, strangerId, isInitiator);
       }
     });
 
@@ -152,6 +149,7 @@ export function useStrangerMatch(): MatchHook {
     state,
     strangerSessionId,
     channelName,
+    isInitiator,
     startSearching,
     stopSearching,
     skip,

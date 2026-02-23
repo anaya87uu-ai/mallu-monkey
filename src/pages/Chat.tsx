@@ -64,28 +64,22 @@ const Chat = () => {
     });
   }, [match, rtc]);
 
-  // When connected to a stranger, initiate WebRTC (only one side creates offer)
+  // When connected, only the initiator creates the offer
   useEffect(() => {
-    if (match.state === "connected" && match.channelName && !hasInitiatedRef.current) {
+    if (match.state === "connected" && match.isInitiator && !hasInitiatedRef.current) {
       hasInitiatedRef.current = true;
-
-      // Determine if we're the initiator (alphabetically first session)
-      const parts = match.channelName.replace("match-", "").split("-");
-      // The session that appears first in the channel name is the initiator
-      // We need our session id to check — but we can use a simpler heuristic:
-      // Only create offer after a short delay, the other side will respond with answer
-      setTimeout(async () => {
+      (async () => {
         const offer = await rtc.createOffer();
         if (offer) {
           match.sendSignal(offer);
         }
-      }, 800);
+      })();
     }
 
     if (match.state !== "connected") {
       hasInitiatedRef.current = false;
     }
-  }, [match.state, match.channelName, rtc, match]);
+  }, [match.state, match.isInitiator, rtc, match]);
 
   const handleStart = async () => {
     if (!cameraReady) {
