@@ -59,7 +59,7 @@ const AgeGate = ({ children }: { children: React.ReactNode }) => {
                 I am 18+ — Enter
               </Button>
               <a
-                href="https://www.google.com"
+                href="https://www.youtube.com/kids"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 I am under 18 — Leave
