@@ -1,23 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const AGE_KEY = "mallu_monkey_age_verified";
-
 const AgeGate = ({ children }: { children: React.ReactNode }) => {
-  const [verified, setVerified] = useState(() => {
-    // Check localStorage synchronously to avoid flash
-    try {
-      return localStorage.getItem(AGE_KEY) === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [verified, setVerified] = useState(false);
 
 
   const handleAgree = () => {
-    localStorage.setItem(AGE_KEY, "true");
     setVerified(true);
   };
 
