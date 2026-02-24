@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button";
 const AGE_KEY = "mallu_monkey_age_verified";
 
 const AgeGate = ({ children }: { children: React.ReactNode }) => {
-  const [verified, setVerified] = useState(true); // default true to avoid flash
+  const [verified, setVerified] = useState(() => {
+    // Check localStorage synchronously to avoid flash
+    try {
+      return localStorage.getItem(AGE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
 
-  useEffect(() => {
-    const stored = localStorage.getItem(AGE_KEY);
-    setVerified(stored === "true");
-  }, []);
 
   const handleAgree = () => {
     localStorage.setItem(AGE_KEY, "true");
