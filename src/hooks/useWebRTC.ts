@@ -6,13 +6,15 @@ const ICE_SERVERS: RTCConfiguration = {
     { urls: "stun:stun1.l.google.com:19302" },
     { urls: "stun:stun2.l.google.com:19302" },
     { urls: "stun:stun3.l.google.com:19302" },
+    { urls: "stun:stun4.l.google.com:19302" },
   ],
+  iceCandidatePoolSize: 10,
 };
 
 interface WebRTCHook {
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
-  startLocalStream: () => Promise<void>;
+  startLocalStream: () => Promise<MediaStream | null>;
   stopLocalStream: () => void;
   createOffer: () => Promise<RTCSessionDescriptionInit | null>;
   handleSignal: (signal: any) => Promise<RTCSessionDescriptionInit | RTCIceCandidateInit | null>;
@@ -36,19 +38,30 @@ export function useWebRTC(): WebRTCHook {
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   const remoteStreamRef = useRef<MediaStream>(new MediaStream());
 
+  const addLocalTracksToPC = useCallback((pc: RTCPeerConnection) => {
+    if (!localStreamRef.current) return;
+    const existingSenders = pc.getSenders();
+    localStreamRef.current.getTracks().forEach((track) => {
+      const alreadyAdded = existingSenders.some((s) => s.track?.id === track.id);
+      if (!alreadyAdded) {
+        pc.addTrack(track, localStreamRef.current!);
+      }
+    });
+  }, []);
+
   const ensurePC = useCallback(() => {
     if (pcRef.current && pcRef.current.signalingState !== "closed") {
+      // Make sure local tracks are added even if PC was created before stream
+      addLocalTracksToPC(pcRef.current);
       return pcRef.current;
     }
 
-    // Close any stale connection
     if (pcRef.current) {
       pcRef.current.close();
     }
 
     const pc = new RTCPeerConnection(ICE_SERVERS);
 
-    // Reset remote stream
     remoteStreamRef.current = new MediaStream();
     setRemoteStream(null);
 
@@ -69,56 +82,56 @@ export function useWebRTC(): WebRTCHook {
     pc.ontrack = (e) => {
       console.log("[WebRTC] Got remote track:", e.track.kind);
       const remote = remoteStreamRef.current;
-      // Avoid duplicate tracks
-      const existing = remote.getTracks().find(t => t.id === e.track.id);
+      const existing = remote.getTracks().find((t) => t.id === e.track.id);
       if (!existing) {
         remote.addTrack(e.track);
       }
-      // Force React state update with new MediaStream reference
       setRemoteStream(new MediaStream(remote.getTracks()));
     };
 
-    // Add local tracks immediately
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => {
-        pc.addTrack(track, localStreamRef.current!);
-      });
-    }
+    // Add local tracks immediately if available
+    addLocalTracksToPC(pc);
 
     pcRef.current = pc;
     return pc;
-  }, []);
+  }, [addLocalTracksToPC]);
 
-  const startLocalStream = useCallback(async () => {
+  const startLocalStream = useCallback(async (): Promise<MediaStream | null> => {
+    // If we already have a stream, return it
+    if (localStreamRef.current && localStreamRef.current.active) {
+      return localStreamRef.current;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
+        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
       localStreamRef.current = stream;
       setLocalStream(stream);
+
+      // If PC already exists, add tracks to it now
+      if (pcRef.current && pcRef.current.signalingState !== "closed") {
+        addLocalTracksToPC(pcRef.current);
+      }
+
+      return stream;
     } catch (err) {
-      console.error("Failed to get media devices:", err);
+      console.error("Camera failed, trying audio only:", err);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: false,
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
         });
         localStreamRef.current = stream;
         setLocalStream(stream);
+        return stream;
       } catch (err2) {
         console.error("Failed to get any media:", err2);
+        return null;
       }
     }
-  }, []);
+  }, [addLocalTracksToPC]);
 
   const stopLocalStream = useCallback(() => {
     localStreamRef.current?.getTracks().forEach((t) => t.stop());
@@ -146,19 +159,13 @@ export function useWebRTC(): WebRTCHook {
       const pc = ensurePC();
       try {
         if (signal.type === "offer") {
-          // If we already have a local offer, use "rollback" to avoid collision
           if (pc.signalingState === "have-local-offer") {
-            console.log("[WebRTC] Glare detected, rolling back local offer");
+            console.log("[WebRTC] Glare detected, rolling back");
             await pc.setLocalDescription({ type: "rollback" });
           }
           await pc.setRemoteDescription(new RTCSessionDescription(signal));
-          // Flush pending candidates
           for (const c of pendingCandidatesRef.current) {
-            try {
-              await pc.addIceCandidate(new RTCIceCandidate(c));
-            } catch (e) {
-              console.warn("[WebRTC] Failed to add buffered candidate:", e);
-            }
+            try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { /* skip */ }
           }
           pendingCandidatesRef.current = [];
           const answer = await pc.createAnswer();
@@ -167,26 +174,15 @@ export function useWebRTC(): WebRTCHook {
         } else if (signal.type === "answer") {
           if (pc.signalingState === "have-local-offer") {
             await pc.setRemoteDescription(new RTCSessionDescription(signal));
-            // Flush pending candidates
             for (const c of pendingCandidatesRef.current) {
-              try {
-                await pc.addIceCandidate(new RTCIceCandidate(c));
-              } catch (e) {
-                console.warn("[WebRTC] Failed to add buffered candidate:", e);
-              }
+              try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { /* skip */ }
             }
             pendingCandidatesRef.current = [];
-          } else {
-            console.warn("[WebRTC] Ignoring answer in state:", pc.signalingState);
           }
           return null;
         } else if (signal.candidate) {
           if (pc.remoteDescription && pc.remoteDescription.type) {
-            try {
-              await pc.addIceCandidate(new RTCIceCandidate(signal));
-            } catch (e) {
-              console.warn("[WebRTC] Failed to add ICE candidate:", e);
-            }
+            try { await pc.addIceCandidate(new RTCIceCandidate(signal)); } catch (e) { /* skip */ }
           } else {
             pendingCandidatesRef.current.push(signal);
           }
@@ -209,16 +205,12 @@ export function useWebRTC(): WebRTCHook {
   }, []);
 
   const toggleMute = useCallback(() => {
-    localStreamRef.current?.getAudioTracks().forEach((t) => {
-      t.enabled = !t.enabled;
-    });
+    localStreamRef.current?.getAudioTracks().forEach((t) => { t.enabled = !t.enabled; });
     setIsMuted((m) => !m);
   }, []);
 
   const toggleCamera = useCallback(() => {
-    localStreamRef.current?.getVideoTracks().forEach((t) => {
-      t.enabled = !t.enabled;
-    });
+    localStreamRef.current?.getVideoTracks().forEach((t) => { t.enabled = !t.enabled; });
     setIsCamOff((c) => !c);
   }, []);
 

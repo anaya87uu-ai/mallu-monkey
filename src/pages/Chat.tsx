@@ -82,14 +82,19 @@ const Chat = () => {
   }, [match.state, match.isInitiator, rtc, match]);
 
   const handleStart = async () => {
+    // CRITICAL: Get camera FIRST, directly in click handler
     if (!cameraReady) {
       try {
-        await rtc.startLocalStream();
-        setCameraReady(true);
+        const stream = await rtc.startLocalStream();
+        if (stream) {
+          setCameraReady(true);
+        }
       } catch (err) {
         console.error("Media access error:", err);
+        return; // Don't search if camera failed
       }
     }
+    // Only start matching after camera is ready
     match.startSearching();
   };
 
