@@ -41,46 +41,48 @@ export function useStrangerMatch(): MatchHook {
     setChannelName(null);
   }, []);
 
-  const joinSignalingChannel = useCallback((name: string, strangerId: string, initiator: boolean) => {
-    if (signalingRef.current) {
-      supabase.removeChannel(signalingRef.current);
-    }
-
-    const ch = supabase.channel(name, {
-      config: { broadcast: { self: false } },
-    });
-
-    ch.on("broadcast", { event: "signal" }, ({ payload }) => {
-      if (payload.from !== sessionIdRef.current && signalCallbackRef.current) {
-        signalCallbackRef.current(payload.signal);
+  const joinSignalingChannel = useCallback(
+    (name: string, strangerId: string, initiator: boolean) => {
+      if (signalingRef.current) {
+        supabase.removeChannel(signalingRef.current);
       }
-    });
 
-    ch.subscribe((status) => {
-      if (status === "SUBSCRIBED") {
-        setState("connected");
-        setStrangerSessionId(strangerId);
-        setChannelName(name);
-        setIsInitiator(initiator);
-      }
-    });
+      const ch = supabase.channel(name, {
+        config: { broadcast: { self: false, ack: true } },
+      });
 
-    signalingRef.current = ch;
-  }, []);
+      ch.on("broadcast", { event: "signal" }, ({ payload }) => {
+        if (payload.from !== sessionIdRef.current && signalCallbackRef.current) {
+          signalCallbackRef.current(payload.signal);
+        }
+      });
+
+      ch.subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          setState("connected");
+          setStrangerSessionId(strangerId);
+          setChannelName(name);
+          setIsInitiator(initiator);
+        }
+      });
+
+      signalingRef.current = ch;
+    },
+    []
+  );
 
   const startSearching = useCallback(() => {
     cleanup();
     matchedRef.current = false;
     setState("searching");
 
-    // Generate new session ID for fresh matching
     sessionIdRef.current = crypto.randomUUID();
 
     const lobby = supabase.channel("stranger-lobby", {
       config: { presence: { key: sessionIdRef.current } },
     });
 
-    lobby.on("presence", { event: "sync" }, () => {
+    const tryMatch = () => {
       if (matchedRef.current) return;
 
       const presenceState = lobby.presenceState();
@@ -89,25 +91,30 @@ export function useStrangerMatch(): MatchHook {
       );
 
       if (allUsers.length > 0) {
-        // Sort to ensure both sides agree on who initiates
-        const sorted = [sessionIdRef.current, allUsers[0]].sort();
-        const strangerId = allUsers[0];
+        // Pick random stranger for better distribution
+        const strangerId = allUsers[Math.floor(Math.random() * allUsers.length)];
+        const sorted = [sessionIdRef.current, strangerId].sort();
         const chName = `match-${sorted[0]}-${sorted[1]}`;
-        const isInitiator = sorted[0] === sessionIdRef.current;
+        const initiator = sorted[0] === sessionIdRef.current;
 
         matchedRef.current = true;
         setState("matched");
 
-        // Both join signaling channel immediately, no delay
         supabase.removeChannel(lobby);
         lobbyRef.current = null;
-        joinSignalingChannel(chName, strangerId, isInitiator);
+        joinSignalingChannel(chName, strangerId, initiator);
       }
-    });
+    };
+
+    lobby.on("presence", { event: "sync" }, tryMatch);
+    lobby.on("presence", { event: "join" }, tryMatch);
 
     lobby.subscribe(async (status) => {
       if (status === "SUBSCRIBED") {
-        await lobby.track({ session_id: sessionIdRef.current, joined_at: Date.now() });
+        await lobby.track({
+          session_id: sessionIdRef.current,
+          joined_at: Date.now(),
+        });
       }
     });
 
@@ -122,24 +129,21 @@ export function useStrangerMatch(): MatchHook {
   const skip = useCallback(() => {
     cleanup();
     setState("idle");
-    // Auto-start searching again
-    setTimeout(() => startSearching(), 300);
+    // Immediately start searching again
+    setTimeout(() => startSearching(), 100);
   }, [cleanup, startSearching]);
 
   const onSignal = useCallback((callback: (signal: any) => void) => {
     signalCallbackRef.current = callback;
   }, []);
 
-  const sendSignal = useCallback(
-    (signal: any) => {
-      signalingRef.current?.send({
-        type: "broadcast",
-        event: "signal",
-        payload: { from: sessionIdRef.current, signal },
-      });
-    },
-    []
-  );
+  const sendSignal = useCallback((signal: any) => {
+    signalingRef.current?.send({
+      type: "broadcast",
+      event: "signal",
+      payload: { from: sessionIdRef.current, signal },
+    });
+  }, []);
 
   useEffect(() => {
     return () => cleanup();
