@@ -4,10 +4,12 @@ import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AgeGate = ({ children }: { children: React.ReactNode }) => {
-  const [verified, setVerified] = useState(false);
-
+  const [verified, setVerified] = useState(() => {
+    return localStorage.getItem("age_verified") === "true";
+  });
 
   const handleAgree = () => {
+    localStorage.setItem("age_verified", "true");
     setVerified(true);
   };
 
