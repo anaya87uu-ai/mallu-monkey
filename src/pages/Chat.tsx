@@ -23,13 +23,12 @@ const Chat = () => {
   const [cameraReady, setCameraReady] = useState(false);
   const [allowed, setAllowed] = useState(false);
 
-  // On page load: if refreshed or directly accessed, redirect home
+  // On page load: if refreshed, redirect home. Use sessionStorage flag.
   useEffect(() => {
     const perf = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
-    const isReload = perf?.type === "reload" || perf?.type === "navigate";
-    const cameFromInternalNav = document.referrer.includes(window.location.origin) || window.history.length > 1;
+    const isReload = perf?.type === "reload";
     
-    if (isReload && !cameFromInternalNav) {
+    if (isReload) {
       navigate("/", { replace: true });
       return;
     }
