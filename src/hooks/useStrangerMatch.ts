@@ -115,6 +115,8 @@ export function useStrangerMatch(): MatchHook {
           session_id: sessionIdRef.current,
           joined_at: Date.now(),
         });
+        // Immediately try matching after tracking — reduces wait time
+        setTimeout(tryMatch, 50);
       }
     });
 
@@ -129,8 +131,8 @@ export function useStrangerMatch(): MatchHook {
   const skip = useCallback(() => {
     cleanup();
     setState("idle");
-    // Immediately start searching again
-    setTimeout(() => startSearching(), 100);
+    // Faster re-search for better UX
+    setTimeout(() => startSearching(), 30);
   }, [cleanup, startSearching]);
 
   const onSignal = useCallback((callback: (signal: any) => void) => {
