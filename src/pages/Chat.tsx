@@ -14,27 +14,12 @@ import ReportDialog from "@/components/ReportDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useStrangerMatch } from "@/hooks/useStrangerMatch";
 import { useWebRTC } from "@/hooks/useWebRTC";
 
 const Chat = () => {
-  const navigate = useNavigate();
   const [chatOpen, setChatOpen] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
-  const [allowed, setAllowed] = useState(false);
-
-  // On page load: if refreshed, redirect home. Use sessionStorage flag.
-  useEffect(() => {
-    const perf = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
-    const isReload = perf?.type === "reload";
-    
-    if (isReload) {
-      navigate("/", { replace: true });
-      return;
-    }
-    setAllowed(true);
-  }, [navigate]);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -126,8 +111,6 @@ const Chat = () => {
 
   const isSearching = match.state === "searching" || match.state === "matched";
   const isConnected = match.state === "connected";
-
-  if (!allowed) return null;
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col relative overflow-hidden">
