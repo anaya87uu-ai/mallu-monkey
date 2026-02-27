@@ -10,6 +10,7 @@ import {
   Send,
   Users,
 } from "lucide-react";
+import ReportDialog from "@/components/ReportDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
@@ -309,12 +310,15 @@ const Chat = () => {
           )}
 
           {isConnected && (
-            <Button
-              onClick={handleSkip}
-              className="rounded-full h-11 md:h-12 px-5 md:px-6 bg-gradient-to-r from-primary to-secondary glow-primary text-sm md:text-base"
-            >
-              <SkipForward className="w-5 h-5 mr-2" /> Skip
-            </Button>
+            <>
+              <ReportDialog strangerSessionId={match.strangerSessionId} />
+              <Button
+                onClick={handleSkip}
+                className="rounded-full h-11 md:h-12 px-5 md:px-6 bg-gradient-to-r from-primary to-secondary glow-primary text-sm md:text-base"
+              >
+                <SkipForward className="w-5 h-5 mr-2" /> Skip
+              </Button>
+            </>
           )}
 
           {(isConnected || isSearching) && (
