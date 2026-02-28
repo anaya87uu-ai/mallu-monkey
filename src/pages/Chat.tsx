@@ -129,116 +129,8 @@ const Chat = () => {
     <div className="h-[calc(100dvh-3.5rem)] md:h-[calc(100vh-4rem)] flex flex-col relative overflow-hidden">
       {/* Video area */}
       <div className="flex-1 flex flex-col md:flex-row gap-1.5 md:gap-3 p-1.5 md:p-3 relative min-h-0">
-        {/* On mobile: stack videos with local as small PiP overlay */}
-        <div className="flex-1 relative min-h-0">
-          {/* Stranger video (main on mobile) */}
-          <div className="absolute inset-0 glass-card overflow-hidden">
-            {isConnected && rtc.remoteStream && rtc.remoteStream.getTracks().length > 0 ? (
-              <video
-                ref={remoteVideoRef}
-                autoPlay
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
-                <div className="text-center px-4">
-                  {isSearching ? (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                      <div className="relative w-16 h-16 md:w-24 md:h-24 mx-auto mb-3 md:mb-5">
-                        <motion.div
-                          className="absolute inset-0 rounded-full border-2 border-primary/20"
-                          animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                        <motion.div
-                          className="absolute inset-1 rounded-full border-2 border-secondary/20"
-                          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-                        />
-                        <div className="absolute inset-2 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                        <motion.div
-                          className="absolute inset-0 flex items-center justify-center"
-                          animate={{ scale: [1, 1.05, 1] }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                          <Users className="w-5 h-5 md:w-7 md:h-7 text-primary" />
-                        </motion.div>
-                      </div>
-                      <p className="text-foreground font-display font-semibold text-base md:text-lg">
-                        Finding a stranger...
-                      </p>
-                      <motion.p
-                        className="text-xs md:text-sm text-muted-foreground mt-1"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        Scanning for available people
-                      </motion.p>
-                    </motion.div>
-                  ) : isConnected ? (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                    >
-                      <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 flex items-center justify-center mx-auto mb-2 md:mb-3">
-                        <Users className="w-6 h-6 md:w-8 md:h-8 text-secondary" />
-                      </div>
-                      <p className="text-foreground font-display font-semibold text-sm md:text-base">
-                        Connected!
-                      </p>
-                      <p className="text-xs md:text-sm text-muted-foreground">
-                        Waiting for video...
-                      </p>
-                    </motion.div>
-                  ) : (
-                    <div>
-                      <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-2 md:mb-3">
-                        <Video className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
-                      </div>
-                      <p className="text-muted-foreground text-xs md:text-sm mb-3 md:mb-4">
-                        No one connected yet
-                      </p>
-                      <Button
-                        onClick={handleStart}
-                        size="sm"
-                        className="bg-gradient-to-r from-primary to-secondary glow-primary text-xs md:text-sm"
-                      >
-                        Find a Stranger
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
-              Stranger
-            </div>
-          </div>
-
-          {/* Local video - PiP on mobile, side-by-side on desktop */}
-          <div className="absolute bottom-2 right-2 w-24 h-32 md:hidden glass-card overflow-hidden rounded-xl z-20 shadow-lg border border-border/30">
-            {rtc.localStream ? (
-              <video
-                ref={localVideoRef}
-                autoPlay
-                playsInline
-                muted
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
-                <Video className="w-4 h-4 text-muted-foreground" />
-              </div>
-            )}
-            <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded-full glass text-[8px] text-foreground">
-              You
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop: separate local video panel */}
-        <div className="hidden md:flex flex-1 glass-card overflow-hidden relative">
+        {/* Your video */}
+        <div className="flex-1 glass-card overflow-hidden relative min-h-0">
           {rtc.localStream ? (
             <video
               ref={localVideoRef}
@@ -250,15 +142,100 @@ const Chat = () => {
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
               <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center mx-auto mb-3">
-                  <Video className="w-8 h-8 text-primary" />
+                <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                  <Video className="w-6 h-6 md:w-8 md:h-8 text-primary" />
                 </div>
-                <p className="text-sm text-muted-foreground">Camera off</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Camera off</p>
               </div>
             </div>
           )}
-          <div className="absolute top-3 left-3 px-3 py-1 rounded-full glass text-xs text-foreground z-10">
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
             You
+          </div>
+        </div>
+
+        {/* Stranger video */}
+        <div className="flex-1 glass-card overflow-hidden relative min-h-0">
+          {isConnected && rtc.remoteStream && rtc.remoteStream.getTracks().length > 0 ? (
+            <video
+              ref={remoteVideoRef}
+              autoPlay
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
+              <div className="text-center px-4">
+                {isSearching ? (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <div className="relative w-16 h-16 md:w-24 md:h-24 mx-auto mb-3 md:mb-5">
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-2 border-primary/20"
+                        animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      <motion.div
+                        className="absolute inset-1 rounded-full border-2 border-secondary/20"
+                        animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+                      />
+                      <div className="absolute inset-2 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <Users className="w-5 h-5 md:w-7 md:h-7 text-primary" />
+                      </motion.div>
+                    </div>
+                    <p className="text-foreground font-display font-semibold text-sm md:text-lg">
+                      Finding a stranger...
+                    </p>
+                    <motion.p
+                      className="text-xs md:text-sm text-muted-foreground mt-1"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      Scanning for available people
+                    </motion.p>
+                  </motion.div>
+                ) : isConnected ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                  >
+                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                      <Users className="w-6 h-6 md:w-8 md:h-8 text-secondary" />
+                    </div>
+                    <p className="text-foreground font-display font-semibold text-sm md:text-base">
+                      Connected!
+                    </p>
+                    <p className="text-xs md:text-sm text-muted-foreground">
+                      Waiting for video...
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div>
+                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                      <Video className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-xs md:text-sm mb-3 md:mb-4">
+                      No one connected yet
+                    </p>
+                    <Button
+                      onClick={handleStart}
+                      size="sm"
+                      className="bg-gradient-to-r from-primary to-secondary glow-primary text-xs md:text-sm"
+                    >
+                      Find a Stranger
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
+            Stranger
           </div>
         </div>
 
