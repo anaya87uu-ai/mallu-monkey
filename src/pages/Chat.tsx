@@ -319,9 +319,12 @@ const Chat = () => {
             </Button>
           )}
 
+          {(isConnected || isSearching) && (
+            <ReportDialog strangerSessionId={match.strangerSessionId} />
+          )}
+
           {isConnected && (
             <>
-              <ReportDialog strangerSessionId={match.strangerSessionId} />
               <Button
                 onClick={handleSkip}
                 className="rounded-full h-11 md:h-12 px-5 md:px-6 bg-gradient-to-r from-primary to-secondary glow-primary text-sm md:text-base"
