@@ -1,1 +1,4 @@
 project_id = "wtplwvaukhkjymxwndoo"
+
+[functions.check-nudity]
+verify_jwt = false

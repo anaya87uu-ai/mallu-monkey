@@ -13,9 +13,10 @@ import {
 import ReportDialog from "@/components/ReportDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useStrangerMatch } from "@/hooks/useStrangerMatch";
 import { useWebRTC } from "@/hooks/useWebRTC";
+import { useNudityDetection } from "@/hooks/useNudityDetection";
 
 const Chat = () => {
   const [chatOpen, setChatOpen] = useState(false);
@@ -27,6 +28,18 @@ const Chat = () => {
 
   const match = useStrangerMatch();
   const rtc = useWebRTC();
+
+  const handleNudityDetected = useCallback(() => {
+    rtc.closeConnection();
+    match.skip();
+  }, [rtc, match]);
+
+  useNudityDetection({
+    remoteVideoRef,
+    strangerSessionId: match.strangerSessionId,
+    isConnected: match.state === "connected",
+    onNudityDetected: handleNudityDetected,
+  });
 
   // Cleanup on unmount only
   useEffect(() => {
