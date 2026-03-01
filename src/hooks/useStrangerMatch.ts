@@ -3,12 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 
 type MatchState = "idle" | "searching" | "matched" | "connected";
 
+export interface StrangerInfo {
+  name: string;
+  country: string;
+  countryCode: string;
+}
+
 interface MatchHook {
   state: MatchState;
   strangerSessionId: string | null;
+  strangerInfo: StrangerInfo | null;
   channelName: string | null;
   isInitiator: boolean;
-  startSearching: () => void;
+  startSearching: (userInfo: { name: string; country: string; countryCode: string }) => void;
   stopSearching: () => void;
   skip: () => void;
   onSignal: (callback: (signal: any) => void) => void;
@@ -19,10 +26,12 @@ interface MatchHook {
 export function useStrangerMatch(): MatchHook {
   const [state, setState] = useState<MatchState>("idle");
   const [strangerSessionId, setStrangerSessionId] = useState<string | null>(null);
+  const [strangerInfo, setStrangerInfo] = useState<StrangerInfo | null>(null);
   const [channelName, setChannelName] = useState<string | null>(null);
   const [isInitiator, setIsInitiator] = useState(false);
 
   const sessionIdRef = useRef(crypto.randomUUID());
+  const userInfoRef = useRef<{ name: string; country: string; countryCode: string } | null>(null);
   const lobbyRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const signalingRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const signalCallbackRef = useRef<((signal: any) => void) | null>(null);
@@ -45,6 +54,7 @@ export function useStrangerMatch(): MatchHook {
     }
     matchedRef.current = false;
     setStrangerSessionId(null);
+    setStrangerInfo(null);
     setChannelName(null);
   }, []);
 
@@ -87,10 +97,11 @@ export function useStrangerMatch(): MatchHook {
     []
   );
 
-  const startSearching = useCallback(() => {
+  const startSearching = useCallback((userInfo: { name: string; country: string; countryCode: string }) => {
     cleanup();
     matchedRef.current = false;
     setState("searching");
+    userInfoRef.current = userInfo;
 
     sessionIdRef.current = crypto.randomUUID();
 
@@ -107,11 +118,21 @@ export function useStrangerMatch(): MatchHook {
       );
 
       if (allUsers.length > 0) {
-        // Pick random stranger for better distribution
         const strangerId = allUsers[Math.floor(Math.random() * allUsers.length)];
         const sorted = [sessionIdRef.current, strangerId].sort();
         const chName = `match-${sorted[0]}-${sorted[1]}`;
         const initiator = sorted[0] === sessionIdRef.current;
+
+        // Extract stranger's info from presence
+        const strangerPresence = presenceState[strangerId];
+        if (strangerPresence && strangerPresence.length > 0) {
+          const sp = strangerPresence[0] as any;
+          setStrangerInfo({
+            name: sp.name || "Stranger",
+            country: sp.country || "Unknown",
+            countryCode: sp.country_code || "",
+          });
+        }
 
         matchedRef.current = true;
         setState("matched");
@@ -130,10 +151,11 @@ export function useStrangerMatch(): MatchHook {
         await lobby.track({
           session_id: sessionIdRef.current,
           joined_at: Date.now(),
+          name: userInfo.name,
+          country: userInfo.country,
+          country_code: userInfo.countryCode,
         });
-        // Immediately try matching after tracking
         setTimeout(tryMatch, 50);
-        // Periodic retry to catch already-waiting users that presence events may miss
         retryIntervalRef.current = setInterval(() => {
           if (!matchedRef.current) tryMatch();
         }, 2000);
@@ -159,9 +181,12 @@ export function useStrangerMatch(): MatchHook {
 
   const skip = useCallback(() => {
     sendLeave();
+    const savedInfo = userInfoRef.current;
     cleanup();
     setState("idle");
-    setTimeout(() => startSearching(), 30);
+    if (savedInfo) {
+      setTimeout(() => startSearching(savedInfo), 30);
+    }
   }, [cleanup, startSearching, sendLeave]);
 
   const onSignal = useCallback((callback: (signal: any) => void) => {
@@ -187,6 +212,7 @@ export function useStrangerMatch(): MatchHook {
   return {
     state,
     strangerSessionId,
+    strangerInfo,
     channelName,
     isInitiator,
     startSearching,

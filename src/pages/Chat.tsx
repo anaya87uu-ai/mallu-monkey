@@ -17,6 +17,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useStrangerMatch } from "@/hooks/useStrangerMatch";
 import { useWebRTC } from "@/hooks/useWebRTC";
 import { useNudityDetection } from "@/hooks/useNudityDetection";
+import { useGeoLocation } from "@/hooks/useGeoLocation";
 
 const Chat = () => {
   const [chatOpen, setChatOpen] = useState(false);
@@ -26,6 +27,7 @@ const Chat = () => {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const hasInitiatedRef = useRef(false);
 
+  const geoInfo = useGeoLocation();
   const match = useStrangerMatch();
   const rtc = useWebRTC();
 
@@ -118,7 +120,11 @@ const Chat = () => {
       }
     }
     // Only start matching after camera is ready
-    match.startSearching();
+    match.startSearching({
+      name: geoInfo.anonymousName,
+      country: geoInfo.country,
+      countryCode: geoInfo.countryCode,
+    });
   };
 
   const handleSkip = () => {
@@ -243,8 +249,22 @@ const Chat = () => {
               </div>
             </div>
           )}
-          <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
-            Stranger
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10 flex items-center gap-1.5">
+            {match.strangerInfo ? (
+              <>
+                {match.strangerInfo.countryCode && (
+                  <img
+                    src={`https://flagcdn.com/16x12/${match.strangerInfo.countryCode}.png`}
+                    alt={match.strangerInfo.country}
+                    className="w-4 h-3 rounded-sm object-cover"
+                  />
+                )}
+                <span>{match.strangerInfo.name}</span>
+                <span className="text-muted-foreground">· {match.strangerInfo.country}</span>
+              </>
+            ) : (
+              "Stranger"
+            )}
           </div>
         </div>
 
