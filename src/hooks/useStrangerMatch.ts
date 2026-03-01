@@ -13,6 +13,7 @@ interface MatchHook {
   skip: () => void;
   onSignal: (callback: (signal: any) => void) => void;
   sendSignal: (signal: any) => void;
+  onStrangerLeft: (callback: () => void) => void;
 }
 
 export function useStrangerMatch(): MatchHook {
@@ -25,6 +26,7 @@ export function useStrangerMatch(): MatchHook {
   const lobbyRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const signalingRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const signalCallbackRef = useRef<((signal: any) => void) | null>(null);
+  const strangerLeftCallbackRef = useRef<(() => void) | null>(null);
   const matchedRef = useRef(false);
 
   const cleanup = useCallback(() => {
@@ -54,6 +56,15 @@ export function useStrangerMatch(): MatchHook {
       ch.on("broadcast", { event: "signal" }, ({ payload }) => {
         if (payload.from !== sessionIdRef.current && signalCallbackRef.current) {
           signalCallbackRef.current(payload.signal);
+        }
+      });
+
+      ch.on("broadcast", { event: "leave" }, ({ payload }) => {
+        if (payload.from !== sessionIdRef.current) {
+          console.log("[Match] Stranger left the channel");
+          if (strangerLeftCallbackRef.current) {
+            strangerLeftCallbackRef.current();
+          }
         }
       });
 
@@ -123,17 +134,26 @@ export function useStrangerMatch(): MatchHook {
     lobbyRef.current = lobby;
   }, [cleanup, joinSignalingChannel]);
 
+  const sendLeave = useCallback(() => {
+    signalingRef.current?.send({
+      type: "broadcast",
+      event: "leave",
+      payload: { from: sessionIdRef.current },
+    });
+  }, []);
+
   const stopSearching = useCallback(() => {
+    sendLeave();
     cleanup();
     setState("idle");
-  }, [cleanup]);
+  }, [cleanup, sendLeave]);
 
   const skip = useCallback(() => {
+    sendLeave();
     cleanup();
     setState("idle");
-    // Faster re-search for better UX
     setTimeout(() => startSearching(), 30);
-  }, [cleanup, startSearching]);
+  }, [cleanup, startSearching, sendLeave]);
 
   const onSignal = useCallback((callback: (signal: any) => void) => {
     signalCallbackRef.current = callback;
@@ -145,6 +165,10 @@ export function useStrangerMatch(): MatchHook {
       event: "signal",
       payload: { from: sessionIdRef.current, signal },
     });
+  }, []);
+
+  const onStrangerLeft = useCallback((callback: () => void) => {
+    strangerLeftCallbackRef.current = callback;
   }, []);
 
   useEffect(() => {
@@ -161,5 +185,6 @@ export function useStrangerMatch(): MatchHook {
     skip,
     onSignal,
     sendSignal,
+    onStrangerLeft,
   };
 }
