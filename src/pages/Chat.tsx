@@ -68,6 +68,15 @@ const Chat = () => {
     });
   }, [rtc, match]);
 
+  // Auto-skip when stranger leaves
+  useEffect(() => {
+    match.onStrangerLeft(() => {
+      console.log("[Chat] Stranger left, auto-skipping...");
+      rtc.closeConnection();
+      match.skip();
+    });
+  }, [match, rtc]);
+
   // Handle incoming signals
   useEffect(() => {
     match.onSignal(async (signal) => {
