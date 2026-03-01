@@ -28,8 +28,13 @@ export function useStrangerMatch(): MatchHook {
   const signalCallbackRef = useRef<((signal: any) => void) | null>(null);
   const strangerLeftCallbackRef = useRef<(() => void) | null>(null);
   const matchedRef = useRef(false);
+  const retryIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const cleanup = useCallback(() => {
+    if (retryIntervalRef.current) {
+      clearInterval(retryIntervalRef.current);
+      retryIntervalRef.current = null;
+    }
     if (signalingRef.current) {
       supabase.removeChannel(signalingRef.current);
       signalingRef.current = null;
@@ -126,8 +131,12 @@ export function useStrangerMatch(): MatchHook {
           session_id: sessionIdRef.current,
           joined_at: Date.now(),
         });
-        // Immediately try matching after tracking — reduces wait time
+        // Immediately try matching after tracking
         setTimeout(tryMatch, 50);
+        // Periodic retry to catch already-waiting users that presence events may miss
+        retryIntervalRef.current = setInterval(() => {
+          if (!matchedRef.current) tryMatch();
+        }, 2000);
       }
     });
 
