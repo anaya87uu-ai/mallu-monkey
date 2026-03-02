@@ -144,7 +144,32 @@ const Chat = () => {
     <div className="h-[calc(100dvh-3.5rem)] md:h-[calc(100vh-4rem)] flex flex-col relative overflow-hidden">
       {/* Video area */}
       <div className="flex-1 flex flex-col md:flex-row gap-1.5 md:gap-3 p-1.5 md:p-3 relative min-h-0">
-        {/* Stranger video - full size */}
+        {/* Your video */}
+        <div className="flex-1 glass-card overflow-hidden relative min-h-0">
+          {rtc.localStream ? (
+            <video
+              ref={localVideoRef}
+              autoPlay
+              playsInline
+              muted
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                  <Video className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                </div>
+                <p className="text-xs md:text-sm text-muted-foreground">Camera off</p>
+              </div>
+            </div>
+          )}
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
+            You
+          </div>
+        </div>
+
+        {/* Stranger video */}
         <div className="flex-1 glass-card overflow-hidden relative min-h-0">
           {isConnected && rtc.remoteStream && rtc.remoteStream.getTracks().length > 0 ? (
             <video
@@ -240,26 +265,6 @@ const Chat = () => {
             ) : (
               "Stranger"
             )}
-          </div>
-
-          {/* Local video PiP overlay */}
-          <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-24 h-32 md:w-36 md:h-48 rounded-xl overflow-hidden shadow-lg border border-border/30 z-20">
-            {rtc.localStream ? (
-              <video
-                ref={localVideoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-muted/80 to-background flex items-center justify-center">
-                <Video className="w-5 h-5 text-muted-foreground" />
-              </div>
-            )}
-            <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded-full glass text-[9px] md:text-[10px] text-foreground">
-              You
-            </div>
           </div>
         </div>
 
