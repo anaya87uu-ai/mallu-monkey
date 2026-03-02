@@ -152,7 +152,7 @@ const Chat = () => {
               autoPlay
               playsInline
               muted
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
