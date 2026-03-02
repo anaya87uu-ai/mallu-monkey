@@ -37,7 +37,7 @@ const Index = () => (
             Video chat with random people from around the world. Anonymous, instant, and unforgettable connections.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/chat">
+            <Link to="/auth">
               <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg px-8 h-14 glow-primary">
                 Start Chatting <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
@@ -97,7 +97,7 @@ const Index = () => (
             Ready to <span className="gradient-text">Connect</span>?
           </h2>
           <p className="text-muted-foreground mb-8">Jump in and start meeting new people right now. No signup required.</p>
-          <Link to="/chat">
+          <Link to="/auth">
             <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg px-10 h-14 glow-primary">
               Start Video Chat <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
