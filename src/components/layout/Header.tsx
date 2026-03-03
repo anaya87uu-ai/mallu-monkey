@@ -1,8 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
-import { Cat, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Cat, Menu, X, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -12,7 +14,36 @@ const navLinks = [
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        localStorage.setItem("user", JSON.stringify({ id: session.user.id, email: session.user.email, display_name: session.user.user_metadata?.display_name }));
+      } else {
+        localStorage.removeItem("user");
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        localStorage.setItem("user", JSON.stringify({ id: session.user.id, email: session.user.email, display_name: session.user.user_metadata?.display_name }));
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("user");
+    toast.success("Logged out");
+    navigate("/");
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30">
@@ -41,16 +72,29 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/auth">
-            <Button variant="outline" size="sm" className="glass border-border/50 hover:border-primary/50">
-              Log In
-            </Button>
-          </Link>
-          <Link to="/auth?mode=signup">
-            <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
-              Sign Up
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                {user.user_metadata?.display_name || user.email}
+              </span>
+              <Button variant="outline" size="sm" className="glass border-border/50 hover:border-destructive/50" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-1" /> Log Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/auth">
+                <Button variant="outline" size="sm" className="glass border-border/50 hover:border-primary/50">
+                  Log In
+                </Button>
+              </Link>
+              <Link to="/auth?mode=signup">
+                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -82,12 +126,20 @@ const Header = () => {
                 </Link>
               ))}
               <div className="flex gap-3 mt-2">
-                <Link to="/auth" className="flex-1" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="w-full glass border-border/50">Log In</Button>
-                </Link>
-                <Link to="/auth?mode=signup" className="flex-1" onClick={() => setMobileOpen(false)}>
-                  <Button className="w-full bg-gradient-to-r from-primary to-secondary">Sign Up</Button>
-                </Link>
+                {user ? (
+                  <Button variant="outline" className="w-full glass border-border/50" onClick={() => { setMobileOpen(false); handleLogout(); }}>
+                    <LogOut className="w-4 h-4 mr-1" /> Log Out
+                  </Button>
+                ) : (
+                  <>
+                    <Link to="/auth" className="flex-1" onClick={() => setMobileOpen(false)}>
+                      <Button variant="outline" className="w-full glass border-border/50">Log In</Button>
+                    </Link>
+                    <Link to="/auth?mode=signup" className="flex-1" onClick={() => setMobileOpen(false)}>
+                      <Button className="w-full bg-gradient-to-r from-primary to-secondary">Sign Up</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
