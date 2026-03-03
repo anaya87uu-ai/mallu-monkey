@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Cat, Menu, X, LogOut } from "lucide-react";
+import { Cat, Menu, X, LogOut, UserCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -74,9 +74,12 @@ const Header = () => {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground">
-                {user.user_metadata?.display_name || user.email}
-              </span>
+              <Link to="/account">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                  <UserCircle className="w-4 h-4 mr-1" />
+                  {user.user_metadata?.display_name || user.email}
+                </Button>
+              </Link>
               <Button variant="outline" size="sm" className="glass border-border/50 hover:border-destructive/50" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-1" /> Log Out
               </Button>
