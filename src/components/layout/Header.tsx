@@ -15,14 +15,22 @@ const navLinks = [
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [guestUser, setGuestUser] = useState<any>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check for guest user
+    const stored = localStorage.getItem("guest_user");
+    if (stored) setGuestUser(JSON.parse(stored));
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         localStorage.setItem("user", JSON.stringify({ id: session.user.id, email: session.user.email, display_name: session.user.user_metadata?.display_name }));
+        // Clear guest if logged in with real account
+        localStorage.removeItem("guest_user");
+        setGuestUser(null);
       } else {
         localStorage.removeItem("user");
       }
@@ -41,9 +49,14 @@ const Header = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem("user");
+    localStorage.removeItem("guest_user");
+    setGuestUser(null);
     toast.success("Logged out");
     navigate("/");
   };
+
+  const isLoggedIn = !!user || !!guestUser;
+  const displayLabel = user?.user_metadata?.display_name || user?.email || guestUser?.name || "Guest";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30">
@@ -72,14 +85,20 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          {user ? (
+          {isLoggedIn ? (
             <>
-              <Link to="/account">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <UserCircle className="w-4 h-4 mr-1" />
-                  {user.user_metadata?.display_name || user.email}
-                </Button>
-              </Link>
+              {user ? (
+                <Link to="/account">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    <UserCircle className="w-4 h-4 mr-1" />
+                    {displayLabel}
+                  </Button>
+                </Link>
+              ) : (
+                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                  <UserCircle className="w-4 h-4" /> {displayLabel}
+                </span>
+              )}
               <Button variant="outline" size="sm" className="glass border-border/50 hover:border-destructive/50" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-1" /> Log Out
               </Button>
@@ -129,7 +148,7 @@ const Header = () => {
                 </Link>
               ))}
               <div className="flex gap-3 mt-2">
-                {user ? (
+                {isLoggedIn ? (
                   <Button variant="outline" className="w-full glass border-border/50" onClick={() => { setMobileOpen(false); handleLogout(); }}>
                     <LogOut className="w-4 h-4 mr-1" /> Log Out
                   </Button>

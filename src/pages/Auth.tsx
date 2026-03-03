@@ -64,6 +64,7 @@ const Auth = () => {
       toast.error("Please enter your name");
       return;
     }
+    localStorage.setItem("guest_user", JSON.stringify({ name: guestName.trim(), gender: guestGender }));
     toast.success(`Welcome, ${guestName.trim()}! Some features may be limited.`);
     navigate("/chat", { state: { guestName: guestName.trim(), guestGender } });
   };
