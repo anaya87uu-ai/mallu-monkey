@@ -276,22 +276,6 @@ const Auth = () => {
             </button>
           </p>
 
-          <div className="mt-4 p-3 rounded-xl border border-border/30 bg-muted/20">
-            <p className="text-[10px] text-muted-foreground text-center mb-1.5 uppercase tracking-wider font-medium">Demo Admin</p>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Email:</span>
-              <button
-                onClick={() => { setEmail("demo@admin.com"); setPassword("admin123"); setIsSignup(false); }}
-                className="text-primary font-mono hover:underline"
-              >
-                demo@admin.com
-              </button>
-            </div>
-            <div className="flex items-center justify-between text-xs mt-0.5">
-              <span className="text-muted-foreground">Pass:</span>
-              <span className="font-mono text-foreground/70">admin123</span>
-            </div>
-          </div>
         </div>
       </motion.div>
     </div>
