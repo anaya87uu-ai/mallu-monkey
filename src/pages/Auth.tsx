@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cat, Mail, Lock, User, LogIn } from "lucide-react";
@@ -8,12 +8,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isSignup, setIsSignup] = useState(searchParams.get("mode") === "signup");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate("/chat", { replace: true });
+    });
+  }, [navigate]);
   const [gender, setGender] = useState("boy");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
