@@ -104,18 +104,11 @@ const Header = () => {
               </Button>
             </>
           ) : (
-            <>
-              <Link to="/auth">
-                <Button variant="outline" size="sm" className="glass border-border/50 hover:border-primary/50">
-                  Log In
-                </Button>
-              </Link>
-              <Link to="/auth?mode=signup">
-                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
-                  Sign Up
-                </Button>
-              </Link>
-            </>
+            <Link to="/auth">
+              <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+                Join Chat
+              </Button>
+            </Link>
           )}
         </div>
 
@@ -153,14 +146,9 @@ const Header = () => {
                     <LogOut className="w-4 h-4 mr-1" /> Log Out
                   </Button>
                 ) : (
-                  <>
-                    <Link to="/auth" className="flex-1" onClick={() => setMobileOpen(false)}>
-                      <Button variant="outline" className="w-full glass border-border/50">Log In</Button>
-                    </Link>
-                    <Link to="/auth?mode=signup" className="flex-1" onClick={() => setMobileOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-primary to-secondary">Sign Up</Button>
-                    </Link>
-                  </>
+                  <Link to="/auth" className="flex-1" onClick={() => setMobileOpen(false)}>
+                    <Button className="w-full bg-gradient-to-r from-primary to-secondary">Join Chat</Button>
+                  </Link>
                 )}
               </div>
             </div>
