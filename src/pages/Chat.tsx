@@ -143,20 +143,6 @@ const Chat = () => {
     <div className="h-[calc(100dvh-3.5rem)] md:h-[calc(100vh-4rem)] flex flex-col relative overflow-hidden">
       {/* Video area */}
       <div className="flex-1 flex flex-col md:flex-row gap-1.5 md:gap-3 p-1.5 md:p-3 relative min-h-0">
-        {/* Your video */}
-        <div className="flex-1 glass-card overflow-hidden relative min-h-0">
-          <video
-            ref={localVideoRef}
-            autoPlay
-            playsInline
-            muted
-            className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
-          />
-          <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
-            You
-          </div>
-        </div>
-
         {/* Stranger video */}
         <div className="flex-1 glass-card overflow-hidden relative min-h-0">
           {isConnected && rtc.remoteStream && rtc.remoteStream.getTracks().length > 0 ? (
@@ -256,6 +242,20 @@ const Chat = () => {
           </div>
           <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-2 py-0.5 md:px-3 md:py-1 rounded-md bg-background/40 backdrop-blur-sm text-[9px] md:text-[11px] text-foreground/50 z-10 font-medium tracking-wide select-none pointer-events-none">
             mallumonkey.xyz
+          </div>
+        </div>
+
+        {/* Your video */}
+        <div className="flex-1 glass-card overflow-hidden relative min-h-0">
+          <video
+            ref={localVideoRef}
+            autoPlay
+            playsInline
+            muted
+            className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
+          />
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
+            You
           </div>
         </div>
 
