@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Video, Shield, Users, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const features = [
   { icon: Video, title: "HD Video Chat", desc: "Crystal clear video & voice calls with strangers worldwide" },
@@ -14,7 +16,21 @@ const GlassOrb = ({ className }: { className?: string }) => (
   <div className={`absolute rounded-full blur-3xl opacity-20 ${className}`} />
 );
 
-const Index = () => (
+const Index = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const guest = localStorage.getItem("guest_user");
+    if (guest) {
+      navigate("/chat", { replace: true });
+      return;
+    }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate("/chat", { replace: true });
+    });
+  }, [navigate]);
+
+  return (
   <div className="relative overflow-hidden">
     {/* Background orbs */}
     <GlassOrb className="w-96 h-96 bg-primary -top-48 -left-48 animate-float" />
@@ -106,6 +122,7 @@ const Index = () => (
       </div>
     </section>
   </div>
-);
+  );
+};
 
 export default Index;
