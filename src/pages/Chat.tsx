@@ -3,7 +3,6 @@ import {
   Video,
   Mic,
   MicOff,
-  VideoOff,
   SkipForward,
   Phone,
   MessageSquare,
@@ -146,24 +145,13 @@ const Chat = () => {
       <div className="flex-1 flex flex-col md:flex-row gap-1.5 md:gap-3 p-1.5 md:p-3 relative min-h-0">
         {/* Your video */}
         <div className="flex-1 glass-card overflow-hidden relative min-h-0">
-          {rtc.localStream ? (
-            <video
-              ref={localVideoRef}
-              autoPlay
-              playsInline
-              muted
-              className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center mx-auto mb-2 md:mb-3">
-                  <Video className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-                </div>
-                <p className="text-xs md:text-sm text-muted-foreground">Camera off</p>
-              </div>
-            </div>
-          )}
+          <video
+            ref={localVideoRef}
+            autoPlay
+            playsInline
+            muted
+            className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
+          />
           <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-3 md:py-1 rounded-full glass text-[10px] md:text-xs text-foreground z-10">
             You
           </div>
@@ -266,6 +254,9 @@ const Chat = () => {
               "Stranger"
             )}
           </div>
+          <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-2 py-0.5 md:px-3 md:py-1 rounded-md bg-background/40 backdrop-blur-sm text-[9px] md:text-[11px] text-foreground/50 z-10 font-medium tracking-wide select-none pointer-events-none">
+            mallu monkey.xyz
+          </div>
         </div>
 
         {/* Chat panel */}
@@ -327,22 +318,6 @@ const Chat = () => {
             )}
           </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={rtc.toggleCamera}
-            className={`rounded-full w-9 h-9 md:w-12 md:h-12 glass border-border/50 ${
-              rtc.isCamOff
-                ? "bg-destructive/20 border-destructive/50 text-destructive"
-                : ""
-            }`}
-          >
-            {rtc.isCamOff ? (
-              <VideoOff className="w-4 h-4 md:w-5 md:h-5" />
-            ) : (
-              <Video className="w-4 h-4 md:w-5 md:h-5" />
-            )}
-          </Button>
 
           <Button
             variant="outline"
