@@ -255,7 +255,7 @@ const Chat = () => {
             )}
           </div>
           <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-2 py-0.5 md:px-3 md:py-1 rounded-md bg-background/40 backdrop-blur-sm text-[9px] md:text-[11px] text-foreground/50 z-10 font-medium tracking-wide select-none pointer-events-none">
-            mallu monkey.xyz
+            mallumonkey.xyz
           </div>
         </div>
 
