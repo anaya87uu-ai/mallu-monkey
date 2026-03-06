@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_stats: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          longest_chat_seconds: number
+          total_chat_seconds: number
+          total_chats: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          longest_chat_seconds?: number
+          total_chat_seconds?: number
+          total_chats?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          longest_chat_seconds?: number
+          total_chat_seconds?: number
+          total_chats?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           banned_at: string | null
