@@ -134,6 +134,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_points: {
+        Row: {
+          badges: string[]
+          created_at: string
+          display_name: string | null
+          games_played: number
+          games_won: number
+          id: string
+          last_daily_claim: string | null
+          level: number
+          login_streak: number
+          total_points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          badges?: string[]
+          created_at?: string
+          display_name?: string | null
+          games_played?: number
+          games_won?: number
+          id?: string
+          last_daily_claim?: string | null
+          level?: number
+          login_streak?: number
+          total_points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          badges?: string[]
+          created_at?: string
+          display_name?: string | null
+          games_played?: number
+          games_won?: number
+          id?: string
+          last_daily_claim?: string | null
+          level?: number
+          login_streak?: number
+          total_points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
