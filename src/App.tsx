@@ -14,6 +14,8 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
 import Account from "./pages/Account";
+import Games from "./pages/Games";
+import Leaderboards from "./pages/Leaderboards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const App = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/leaderboards" element={<Leaderboards />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
