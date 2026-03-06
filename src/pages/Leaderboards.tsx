@@ -1,26 +1,21 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Clock, MessageCircle, Flame, Medal } from "lucide-react";
+import { Trophy, Clock, MessageCircle, Flame, Medal, Star, Gamepad2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { getLevelInfo, LEVELS } from "@/lib/points";
 
-interface ChatStat {
+interface PointsStat {
   id: string;
   user_id: string;
   display_name: string | null;
-  total_chats: number;
-  total_chat_seconds: number;
-  longest_chat_seconds: number;
+  total_points: number;
+  level: number;
+  games_won: number;
+  games_played: number;
+  login_streak: number;
+  badges: string[];
 }
-
-const formatTime = (seconds: number) => {
-  if (seconds < 60) return `${seconds}s`;
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  if (mins < 60) return `${mins}m ${secs}s`;
-  const hrs = Math.floor(mins / 60);
-  return `${hrs}h ${mins % 60}m`;
-};
 
 const rankColors = [
   "from-yellow-400 to-amber-500",
@@ -33,15 +28,14 @@ const rankIcons = ["🥇", "🥈", "🥉"];
 const LeaderboardRow = ({
   stat,
   rank,
-  valueKey,
-  formatValue,
+  valueLabel,
 }: {
-  stat: ChatStat;
+  stat: PointsStat;
   rank: number;
-  valueKey: keyof ChatStat;
-  formatValue: (val: number) => string;
+  valueLabel: string;
 }) => {
   const isTop3 = rank < 3;
+  const levelInfo = getLevelInfo(stat.total_points);
 
   return (
     <motion.div
@@ -49,9 +43,7 @@ const LeaderboardRow = ({
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: rank * 0.05 }}
       className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-        isTop3
-          ? "glass-card border border-primary/20"
-          : "hover:bg-muted/30"
+        isTop3 ? "glass-card border border-primary/20" : "hover:bg-muted/30"
       }`}
     >
       <div className="w-8 h-8 flex items-center justify-center shrink-0">
@@ -63,43 +55,47 @@ const LeaderboardRow = ({
       </div>
 
       <div
-        className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+        className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 relative ${
           isTop3
             ? `bg-gradient-to-br ${rankColors[rank]} text-white`
             : "bg-muted/50 text-muted-foreground"
         }`}
       >
         {(stat.display_name || "?")[0].toUpperCase()}
+        <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-background border border-border/30 flex items-center justify-center text-[8px] font-bold">
+          {stat.level}
+        </span>
       </div>
 
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-semibold truncate ${isTop3 ? "text-foreground" : "text-foreground/80"}`}>
           {stat.display_name || "Anonymous"}
         </p>
+        <p className="text-[10px] text-muted-foreground">{levelInfo.current.name}</p>
       </div>
 
       <div className={`text-right shrink-0 ${isTop3 ? "text-primary font-bold" : "text-muted-foreground font-medium"}`}>
-        <span className="text-sm">{formatValue(stat[valueKey] as number)}</span>
+        <span className="text-sm">{valueLabel}</span>
       </div>
     </motion.div>
   );
 };
 
 const Leaderboards = () => {
-  const [stats, setStats] = useState<ChatStat[]>([]);
+  const [stats, setStats] = useState<PointsStat[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState("chats");
+  const [tab, setTab] = useState("points");
 
   useEffect(() => {
     const fetchStats = async () => {
       const { data, error } = await supabase
-        .from("chat_stats")
+        .from("user_points")
         .select("*")
-        .order("total_chats", { ascending: false })
+        .order("total_points", { ascending: false })
         .limit(50);
 
       if (!error && data) {
-        setStats(data as ChatStat[]);
+        setStats(data as unknown as PointsStat[]);
       }
       setLoading(false);
     };
@@ -107,10 +103,16 @@ const Leaderboards = () => {
   }, []);
 
   const sortedStats = [...stats].sort((a, b) => {
-    if (tab === "chats") return b.total_chats - a.total_chats;
-    if (tab === "time") return b.total_chat_seconds - a.total_chat_seconds;
-    return b.longest_chat_seconds - a.longest_chat_seconds;
+    if (tab === "points") return b.total_points - a.total_points;
+    if (tab === "wins") return b.games_won - a.games_won;
+    return b.login_streak - a.login_streak;
   });
+
+  const getValueLabel = (stat: PointsStat) => {
+    if (tab === "points") return `${stat.total_points} pts`;
+    if (tab === "wins") return `${stat.games_won} wins`;
+    return `${stat.login_streak} 🔥`;
+  };
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] px-4 py-8 pb-20 overflow-hidden">
@@ -127,19 +129,33 @@ const Leaderboards = () => {
             <Trophy className="w-7 h-7 text-primary-foreground" />
           </div>
           <h1 className="font-display text-3xl font-bold">Leaderboards</h1>
-          <p className="text-muted-foreground mt-1 text-sm">Top chatters on mallumonkey.xyz</p>
+          <p className="text-muted-foreground mt-1 text-sm">Top players on mallumonkey.xyz</p>
+        </div>
+
+        {/* Level guide */}
+        <div className="glass-card p-3 mb-4">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {LEVELS.map((l) => (
+              <div key={l.level} className="flex flex-col items-center shrink-0 min-w-[48px]">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary/60 to-secondary/60 flex items-center justify-center text-[10px] font-bold text-primary-foreground">
+                  {l.level}
+                </div>
+                <span className="text-[8px] text-muted-foreground mt-0.5">{l.name}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="w-full glass border border-border/30 mb-4">
-            <TabsTrigger value="chats" className="flex-1 gap-1.5 text-xs">
-              <MessageCircle className="w-3.5 h-3.5" /> Most Chats
+            <TabsTrigger value="points" className="flex-1 gap-1.5 text-xs">
+              <Star className="w-3.5 h-3.5" /> Points
             </TabsTrigger>
-            <TabsTrigger value="time" className="flex-1 gap-1.5 text-xs">
-              <Clock className="w-3.5 h-3.5" /> Total Time
+            <TabsTrigger value="wins" className="flex-1 gap-1.5 text-xs">
+              <Gamepad2 className="w-3.5 h-3.5" /> Game Wins
             </TabsTrigger>
-            <TabsTrigger value="longest" className="flex-1 gap-1.5 text-xs">
-              <Flame className="w-3.5 h-3.5" /> Longest Chat
+            <TabsTrigger value="streak" className="flex-1 gap-1.5 text-xs">
+              <Flame className="w-3.5 h-3.5" /> Streaks
             </TabsTrigger>
           </TabsList>
 
@@ -150,44 +166,21 @@ const Leaderboards = () => {
           ) : sortedStats.length === 0 ? (
             <div className="glass-card p-10 text-center">
               <Medal className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground text-sm">No stats yet. Start chatting to appear on the leaderboard!</p>
+              <p className="text-muted-foreground text-sm">No stats yet. Start playing to appear on the leaderboard!</p>
             </div>
           ) : (
-            <>
-              <TabsContent value="chats" className="space-y-1 mt-0">
+            ["points", "wins", "streak"].map((t) => (
+              <TabsContent key={t} value={t} className="space-y-1 mt-0">
                 {sortedStats.map((stat, i) => (
                   <LeaderboardRow
                     key={stat.id}
                     stat={stat}
                     rank={i}
-                    valueKey="total_chats"
-                    formatValue={(v) => `${v} chats`}
+                    valueLabel={getValueLabel(stat)}
                   />
                 ))}
               </TabsContent>
-              <TabsContent value="time" className="space-y-1 mt-0">
-                {sortedStats.map((stat, i) => (
-                  <LeaderboardRow
-                    key={stat.id}
-                    stat={stat}
-                    rank={i}
-                    valueKey="total_chat_seconds"
-                    formatValue={formatTime}
-                  />
-                ))}
-              </TabsContent>
-              <TabsContent value="longest" className="space-y-1 mt-0">
-                {sortedStats.map((stat, i) => (
-                  <LeaderboardRow
-                    key={stat.id}
-                    stat={stat}
-                    rank={i}
-                    valueKey="longest_chat_seconds"
-                    formatValue={formatTime}
-                  />
-                ))}
-              </TabsContent>
-            </>
+            ))
           )}
         </Tabs>
       </motion.div>
