@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import AgeGate from "@/components/AgeGate";
 import Index from "./pages/Index";
+import Welcome from "./pages/Welcome";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
