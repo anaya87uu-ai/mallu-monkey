@@ -47,6 +47,51 @@ export type Database = {
         }
         Relationships: []
       }
+      game_rooms: {
+        Row: {
+          board: string[]
+          created_at: string
+          current_turn: string
+          id: string
+          player_o_id: string | null
+          player_o_name: string | null
+          player_x_id: string
+          player_x_name: string
+          status: string
+          turn_started_at: string | null
+          updated_at: string
+          winner: string | null
+        }
+        Insert: {
+          board?: string[]
+          created_at?: string
+          current_turn?: string
+          id?: string
+          player_o_id?: string | null
+          player_o_name?: string | null
+          player_x_id: string
+          player_x_name?: string
+          status?: string
+          turn_started_at?: string | null
+          updated_at?: string
+          winner?: string | null
+        }
+        Update: {
+          board?: string[]
+          created_at?: string
+          current_turn?: string
+          id?: string
+          player_o_id?: string | null
+          player_o_name?: string | null
+          player_x_id?: string
+          player_x_name?: string
+          status?: string
+          turn_started_at?: string | null
+          updated_at?: string
+          winner?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           banned_at: string | null
