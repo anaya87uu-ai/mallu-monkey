@@ -38,7 +38,13 @@ const Index = () => {
     });
   }, [navigate]);
 
-  const level = stats ? getLevelInfo(stats.total_points) : { level: 1, current: 0, needed: 100, progress: 0 };
+  const levelRaw = stats ? getLevelInfo(stats.total_points) : null;
+  const level = {
+    level: levelRaw?.current.level ?? 1,
+    current: stats?.total_points ?? 0,
+    needed: levelRaw?.next?.pointsNeeded ?? 100,
+    progress: levelRaw?.progress ?? 0,
+  };
 
   const quickActions = [
     { to: "/chat", icon: MessageCircle, label: "Start Chat", gradient: "from-primary to-secondary", desc: "Meet someone new" },
