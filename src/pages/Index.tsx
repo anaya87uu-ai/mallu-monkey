@@ -1,127 +1,143 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Video, Shield, Users, Zap, ArrowRight } from "lucide-react";
+import { MessageCircle, Gamepad2, Trophy, Gift, TrendingUp, Clock, Star, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-const features = [
-  { icon: Video, title: "HD Video Chat", desc: "Crystal clear video & voice calls with strangers worldwide" },
-  { icon: Shield, title: "Anonymous & Safe", desc: "No personal info required. Chat freely with full privacy" },
-  { icon: Users, title: "Gender Filter", desc: "Choose to match with boys, girls, or anyone you prefer" },
-  { icon: Zap, title: "Instant Skip", desc: "One tap to skip and connect with someone new instantly" },
-];
-
-const GlassOrb = ({ className }: { className?: string }) => (
-  <div className={`absolute rounded-full blur-3xl opacity-20 ${className}`} />
-);
+import { getLevelInfo, LEVELS } from "@/lib/points";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState<any>(null);
+  const [chatStats, setChatStats] = useState<any>(null);
+  const [isGuest, setIsGuest] = useState(false);
+  const [userName, setUserName] = useState("User");
 
   useEffect(() => {
     const guest = localStorage.getItem("guest_user");
     if (guest) {
-      navigate("/chat", { replace: true });
+      const g = JSON.parse(guest);
+      setIsGuest(true);
+      setUserName(g.name || "Guest");
       return;
     }
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/chat", { replace: true });
+      if (!session) {
+        navigate("/welcome", { replace: true });
+        return;
+      }
+      setUserName(session.user.user_metadata?.display_name || session.user.email || "User");
+      // Fetch points
+      supabase.from("user_points").select("*").eq("user_id", session.user.id).maybeSingle().then(({ data }) => {
+        if (data) setStats(data);
+      });
+      // Fetch chat stats
+      supabase.from("chat_stats").select("*").eq("user_id", session.user.id).maybeSingle().then(({ data }) => {
+        if (data) setChatStats(data);
+      });
     });
   }, [navigate]);
 
+  const levelRaw = stats ? getLevelInfo(stats.total_points) : null;
+  const level = {
+    level: levelRaw?.current.level ?? 1,
+    current: stats?.total_points ?? 0,
+    needed: levelRaw?.next?.pointsNeeded ?? 100,
+    progress: levelRaw?.progress ?? 0,
+  };
+
+  const quickActions = [
+    { to: "/chat", icon: MessageCircle, label: "Start Chat", gradient: "from-primary to-secondary", desc: "Meet someone new" },
+    { to: "/games", icon: Gamepad2, label: "Play Games", gradient: "from-emerald-500 to-teal-500", desc: "Earn points" },
+    { to: "/leaderboards", icon: Trophy, label: "Leaderboards", gradient: "from-amber-500 to-orange-500", desc: "View rankings" },
+    { to: "/games?tab=daily", icon: Gift, label: "Daily Reward", gradient: "from-pink-500 to-rose-500", desc: "Claim bonus" },
+  ];
+
   return (
-  <div className="relative overflow-hidden">
-    {/* Background orbs */}
-    <GlassOrb className="w-96 h-96 bg-primary -top-48 -left-48 animate-float" />
-    <GlassOrb className="w-80 h-80 bg-secondary top-1/3 -right-40 animate-float-delayed" />
-    <GlassOrb className="w-64 h-64 bg-primary/50 bottom-20 left-1/4 animate-float" />
+    <div className="min-h-[calc(100vh-4rem)] px-4 py-6 space-y-6">
+      {/* Greeting */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
+        <h1 className="font-display text-2xl md:text-3xl font-bold">
+          Hey, <span className="gradient-text">{userName}</span> 👋
+        </h1>
+        <p className="text-muted-foreground text-sm">Ready to connect and play?</p>
+      </motion.div>
 
-    {/* Hero */}
-    <section className="relative min-h-[90vh] flex items-center justify-center px-4">
-      <div className="text-center max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Meet Strangers.{" "}
-            <span className="gradient-text">Make Memories.</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-            Video chat with random people from around the world. Anonymous, instant, and unforgettable connections.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg px-8 h-14 glow-primary">
-                Start Chatting <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link to="/auth">
-              <Button size="lg" variant="outline" className="glass border-border/50 hover:border-primary/50 text-lg px-8 h-14">
-                Sign Up Free
-              </Button>
-            </Link>
+      {/* Level Card */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-5">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+              <Star className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-display font-semibold text-sm">Level {level.level}</p>
+              <p className="text-xs text-muted-foreground">{stats?.total_points ?? 0} points</p>
+            </div>
           </div>
-        </motion.div>
-      </div>
-    </section>
+          {stats?.login_streak ? (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Zap className="w-3.5 h-3.5 text-primary" />
+              {stats.login_streak} day streak
+            </div>
+          ) : null}
+        </div>
+        <div className="h-2 rounded-full bg-muted/50 overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${level.progress}%` }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+          />
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-1 text-right">{level.current}/{level.needed} XP</p>
+      </motion.div>
 
-    {/* Features */}
-    <section className="relative py-24 px-4">
-      <div className="container max-w-5xl">
-        <motion.h2
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="font-display text-3xl md:text-4xl font-bold text-center mb-16"
-        >
-          Why <span className="gradient-text">Mallu Monkey</span>?
-        </motion.h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="glass-card p-6 text-center group hover:border-primary/30 transition-all"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <f.icon className="w-7 h-7 text-primary" />
+      {/* Quick Actions */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 gap-3">
+        {quickActions.map((action) => (
+          <Link key={action.to} to={action.to}>
+            <div className="glass-card p-4 hover:border-primary/30 transition-all group cursor-pointer h-full">
+              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                <action.icon className="w-5 h-5 text-white" />
               </div>
-              <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-            </motion.div>
+              <p className="font-display font-semibold text-sm">{action.label}</p>
+              <p className="text-[11px] text-muted-foreground">{action.desc}</p>
+            </div>
+          </Link>
+        ))}
+      </motion.div>
+
+      {/* Stats Grid */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <h2 className="font-display font-semibold text-lg mb-3">Your Stats</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { label: "Total Chats", value: chatStats?.total_chats ?? 0, icon: MessageCircle },
+            { label: "Chat Time", value: `${Math.floor((chatStats?.total_chat_seconds ?? 0) / 60)}m`, icon: Clock },
+            { label: "Games Won", value: stats?.games_won ?? 0, icon: Trophy },
+            { label: "Games Played", value: stats?.games_played ?? 0, icon: Gamepad2 },
+          ].map((stat) => (
+            <div key={stat.label} className="glass-card p-4 text-center">
+              <stat.icon className="w-5 h-5 text-primary mx-auto mb-2" />
+              <p className="font-display font-bold text-xl">{stat.value}</p>
+              <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+            </div>
           ))}
         </div>
-      </div>
-    </section>
+      </motion.div>
 
-    {/* CTA */}
-    <section className="relative py-24 px-4">
-      <div className="container max-w-2xl">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="glass-card p-10 md:p-16 text-center"
-        >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            Ready to <span className="gradient-text">Connect</span>?
-          </h2>
-          <p className="text-muted-foreground mb-8">Jump in and start meeting new people right now. No signup required.</p>
-          <Link to="/auth">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg px-10 h-14 glow-primary">
-              Start Video Chat <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
-        </motion.div>
-      </div>
-    </section>
-  </div>
+      {/* CTA */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card p-6 text-center">
+        <h2 className="font-display text-xl font-bold mb-2">Ready to <span className="gradient-text">Chat</span>?</h2>
+        <p className="text-muted-foreground text-sm mb-4">Meet new people and earn points!</p>
+        <Link to="/chat">
+          <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-12 px-8 glow-primary">
+            <MessageCircle className="w-5 h-5 mr-2" /> Start Video Chat
+          </Button>
+        </Link>
+      </motion.div>
+    </div>
   );
 };
 
