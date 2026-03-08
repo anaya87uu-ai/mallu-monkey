@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { UserCircle, Gamepad2, Trophy, MessageCircle } from "lucide-react";
+import { UserCircle, Gamepad2, Trophy, MessageCircle, Home } from "lucide-react";
 
 const navItems = [
+  { to: "/", label: "Home", icon: Home },
   { to: "/chat", label: "Chat", icon: MessageCircle },
   { to: "/games", label: "Games", icon: Gamepad2 },
   { to: "/leaderboards", label: "Leaders", icon: Trophy },
