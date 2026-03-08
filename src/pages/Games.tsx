@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Gamepad2, Gift, Star, Trophy, Zap, Users, Bot, Clock, User } from "lucide-react";
+import { Gamepad2, Gift, Star, Trophy, Zap, Users, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -16,80 +16,51 @@ import {
   POINT_VALUES,
 } from "@/lib/points";
 import { Progress } from "@/components/ui/progress";
-
-/* ─── Player Avatar ─── */
-const PlayerAvatar = ({ name, symbol, isActive, size = "md" }: { name: string; symbol: "X" | "O"; isActive: boolean; size?: "sm" | "md" }) => {
-  const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : "w-10 h-10 text-sm";
-  return (
-    <div className={`flex items-center gap-2 transition-all ${isActive ? "scale-105" : "opacity-60"}`}>
-      <div className={`${sizeClass} rounded-full flex items-center justify-center font-bold ${
-        symbol === "X"
-          ? "bg-primary/20 text-primary border-2 border-primary/40"
-          : "bg-secondary/20 text-secondary border-2 border-secondary/40"
-      } ${isActive ? "ring-2 ring-offset-2 ring-offset-background ring-primary/50 animate-pulse" : ""}`}>
-        {name.charAt(0).toUpperCase()}
-      </div>
-      <div className="text-left">
-        <p className={`font-semibold text-xs leading-tight ${isActive ? "text-foreground" : "text-muted-foreground"}`}>{name}</p>
-        <p className={`text-[10px] ${symbol === "X" ? "text-primary" : "text-secondary"}`}>
-          {symbol === "X" ? "✕" : "○"}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-/* ─── Turn Timer ─── */
-const TurnTimer = ({ seconds, total }: { seconds: number; total: number }) => {
-  const pct = (seconds / total) * 100;
-  const isLow = seconds <= 5;
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <div className={`w-12 h-12 rounded-full border-4 flex items-center justify-center font-display font-bold text-lg transition-all ${
-        isLow ? "border-destructive text-destructive animate-pulse" : "border-primary/40 text-foreground"
-      }`}>
-        {seconds}
-      </div>
-      <div className="w-16 h-1 rounded-full bg-muted/50 overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-1000 ${isLow ? "bg-destructive" : "bg-primary"}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-};
+import PlayerAvatar from "@/components/games/PlayerAvatar";
+import TurnTimer from "@/components/games/TurnTimer";
+import GameBoard from "@/components/games/GameBoard";
+import GameResultOverlay from "@/components/games/GameResultOverlay";
 
 /* ─── Multiplayer TicTacToe ─── */
 const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userName: string }) => {
   const mp = useMultiplayerTicTacToe(userId, userName);
+  const [pointsEarned, setPointsEarned] = useState(0);
 
   useEffect(() => {
     if (mp.status === "finished" && mp.winner) {
       if (mp.winner === mp.mySymbol) {
-        toast.success("🎉 You won!");
+        setPointsEarned(POINT_VALUES.game_win);
         if (userId && !userId.startsWith("guest_")) {
           addPoints(userId, POINT_VALUES.game_win, ["gamer", "winner"]);
         }
       } else if (mp.winner === "draw") {
-        toast("🤝 It's a draw!");
+        setPointsEarned(POINT_VALUES.game_play);
       } else {
-        toast.error("You lost! Try again 💪");
+        setPointsEarned(0);
       }
     }
   }, [mp.status, mp.winner, mp.mySymbol, userId]);
 
   if (mp.status === "idle") {
     return (
-      <div className="text-center space-y-4 py-4">
-        <Users className="w-12 h-12 text-primary mx-auto" />
-        <h3 className="font-display text-lg font-bold">Play Online</h3>
-        <p className="text-xs text-muted-foreground">Challenge a real player in real-time!</p>
+      <div className="text-center space-y-5 py-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20 flex items-center justify-center mx-auto"
+        >
+          <Users className="w-10 h-10 text-primary" />
+        </motion.div>
+        <div>
+          <h3 className="font-display text-xl font-bold">Play Online</h3>
+          <p className="text-sm text-muted-foreground mt-1">Challenge a real player in real-time!</p>
+        </div>
         <Button
           onClick={mp.findGame}
-          className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-11 px-8 glow-primary"
+          size="lg"
+          className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 glow-primary px-10"
         >
-          <Users className="w-4 h-4 mr-2" /> Find Opponent
+          <Users className="w-5 h-5 mr-2" /> Find Opponent
         </Button>
       </div>
     );
@@ -97,12 +68,32 @@ const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userNa
 
   if (mp.status === "searching") {
     return (
-      <div className="text-center space-y-4 py-8">
-        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}>
-          <Gamepad2 className="w-12 h-12 text-primary mx-auto" />
+      <div className="text-center space-y-5 py-10">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+          className="w-20 h-20 rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center mx-auto"
+        >
+          <Gamepad2 className="w-10 h-10 text-primary" />
         </motion.div>
-        <h3 className="font-display text-lg font-bold">Finding opponent...</h3>
-        <p className="text-xs text-muted-foreground">Waiting for another player to join</p>
+        <div>
+          <h3 className="font-display text-xl font-bold">Finding opponent…</h3>
+          <p className="text-sm text-muted-foreground mt-1">Waiting for another player to join</p>
+        </div>
+        <motion.div
+          className="flex justify-center gap-1"
+          initial="start"
+          animate="end"
+        >
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="w-2 h-2 rounded-full bg-primary"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.15 }}
+            />
+          ))}
+        </motion.div>
         <Button variant="outline" size="sm" onClick={mp.leaveGame} className="glass border-border/50">
           Cancel
         </Button>
@@ -110,87 +101,99 @@ const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userNa
     );
   }
 
+  const getResult = (): "win" | "lose" | "draw" | null => {
+    if (!mp.gameOver || !mp.winner) return null;
+    if (mp.winner === mp.mySymbol) return "win";
+    if (mp.winner === "draw") return "draw";
+    return "lose";
+  };
+
+  const result = getResult();
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Player bar */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-2">
         <PlayerAvatar
           name={mp.myName}
           symbol={mp.mySymbol!}
-          isActive={mp.currentTurn === mp.mySymbol}
+          isActive={mp.currentTurn === mp.mySymbol && !mp.gameOver}
         />
         {mp.status === "playing" && !mp.gameOver && (
           <TurnTimer seconds={mp.turnTimer} total={mp.TURN_TIME} />
         )}
+        {mp.gameOver && (
+          <div className="w-14 h-14 rounded-full bg-muted/30 flex items-center justify-center">
+            <Trophy className="w-6 h-6 text-muted-foreground" />
+          </div>
+        )}
         <PlayerAvatar
-          name={mp.opponent?.name || "..."}
+          name={mp.opponent?.name || "…"}
           symbol={mp.mySymbol === "X" ? "O" : "X"}
-          isActive={mp.currentTurn !== mp.mySymbol}
+          isActive={mp.currentTurn !== mp.mySymbol && !mp.gameOver}
         />
       </div>
 
       {/* Turn indicator */}
       {!mp.gameOver && (
-        <p className={`text-center text-xs font-medium ${
-          mp.currentTurn === mp.mySymbol ? "text-primary" : "text-muted-foreground"
-        }`}>
-          {mp.currentTurn === mp.mySymbol ? "Your turn!" : `${mp.opponent?.name}'s turn...`}
-        </p>
+        <motion.div
+          key={mp.currentTurn}
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`text-center text-sm font-semibold py-1.5 rounded-lg ${
+            mp.currentTurn === mp.mySymbol
+              ? "text-primary bg-primary/10"
+              : "text-muted-foreground bg-muted/20"
+          }`}
+        >
+          {mp.currentTurn === mp.mySymbol ? "⚡ Your turn!" : `⏳ ${mp.opponent?.name}'s turn…`}
+        </motion.div>
       )}
 
       {/* Board */}
-      <div className="grid grid-cols-3 gap-2 max-w-[240px] mx-auto">
-        {mp.board.map((cell, i) => (
-          <motion.button
-            key={i}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => mp.makeMove(i)}
-            disabled={mp.gameOver || !!cell || mp.currentTurn !== mp.mySymbol}
-            className={`aspect-square rounded-xl text-2xl font-bold flex items-center justify-center transition-all ${
-              mp.winLine?.includes(i)
-                ? "bg-primary/30 border-2 border-primary"
-                : cell
-                ? "glass-card border border-border/30"
-                : mp.currentTurn === mp.mySymbol && !mp.gameOver
-                ? "glass border border-border/20 hover:border-primary/40 cursor-pointer"
-                : "glass border border-border/20 opacity-60"
-            }`}
-          >
-            {cell === "X" && <span className="text-primary">✕</span>}
-            {cell === "O" && <span className="text-secondary">○</span>}
-          </motion.button>
-        ))}
-      </div>
+      <GameBoard
+        board={mp.board}
+        winLine={mp.winLine}
+        disabled={mp.gameOver}
+        canPlay={mp.currentTurn === mp.mySymbol}
+        onCellClick={(i) => mp.makeMove(i)}
+      />
 
       {/* Result */}
-      {mp.gameOver && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-2">
-          <p className="text-sm font-medium">
-            {mp.winner === mp.mySymbol ? "🎉 You won!" : mp.winner === "draw" ? "🤝 Draw!" : "😔 You lost!"}
-          </p>
-          <div className="flex gap-2 justify-center">
-            <Button size="sm" onClick={mp.findGame} className="bg-gradient-to-r from-primary to-secondary">
-              Play Again
-            </Button>
-            <Button size="sm" variant="outline" onClick={mp.leaveGame} className="glass border-border/50">
-              Leave
-            </Button>
-          </div>
-        </motion.div>
+      {result && (
+        <GameResultOverlay
+          result={result}
+          onPlayAgain={mp.findGame}
+          onLeave={mp.leaveGame}
+          pointsEarned={pointsEarned}
+        />
       )}
     </div>
   );
 };
 
-/* ─── Bot TicTacToe (existing) ─── */
+/* ─── Bot TicTacToe ─── */
 const TicTacToeGame = ({ userId }: { userId: string | null }) => {
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const { board, play, reset, gameOver, result } = useTicTacToe(difficulty);
+  const [lastResult, setLastResult] = useState<"win" | "lose" | "draw" | null>(null);
+  const [pointsEarned, setPointsEarned] = useState(0);
+
+  useEffect(() => {
+    if (gameOver && result.winner) {
+      if (result.winner === "X") setLastResult("win");
+      else if (result.winner === "O") setLastResult("lose");
+      else setLastResult("draw");
+    } else {
+      setLastResult(null);
+    }
+  }, [gameOver, result.winner]);
 
   const handlePlay = async (index: number) => {
     const res = play(index);
     if (res && userId) {
       if (res.winner === "X") {
+        setPointsEarned(POINT_VALUES.game_win);
         await addPoints(userId, POINT_VALUES.game_win, ["gamer"]);
         const { data } = await supabase.from("user_points").select("games_won, games_played").eq("user_id", userId).single();
         if (data) {
@@ -203,8 +206,8 @@ const TicTacToeGame = ({ userId }: { userId: string | null }) => {
           await supabase.from("user_points").update({ games_won: newWon, games_played: newPlayed }).eq("user_id", userId);
           if (badges.length) await addPoints(userId, 0, badges);
         }
-        toast.success(`You win! +${POINT_VALUES.game_win} points 🎉`);
       } else if (res.winner === "O") {
+        setPointsEarned(POINT_VALUES.game_play);
         const { data } = await supabase.from("user_points").select("games_played").eq("user_id", userId).single();
         if (data) {
           const newPlayed = (data.games_played || 0) + 1;
@@ -214,60 +217,57 @@ const TicTacToeGame = ({ userId }: { userId: string | null }) => {
           if (badges.length) await addPoints(userId, POINT_VALUES.game_play, badges);
           else await addPoints(userId, POINT_VALUES.game_play);
         }
-        toast.error("Bot wins! Try again 💪");
       } else if (res.winner === "draw") {
+        setPointsEarned(POINT_VALUES.game_play);
         await addPoints(userId, POINT_VALUES.game_play);
-        toast("It's a draw!");
       }
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Difficulty selector */}
       <div className="flex gap-2 justify-center">
         {(["easy", "medium", "hard"] as const).map((d) => (
           <Button
             key={d}
             size="sm"
             variant={difficulty === d ? "default" : "outline"}
-            onClick={() => { setDifficulty(d); reset(); }}
-            className={difficulty === d ? "bg-gradient-to-r from-primary to-secondary" : "glass border-border/50"}
-          >
-            {d.charAt(0).toUpperCase() + d.slice(1)}
-          </Button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-3 gap-2 max-w-[240px] mx-auto">
-        {board.map((cell, i) => (
-          <motion.button
-            key={i}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handlePlay(i)}
-            disabled={gameOver || !!cell}
-            className={`aspect-square rounded-xl text-2xl font-bold flex items-center justify-center transition-all ${
-              result.line?.includes(i)
-                ? "bg-primary/30 border-2 border-primary"
-                : cell
-                ? "glass-card border border-border/30"
-                : "glass border border-border/20 hover:border-primary/40 cursor-pointer"
+            onClick={() => { setDifficulty(d); reset(); setLastResult(null); }}
+            className={`transition-all ${
+              difficulty === d
+                ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
+                : "glass border-border/50 hover:border-primary/30"
             }`}
           >
-            {cell === "X" && <span className="text-primary">✕</span>}
-            {cell === "O" && <span className="text-secondary">○</span>}
-          </motion.button>
+            {d === "easy" ? "🟢" : d === "medium" ? "🟡" : "🔴"} {d.charAt(0).toUpperCase() + d.slice(1)}
+          </Button>
         ))}
       </div>
 
-      {gameOver && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <p className="text-sm font-medium mb-2">
-            {result.winner === "X" ? "🎉 You won!" : result.winner === "O" ? "🤖 Bot won!" : "🤝 Draw!"}
-          </p>
-          <Button size="sm" onClick={reset} className="bg-gradient-to-r from-primary to-secondary">
-            Play Again
-          </Button>
-        </motion.div>
+      {/* Player bar for bot mode */}
+      <div className="flex items-center justify-between px-2">
+        <PlayerAvatar name="You" symbol="X" isActive={!gameOver} />
+        <div className="text-xs text-muted-foreground font-medium px-3 py-1 rounded-full bg-muted/20">
+          vs
+        </div>
+        <PlayerAvatar name="Bot" symbol="O" isActive={false} />
+      </div>
+
+      <GameBoard
+        board={board}
+        winLine={result.line || null}
+        disabled={gameOver}
+        canPlay={!gameOver}
+        onCellClick={handlePlay}
+      />
+
+      {lastResult && (
+        <GameResultOverlay
+          result={lastResult}
+          onPlayAgain={() => { reset(); setLastResult(null); }}
+          pointsEarned={pointsEarned}
+        />
       )}
     </div>
   );
@@ -385,7 +385,11 @@ const Games = () => {
                 size="sm"
                 variant={gameMode === "multiplayer" ? "default" : "outline"}
                 onClick={() => setGameMode("multiplayer")}
-                className={gameMode === "multiplayer" ? "bg-gradient-to-r from-primary to-secondary" : "glass border-border/50"}
+                className={`transition-all ${
+                  gameMode === "multiplayer"
+                    ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
+                    : "glass border-border/50"
+                }`}
               >
                 <Users className="w-4 h-4 mr-1" /> Multiplayer
               </Button>
@@ -393,16 +397,20 @@ const Games = () => {
                 size="sm"
                 variant={gameMode === "bot" ? "default" : "outline"}
                 onClick={() => setGameMode("bot")}
-                className={gameMode === "bot" ? "bg-gradient-to-r from-primary to-secondary" : "glass border-border/50"}
+                className={`transition-all ${
+                  gameMode === "bot"
+                    ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
+                    : "glass border-border/50"
+                }`}
               >
                 <Bot className="w-4 h-4 mr-1" /> vs Bot
               </Button>
             </div>
 
-            <div className="glass-card p-6 space-y-4">
+            <div className="glass-card p-6 space-y-4 rounded-2xl">
               <div className="text-center">
-                <h3 className="font-display text-lg font-bold">Tic Tac Toe</h3>
-                <p className="text-xs text-muted-foreground">
+                <h3 className="font-display text-xl font-bold">Tic Tac Toe</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {gameMode === "multiplayer" ? "Challenge real players online!" : "Beat the bot to earn points!"}
                 </p>
               </div>
@@ -411,7 +419,7 @@ const Games = () => {
               ) : gameMode === "bot" ? (
                 <TicTacToeGame userId={user?.id || null} />
               ) : (
-                <div className="text-center py-4">
+                <div className="text-center py-6">
                   <p className="text-sm text-muted-foreground">Please log in to play multiplayer</p>
                 </div>
               )}
@@ -419,7 +427,7 @@ const Games = () => {
           </TabsContent>
 
           <TabsContent value="daily" className="mt-0">
-            <div className="glass-card p-6 space-y-4 text-center">
+            <div className="glass-card p-6 space-y-4 text-center rounded-2xl">
               <Gift className="w-12 h-12 text-primary mx-auto" />
               <h3 className="font-display text-lg font-bold">Daily Reward</h3>
               <p className="text-sm text-muted-foreground">
@@ -448,14 +456,14 @@ const Games = () => {
           </TabsContent>
 
           <TabsContent value="badges" className="mt-0">
-            <div className="glass-card p-6">
+            <div className="glass-card p-6 rounded-2xl">
               <div className="grid grid-cols-2 gap-3">
                 {BADGES.map((badge) => {
                   const earned = earnedBadges.includes(badge.id);
                   return (
                     <motion.div
                       key={badge.id}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.03 }}
                       className={`p-3 rounded-xl border text-center transition-all ${
                         earned
                           ? "border-primary/30 bg-primary/5"
