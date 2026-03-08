@@ -110,12 +110,15 @@ const Chat = () => {
     if (!cameraReady) {
       try {
         const stream = await rtc.startLocalStream();
-        if (stream) {
-          setCameraReady(true);
+        if (!stream) {
+          toast.error("Camera/mic access failed. Please allow permissions and try again.");
+          return;
         }
+        setCameraReady(true);
       } catch (err) {
         console.error("Media access error:", err);
-        return; // Don't search if camera failed
+        toast.error("Could not access camera or microphone.");
+        return;
       }
     }
     // Only start matching after camera is ready
