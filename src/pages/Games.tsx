@@ -280,7 +280,6 @@ const Games = () => {
   const [userPoints, setUserPoints] = useState<any>(null);
   const [claiming, setClaiming] = useState(false);
   const [gameMode, setGameMode] = useState<"bot" | "multiplayer">("multiplayer");
-  const [selectedGame, setSelectedGame] = useState<GameType>("select");
 
   useEffect(() => {
     const load = async () => {
