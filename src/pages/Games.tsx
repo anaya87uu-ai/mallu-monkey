@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Gamepad2, Gift, Star, Trophy, Zap, Users, Bot, Brain, Palette, ChevronLeft } from "lucide-react";
+import { Gamepad2, Gift, Star, Trophy, Zap, Users, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -20,10 +20,6 @@ import PlayerAvatar from "@/components/games/PlayerAvatar";
 import TurnTimer from "@/components/games/TurnTimer";
 import GameBoard from "@/components/games/GameBoard";
 import GameResultOverlay from "@/components/games/GameResultOverlay";
-import MemoryMatchGame from "@/components/games/MemoryMatchGame";
-import ColoringRaceGame from "@/components/games/ColoringRaceGame";
-
-type GameType = "select" | "tictactoe" | "memory" | "coloring";
 
 /* ─── Multiplayer TicTacToe ─── */
 const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userName: string }) => {
@@ -284,7 +280,6 @@ const Games = () => {
   const [userPoints, setUserPoints] = useState<any>(null);
   const [claiming, setClaiming] = useState(false);
   const [gameMode, setGameMode] = useState<"bot" | "multiplayer">("multiplayer");
-  const [selectedGame, setSelectedGame] = useState<GameType>("select");
 
   useEffect(() => {
     const load = async () => {
@@ -384,118 +379,51 @@ const Games = () => {
           </TabsList>
 
           <TabsContent value="games" className="mt-0 space-y-4">
-            {selectedGame === "select" ? (
-              <>
-                {/* Game Selection Grid */}
-                <div className="grid grid-cols-1 gap-3">
-                  {[
-                    { id: "tictactoe" as GameType, icon: Gamepad2, name: "Tic Tac Toe", desc: "Classic 3×3 strategy game", color: "from-primary to-secondary" },
-                    { id: "memory" as GameType, icon: Brain, name: "Memory Match", desc: "Flip cards & find matching pairs", color: "from-violet-500 to-pink-500" },
-                    { id: "coloring" as GameType, icon: Palette, name: "Coloring Race", desc: "Race to fill the grid with your color", color: "from-emerald-500 to-cyan-500" },
-                  ].map((g) => (
-                    <motion.button
-                      key={g.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedGame(g.id)}
-                      className="glass-card p-4 rounded-2xl flex items-center gap-4 text-left transition-all hover:border-primary/30"
-                    >
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${g.color} flex items-center justify-center shrink-0`}>
-                        <g.icon className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-display text-base font-bold">{g.name}</h3>
-                        <p className="text-xs text-muted-foreground">{g.desc}</p>
-                      </div>
-                      <span className="text-muted-foreground text-lg">→</span>
-                    </motion.button>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Back + Mode selector */}
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedGame("select")} className="gap-1">
-                    <ChevronLeft className="w-4 h-4" /> Games
-                  </Button>
-                  <div className="flex-1" />
-                  <Button
-                    size="sm"
-                    variant={gameMode === "multiplayer" ? "default" : "outline"}
-                    onClick={() => setGameMode("multiplayer")}
-                    className={`transition-all text-xs ${
-                      gameMode === "multiplayer"
-                        ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
-                        : "glass border-border/50"
-                    }`}
-                  >
-                    <Users className="w-3.5 h-3.5 mr-1" /> Online
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={gameMode === "bot" ? "default" : "outline"}
-                    onClick={() => setGameMode("bot")}
-                    className={`transition-all text-xs ${
-                      gameMode === "bot"
-                        ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
-                        : "glass border-border/50"
-                    }`}
-                  >
-                    <Bot className="w-3.5 h-3.5 mr-1" /> Bot
-                  </Button>
-                </div>
+            {/* Mode Selector */}
+            <div className="flex gap-2 justify-center">
+              <Button
+                size="sm"
+                variant={gameMode === "multiplayer" ? "default" : "outline"}
+                onClick={() => setGameMode("multiplayer")}
+                className={`transition-all ${
+                  gameMode === "multiplayer"
+                    ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
+                    : "glass border-border/50"
+                }`}
+              >
+                <Users className="w-4 h-4 mr-1" /> Multiplayer
+              </Button>
+              <Button
+                size="sm"
+                variant={gameMode === "bot" ? "default" : "outline"}
+                onClick={() => setGameMode("bot")}
+                className={`transition-all ${
+                  gameMode === "bot"
+                    ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
+                    : "glass border-border/50"
+                }`}
+              >
+                <Bot className="w-4 h-4 mr-1" /> vs Bot
+              </Button>
+            </div>
 
-                <div className="glass-card p-6 space-y-4 rounded-2xl">
-                  {/* Tic Tac Toe */}
-                  {selectedGame === "tictactoe" && (
-                    <>
-                      <div className="text-center">
-                        <h3 className="font-display text-xl font-bold">Tic Tac Toe</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {gameMode === "multiplayer" ? "Challenge real players online!" : "Beat the bot to earn points!"}
-                        </p>
-                      </div>
-                      {gameMode === "multiplayer" && currentUserId ? (
-                        <MultiplayerTicTacToeGame userId={currentUserId} userName={currentUserName} />
-                      ) : gameMode === "bot" ? (
-                        <TicTacToeGame userId={user?.id || null} />
-                      ) : (
-                        <div className="text-center py-6">
-                          <p className="text-sm text-muted-foreground">Please log in to play multiplayer</p>
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  {/* Memory Match */}
-                  {selectedGame === "memory" && (
-                    <>
-                      <div className="text-center">
-                        <h3 className="font-display text-xl font-bold">Memory Match</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {gameMode === "bot" ? "Outsmart the bot — find pairs faster!" : "Find all matching pairs!"}
-                        </p>
-                      </div>
-                      <MemoryMatchGame userId={user?.id || null} mode={gameMode === "bot" ? "bot" : "solo"} />
-                    </>
-                  )}
-
-                  {/* Coloring Race */}
-                  {selectedGame === "coloring" && (
-                    <>
-                      <div className="text-center">
-                        <h3 className="font-display text-xl font-bold">Coloring Race</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {gameMode === "bot" ? "Race the bot to claim the most cells!" : "Color the grid as fast as you can!"}
-                        </p>
-                      </div>
-                      <ColoringRaceGame userId={user?.id || null} mode={gameMode === "bot" ? "bot" : "solo"} />
-                    </>
-                  )}
+            <div className="glass-card p-6 space-y-4 rounded-2xl">
+              <div className="text-center">
+                <h3 className="font-display text-xl font-bold">Tic Tac Toe</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {gameMode === "multiplayer" ? "Challenge real players online!" : "Beat the bot to earn points!"}
+                </p>
+              </div>
+              {gameMode === "multiplayer" && currentUserId ? (
+                <MultiplayerTicTacToeGame userId={currentUserId} userName={currentUserName} />
+              ) : gameMode === "bot" ? (
+                <TicTacToeGame userId={user?.id || null} />
+              ) : (
+                <div className="text-center py-6">
+                  <p className="text-sm text-muted-foreground">Please log in to play multiplayer</p>
                 </div>
-              </>
-            )}
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="daily" className="mt-0">
