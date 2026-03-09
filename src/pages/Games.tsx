@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Gamepad2, Gift, Star, Trophy, Zap, Users, Bot, Brain, Palette, ChevronLeft } from "lucide-react";
+import { Gamepad2, Gift, Star, Trophy, Zap, Users, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -20,10 +20,6 @@ import PlayerAvatar from "@/components/games/PlayerAvatar";
 import TurnTimer from "@/components/games/TurnTimer";
 import GameBoard from "@/components/games/GameBoard";
 import GameResultOverlay from "@/components/games/GameResultOverlay";
-import MemoryMatchGame from "@/components/games/MemoryMatchGame";
-import ColoringRaceGame from "@/components/games/ColoringRaceGame";
-
-type GameType = "select" | "tictactoe" | "memory" | "coloring";
 
 /* ─── Multiplayer TicTacToe ─── */
 const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userName: string }) => {
