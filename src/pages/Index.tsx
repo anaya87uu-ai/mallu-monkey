@@ -137,18 +137,6 @@ const Index = () => {
         </div>
       </motion.div>
 
-      {/* CTA */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card p-6 md:p-8 text-center md:flex md:items-center md:justify-between md:text-left">
-        <div className="mb-4 md:mb-0">
-          <h2 className="font-display text-xl font-bold mb-2">Ready to <span className="gradient-text">Chat</span>?</h2>
-          <p className="text-muted-foreground text-sm">Meet new people and earn points!</p>
-        </div>
-        <Link to="/chat">
-          <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-12 px-8 glow-primary">
-            <MessageCircle className="w-5 h-5 mr-2" /> Start Video Chat
-          </Button>
-        </Link>
-      </motion.div>
     </div>
   );
 };
