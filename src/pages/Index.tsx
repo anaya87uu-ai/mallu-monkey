@@ -61,6 +61,15 @@ const Index = () => {
         <p className="text-muted-foreground text-sm md:text-base">Ready to connect and play?</p>
       </motion.div>
 
+      {/* CTA */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <Link to="/chat">
+          <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-12 glow-primary text-base">
+            <MessageCircle className="w-5 h-5 mr-2" /> Start Video Chat
+          </Button>
+        </Link>
+      </motion.div>
+
       {/* Quick Actions */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {quickActions.map((action) => (
