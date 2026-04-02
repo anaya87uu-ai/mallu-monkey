@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Clock, MessageCircle, Flame, Medal, Star, Gamepad2 } from "lucide-react";
+import { Trophy, Clock, MessageCircle, Flame, Medal, Star, Gamepad2, Wifi } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { getLevelInfo, LEVELS } from "@/lib/points";
@@ -17,6 +17,15 @@ interface PointsStat {
   badges: string[];
 }
 
+interface ChatStat {
+  id: string;
+  user_id: string;
+  display_name: string | null;
+  total_chats: number;
+  total_chat_seconds: number;
+  longest_chat_seconds: number;
+}
+
 const rankColors = [
   "from-yellow-400 to-amber-500",
   "from-slate-300 to-slate-400",
@@ -26,16 +35,20 @@ const rankColors = [
 const rankIcons = ["🥇", "🥈", "🥉"];
 
 const LeaderboardRow = ({
-  stat,
+  name,
+  level,
+  totalPoints,
   rank,
   valueLabel,
 }: {
-  stat: PointsStat;
+  name: string;
+  level: number;
+  totalPoints: number;
   rank: number;
   valueLabel: string;
 }) => {
   const isTop3 = rank < 3;
-  const levelInfo = getLevelInfo(stat.total_points);
+  const levelInfo = getLevelInfo(totalPoints);
 
   return (
     <motion.div
@@ -61,15 +74,15 @@ const LeaderboardRow = ({
             : "bg-muted/50 text-muted-foreground"
         }`}
       >
-        {(stat.display_name || "?")[0].toUpperCase()}
+        {(name || "?")[0].toUpperCase()}
         <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-background border border-border/30 flex items-center justify-center text-[8px] font-bold">
-          {stat.level}
+          {level}
         </span>
       </div>
 
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-semibold truncate ${isTop3 ? "text-foreground" : "text-foreground/80"}`}>
-          {stat.display_name || "Anonymous"}
+          {name || "Anonymous"}
         </p>
         <p className="text-[10px] text-muted-foreground">{levelInfo.current.name}</p>
       </div>
@@ -83,35 +96,68 @@ const LeaderboardRow = ({
 
 const Leaderboards = () => {
   const [stats, setStats] = useState<PointsStat[]>([]);
+  const [chatStats, setChatStats] = useState<ChatStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("points");
+  const [isLive, setIsLive] = useState(false);
+
+  const fetchAll = async () => {
+    const [pointsRes, chatRes] = await Promise.all([
+      supabase.from("user_points").select("*").order("total_points", { ascending: false }).limit(50),
+      supabase.from("chat_stats").select("*").order("total_chats", { ascending: false }).limit(50),
+    ]);
+    if (pointsRes.data) setStats(pointsRes.data as unknown as PointsStat[]);
+    if (chatRes.data) setChatStats(chatRes.data as unknown as ChatStat[]);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      const { data, error } = await supabase
-        .from("user_points")
-        .select("*")
-        .order("total_points", { ascending: false })
-        .limit(50);
+    fetchAll();
 
-      if (!error && data) {
-        setStats(data as unknown as PointsStat[]);
-      }
-      setLoading(false);
+    // Realtime subscriptions
+    const channel = supabase
+      .channel("leaderboard-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_points" }, () => {
+        fetchAll();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "chat_stats" }, () => {
+        fetchAll();
+      })
+      .subscribe((status) => {
+        setIsLive(status === "SUBSCRIBED");
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
     };
-    fetchStats();
   }, []);
 
-  const sortedStats = [...stats].sort((a, b) => {
-    if (tab === "points") return b.total_points - a.total_points;
-    if (tab === "wins") return b.games_won - a.games_won;
-    return b.login_streak - a.login_streak;
-  });
+  const getSortedStats = () => {
+    if (tab === "points") return [...stats].sort((a, b) => b.total_points - a.total_points);
+    if (tab === "wins") return [...stats].sort((a, b) => b.games_won - a.games_won);
+    if (tab === "streak") return [...stats].sort((a, b) => b.login_streak - a.login_streak);
+    return [];
+  };
+
+  const getSortedChatStats = () => {
+    if (tab === "chats") return [...chatStats].sort((a, b) => b.total_chats - a.total_chats);
+    if (tab === "chattime") return [...chatStats].sort((a, b) => b.total_chat_seconds - a.total_chat_seconds);
+    return [];
+  };
+
+  const isChatTab = tab === "chats" || tab === "chattime";
+  const sortedPoints = getSortedStats();
+  const sortedChat = getSortedChatStats();
 
   const getValueLabel = (stat: PointsStat) => {
     if (tab === "points") return `${stat.total_points} pts`;
     if (tab === "wins") return `${stat.games_won} wins`;
     return `${stat.login_streak} 🔥`;
+  };
+
+  const getChatValueLabel = (stat: ChatStat) => {
+    if (tab === "chats") return `${stat.total_chats} chats`;
+    return `${Math.floor(stat.total_chat_seconds / 60)}m`;
   };
 
   return (
@@ -130,6 +176,16 @@ const Leaderboards = () => {
           </div>
           <h1 className="font-display text-3xl font-bold">Leaderboards</h1>
           <p className="text-muted-foreground mt-1 text-sm">Top players on mallumonkey.xyz</p>
+          {isLive && (
+            <div className="flex items-center justify-center gap-1.5 mt-2 text-xs text-emerald-400">
+              <Wifi className="w-3.5 h-3.5" />
+              <span>Live</span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Level guide */}
@@ -147,15 +203,21 @@ const Leaderboards = () => {
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">
-          <TabsList className="w-full glass border border-border/30 mb-4">
-            <TabsTrigger value="points" className="flex-1 gap-1.5 text-xs">
-              <Star className="w-3.5 h-3.5" /> Points
+          <TabsList className="w-full glass border border-border/30 mb-4 flex-wrap h-auto gap-1 p-1">
+            <TabsTrigger value="points" className="flex-1 gap-1 text-[11px] px-2">
+              <Star className="w-3 h-3" /> Points
             </TabsTrigger>
-            <TabsTrigger value="wins" className="flex-1 gap-1.5 text-xs">
-              <Gamepad2 className="w-3.5 h-3.5" /> Game Wins
+            <TabsTrigger value="wins" className="flex-1 gap-1 text-[11px] px-2">
+              <Gamepad2 className="w-3 h-3" /> Wins
             </TabsTrigger>
-            <TabsTrigger value="streak" className="flex-1 gap-1.5 text-xs">
-              <Flame className="w-3.5 h-3.5" /> Streaks
+            <TabsTrigger value="streak" className="flex-1 gap-1 text-[11px] px-2">
+              <Flame className="w-3 h-3" /> Streaks
+            </TabsTrigger>
+            <TabsTrigger value="chats" className="flex-1 gap-1 text-[11px] px-2">
+              <MessageCircle className="w-3 h-3" /> Chats
+            </TabsTrigger>
+            <TabsTrigger value="chattime" className="flex-1 gap-1 text-[11px] px-2">
+              <Clock className="w-3 h-3" /> Time
             </TabsTrigger>
           </TabsList>
 
@@ -163,24 +225,47 @@ const Leaderboards = () => {
             <div className="flex justify-center py-16">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
-          ) : sortedStats.length === 0 ? (
+          ) : !isChatTab && sortedPoints.length === 0 ? (
             <div className="glass-card p-10 text-center">
               <Medal className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground text-sm">No stats yet. Start playing to appear on the leaderboard!</p>
+              <p className="text-muted-foreground text-sm">No stats yet. Start playing to appear!</p>
+            </div>
+          ) : isChatTab && sortedChat.length === 0 ? (
+            <div className="glass-card p-10 text-center">
+              <Medal className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground text-sm">No chat stats yet. Start chatting!</p>
             </div>
           ) : (
-            ["points", "wins", "streak"].map((t) => (
-              <TabsContent key={t} value={t} className="space-y-1 mt-0">
-                {sortedStats.map((stat, i) => (
-                  <LeaderboardRow
-                    key={stat.id}
-                    stat={stat}
-                    rank={i}
-                    valueLabel={getValueLabel(stat)}
-                  />
-                ))}
-              </TabsContent>
-            ))
+            <>
+              {["points", "wins", "streak"].map((t) => (
+                <TabsContent key={t} value={t} className="space-y-1 mt-0">
+                  {sortedPoints.map((stat, i) => (
+                    <LeaderboardRow
+                      key={stat.id}
+                      name={stat.display_name || "Anonymous"}
+                      level={stat.level}
+                      totalPoints={stat.total_points}
+                      rank={i}
+                      valueLabel={getValueLabel(stat)}
+                    />
+                  ))}
+                </TabsContent>
+              ))}
+              {["chats", "chattime"].map((t) => (
+                <TabsContent key={t} value={t} className="space-y-1 mt-0">
+                  {sortedChat.map((stat, i) => (
+                    <LeaderboardRow
+                      key={stat.id}
+                      name={stat.display_name || "Anonymous"}
+                      level={1}
+                      totalPoints={0}
+                      rank={i}
+                      valueLabel={getChatValueLabel(stat)}
+                    />
+                  ))}
+                </TabsContent>
+              ))}
+            </>
           )}
         </Tabs>
       </motion.div>
