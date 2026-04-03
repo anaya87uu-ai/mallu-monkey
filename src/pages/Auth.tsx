@@ -44,6 +44,7 @@ const Auth = () => {
     }
   };
 
+  const handleGuest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestName.trim()) {
       toast.error("Please enter your name");
