@@ -14,6 +14,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const [guestName, setGuestName] = useState("");
   const [guestGender, setGuestGender] = useState("boy");
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("guest_user");
