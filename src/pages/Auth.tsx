@@ -24,7 +24,26 @@ const Auth = () => {
     });
   }, [navigate]);
 
-  const handleGuest = (e: React.FormEvent) => {
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error("Google sign-in failed");
+        return;
+      }
+      if (result.redirected) return;
+      toast.success("Signed in with Google!");
+      navigate("/chat");
+    } catch {
+      toast.error("Google sign-in failed");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
     e.preventDefault();
     if (!guestName.trim()) {
       toast.error("Please enter your name");
