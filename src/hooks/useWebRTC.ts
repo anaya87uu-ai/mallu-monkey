@@ -176,6 +176,11 @@ export function useWebRTC(): WebRTCHook {
   const createOffer = useCallback(async () => {
     const pc = ensurePC();
     try {
+      // Initiator creates the data channel BEFORE the offer
+      if (!dataChannelRef.current || dataChannelRef.current.readyState === "closed") {
+        const channel = pc.createDataChannel("chat", { ordered: true });
+        setupDataChannel(channel);
+      }
       const offer = await pc.createOffer({
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
@@ -186,7 +191,7 @@ export function useWebRTC(): WebRTCHook {
       console.error("Failed to create offer:", err);
       return null;
     }
-  }, [ensurePC]);
+  }, [ensurePC, setupDataChannel]);
 
   const handleSignal = useCallback(
     async (signal: any) => {
