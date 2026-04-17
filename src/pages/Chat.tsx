@@ -19,12 +19,22 @@ import { useWebRTC } from "@/hooks/useWebRTC";
 import { useNudityDetection } from "@/hooks/useNudityDetection";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 
+interface ChatMessage {
+  id: string;
+  text: string;
+  from: "you" | "stranger";
+  time: Date;
+}
+
 const Chat = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messageInput, setMessageInput] = useState("");
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasInitiatedRef = useRef(false);
 
   const geoInfo = useGeoLocation();
@@ -89,6 +99,28 @@ const Chat = () => {
     });
   }, [match, rtc]);
 
+  // Register incoming chat message handler
+  useEffect(() => {
+    rtc.onChatMessage((text) => {
+      setMessages((prev) => [
+        ...prev,
+        { id: `${Date.now()}-${Math.random()}`, text, from: "stranger", time: new Date() },
+      ]);
+    });
+  }, [rtc]);
+
+  // Clear messages when starting a new match / disconnecting
+  useEffect(() => {
+    if (match.state === "searching" || match.state === "idle") {
+      setMessages([]);
+    }
+  }, [match.state]);
+
+  // Auto-scroll chat to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, chatOpen]);
+
   // When connected, only the initiator creates the offer
   useEffect(() => {
     if (match.state === "connected" && match.isInitiator && !hasInitiatedRef.current) {
@@ -105,6 +137,25 @@ const Chat = () => {
       hasInitiatedRef.current = false;
     }
   }, [match.state, match.isInitiator, rtc, match]);
+
+  const handleSendMessage = () => {
+    const text = messageInput.trim();
+    if (!text) return;
+    if (!rtc.isDataChannelOpen) {
+      toast.error("Chat not connected yet");
+      return;
+    }
+    const sent = rtc.sendChatMessage(text);
+    if (sent) {
+      setMessages((prev) => [
+        ...prev,
+        { id: `${Date.now()}-${Math.random()}`, text, from: "you", time: new Date() },
+      ]);
+      setMessageInput("");
+    } else {
+      toast.error("Failed to send message");
+    }
+  };
 
   const handleStart = async () => {
     // CRITICAL: Get camera FIRST, directly in click handler
@@ -281,17 +332,52 @@ const Chat = () => {
                 ✕
               </Button>
             </div>
-            <div className="flex-1 p-3 md:p-4 overflow-y-auto">
-              <p className="text-xs text-muted-foreground text-center">
-                Messages will appear here
-              </p>
+            <div className="flex-1 p-3 md:p-4 overflow-y-auto space-y-2">
+              {messages.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center mt-4">
+                  {isConnected
+                    ? rtc.isDataChannelOpen
+                      ? "Say hi 👋"
+                      : "Connecting chat..."
+                    : "Messages will appear here"}
+                </p>
+              ) : (
+                messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`flex ${m.from === "you" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[80%] px-3 py-1.5 rounded-2xl text-xs md:text-sm break-words ${
+                        m.from === "you"
+                          ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-br-sm"
+                          : "bg-muted text-foreground rounded-bl-sm"
+                      }`}
+                    >
+                      {m.text}
+                    </div>
+                  </div>
+                ))
+              )}
+              <div ref={messagesEndRef} />
             </div>
             <div className="p-2 md:p-3 border-t border-border/30 flex gap-2">
               <Input
-                placeholder="Type a message..."
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                disabled={!rtc.isDataChannelOpen}
+                placeholder={rtc.isDataChannelOpen ? "Type a message..." : "Waiting for connection..."}
                 className="glass border-border/50 bg-muted/30 text-xs md:text-sm h-9 md:h-10"
               />
               <Button
+                onClick={handleSendMessage}
+                disabled={!rtc.isDataChannelOpen || !messageInput.trim()}
                 size="icon"
                 className="bg-gradient-to-r from-primary to-secondary shrink-0 w-9 h-9 md:w-10 md:h-10"
               >

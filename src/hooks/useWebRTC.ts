@@ -24,6 +24,9 @@ interface WebRTCHook {
   toggleMute: () => void;
   toggleCamera: () => void;
   onIceCandidate: (callback: (candidate: RTCIceCandidateInit) => void) => void;
+  sendChatMessage: (text: string) => boolean;
+  onChatMessage: (callback: (text: string) => void) => void;
+  isDataChannelOpen: boolean;
 }
 
 export function useWebRTC(): WebRTCHook {
@@ -31,12 +34,37 @@ export function useWebRTC(): WebRTCHook {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isCamOff, setIsCamOff] = useState(false);
+  const [isDataChannelOpen, setIsDataChannelOpen] = useState(false);
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const iceCandidateCallbackRef = useRef<((c: RTCIceCandidateInit) => void) | null>(null);
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   const remoteStreamRef = useRef<MediaStream>(new MediaStream());
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
+  const chatMessageCallbackRef = useRef<((text: string) => void) | null>(null);
+
+  const setupDataChannel = useCallback((channel: RTCDataChannel) => {
+    dataChannelRef.current = channel;
+    channel.onopen = () => {
+      console.log("[WebRTC] Data channel open");
+      setIsDataChannelOpen(true);
+    };
+    channel.onclose = () => {
+      console.log("[WebRTC] Data channel closed");
+      setIsDataChannelOpen(false);
+    };
+    channel.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.type === "chat" && typeof data.text === "string") {
+          chatMessageCallbackRef.current?.(data.text);
+        }
+      } catch {
+        // ignore malformed
+      }
+    };
+  }, []);
 
   const addLocalTracksToPC = useCallback((pc: RTCPeerConnection) => {
     if (!localStreamRef.current) return;
@@ -89,12 +117,18 @@ export function useWebRTC(): WebRTCHook {
       setRemoteStream(new MediaStream(remote.getTracks()));
     };
 
+    // Incoming data channel (for the answerer)
+    pc.ondatachannel = (e) => {
+      console.log("[WebRTC] Received data channel");
+      setupDataChannel(e.channel);
+    };
+
     // Add local tracks immediately if available
     addLocalTracksToPC(pc);
 
     pcRef.current = pc;
     return pc;
-  }, [addLocalTracksToPC]);
+  }, [addLocalTracksToPC, setupDataChannel]);
 
   const startLocalStream = useCallback(async (): Promise<MediaStream | null> => {
     // If we already have a stream, return it
@@ -142,6 +176,11 @@ export function useWebRTC(): WebRTCHook {
   const createOffer = useCallback(async () => {
     const pc = ensurePC();
     try {
+      // Initiator creates the data channel BEFORE the offer
+      if (!dataChannelRef.current || dataChannelRef.current.readyState === "closed") {
+        const channel = pc.createDataChannel("chat", { ordered: true });
+        setupDataChannel(channel);
+      }
       const offer = await pc.createOffer({
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
@@ -152,7 +191,7 @@ export function useWebRTC(): WebRTCHook {
       console.error("Failed to create offer:", err);
       return null;
     }
-  }, [ensurePC]);
+  }, [ensurePC, setupDataChannel]);
 
   const handleSignal = useCallback(
     async (signal: any) => {
@@ -197,11 +236,30 @@ export function useWebRTC(): WebRTCHook {
   );
 
   const closeConnection = useCallback(() => {
+    try { dataChannelRef.current?.close(); } catch { /* ignore */ }
+    dataChannelRef.current = null;
+    setIsDataChannelOpen(false);
     pcRef.current?.close();
     pcRef.current = null;
     remoteStreamRef.current = new MediaStream();
     setRemoteStream(null);
     pendingCandidatesRef.current = [];
+  }, []);
+
+  const sendChatMessage = useCallback((text: string) => {
+    const channel = dataChannelRef.current;
+    if (!channel || channel.readyState !== "open") return false;
+    try {
+      channel.send(JSON.stringify({ type: "chat", text }));
+      return true;
+    } catch (err) {
+      console.error("Failed to send chat message:", err);
+      return false;
+    }
+  }, []);
+
+  const onChatMessage = useCallback((callback: (text: string) => void) => {
+    chatMessageCallbackRef.current = callback;
   }, []);
 
   const toggleMute = useCallback(() => {
@@ -238,5 +296,8 @@ export function useWebRTC(): WebRTCHook {
     toggleMute,
     toggleCamera,
     onIceCandidate,
+    sendChatMessage,
+    onChatMessage,
+    isDataChannelOpen,
   };
 }
