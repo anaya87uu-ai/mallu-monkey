@@ -99,6 +99,28 @@ const Chat = () => {
     });
   }, [match, rtc]);
 
+  // Register incoming chat message handler
+  useEffect(() => {
+    rtc.onChatMessage((text) => {
+      setMessages((prev) => [
+        ...prev,
+        { id: `${Date.now()}-${Math.random()}`, text, from: "stranger", time: new Date() },
+      ]);
+    });
+  }, [rtc]);
+
+  // Clear messages when starting a new match / disconnecting
+  useEffect(() => {
+    if (match.state === "searching" || match.state === "idle") {
+      setMessages([]);
+    }
+  }, [match.state]);
+
+  // Auto-scroll chat to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, chatOpen]);
+
   // When connected, only the initiator creates the offer
   useEffect(() => {
     if (match.state === "connected" && match.isInitiator && !hasInitiatedRef.current) {
@@ -115,6 +137,25 @@ const Chat = () => {
       hasInitiatedRef.current = false;
     }
   }, [match.state, match.isInitiator, rtc, match]);
+
+  const handleSendMessage = () => {
+    const text = messageInput.trim();
+    if (!text) return;
+    if (!rtc.isDataChannelOpen) {
+      toast.error("Chat not connected yet");
+      return;
+    }
+    const sent = rtc.sendChatMessage(text);
+    if (sent) {
+      setMessages((prev) => [
+        ...prev,
+        { id: `${Date.now()}-${Math.random()}`, text, from: "you", time: new Date() },
+      ]);
+      setMessageInput("");
+    } else {
+      toast.error("Failed to send message");
+    }
+  };
 
   const handleStart = async () => {
     // CRITICAL: Get camera FIRST, directly in click handler
