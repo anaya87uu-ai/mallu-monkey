@@ -34,12 +34,37 @@ export function useWebRTC(): WebRTCHook {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isCamOff, setIsCamOff] = useState(false);
+  const [isDataChannelOpen, setIsDataChannelOpen] = useState(false);
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const iceCandidateCallbackRef = useRef<((c: RTCIceCandidateInit) => void) | null>(null);
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   const remoteStreamRef = useRef<MediaStream>(new MediaStream());
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
+  const chatMessageCallbackRef = useRef<((text: string) => void) | null>(null);
+
+  const setupDataChannel = useCallback((channel: RTCDataChannel) => {
+    dataChannelRef.current = channel;
+    channel.onopen = () => {
+      console.log("[WebRTC] Data channel open");
+      setIsDataChannelOpen(true);
+    };
+    channel.onclose = () => {
+      console.log("[WebRTC] Data channel closed");
+      setIsDataChannelOpen(false);
+    };
+    channel.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.type === "chat" && typeof data.text === "string") {
+          chatMessageCallbackRef.current?.(data.text);
+        }
+      } catch {
+        // ignore malformed
+      }
+    };
+  }, []);
 
   const addLocalTracksToPC = useCallback((pc: RTCPeerConnection) => {
     if (!localStreamRef.current) return;
