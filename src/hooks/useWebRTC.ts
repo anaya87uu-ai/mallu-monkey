@@ -24,6 +24,9 @@ interface WebRTCHook {
   toggleMute: () => void;
   toggleCamera: () => void;
   onIceCandidate: (callback: (candidate: RTCIceCandidateInit) => void) => void;
+  sendChatMessage: (text: string) => boolean;
+  onChatMessage: (callback: (text: string) => void) => void;
+  isDataChannelOpen: boolean;
 }
 
 export function useWebRTC(): WebRTCHook {
