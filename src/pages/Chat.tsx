@@ -19,12 +19,22 @@ import { useWebRTC } from "@/hooks/useWebRTC";
 import { useNudityDetection } from "@/hooks/useNudityDetection";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 
+interface ChatMessage {
+  id: string;
+  text: string;
+  from: "you" | "stranger";
+  time: Date;
+}
+
 const Chat = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messageInput, setMessageInput] = useState("");
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasInitiatedRef = useRef(false);
 
   const geoInfo = useGeoLocation();
