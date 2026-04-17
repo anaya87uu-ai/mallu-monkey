@@ -296,5 +296,8 @@ export function useWebRTC(): WebRTCHook {
     toggleMute,
     toggleCamera,
     onIceCandidate,
+    sendChatMessage,
+    onChatMessage,
+    isDataChannelOpen,
   };
 }
