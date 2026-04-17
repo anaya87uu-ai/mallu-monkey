@@ -332,17 +332,52 @@ const Chat = () => {
                 ✕
               </Button>
             </div>
-            <div className="flex-1 p-3 md:p-4 overflow-y-auto">
-              <p className="text-xs text-muted-foreground text-center">
-                Messages will appear here
-              </p>
+            <div className="flex-1 p-3 md:p-4 overflow-y-auto space-y-2">
+              {messages.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center mt-4">
+                  {isConnected
+                    ? rtc.isDataChannelOpen
+                      ? "Say hi 👋"
+                      : "Connecting chat..."
+                    : "Messages will appear here"}
+                </p>
+              ) : (
+                messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`flex ${m.from === "you" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[80%] px-3 py-1.5 rounded-2xl text-xs md:text-sm break-words ${
+                        m.from === "you"
+                          ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-br-sm"
+                          : "bg-muted text-foreground rounded-bl-sm"
+                      }`}
+                    >
+                      {m.text}
+                    </div>
+                  </div>
+                ))
+              )}
+              <div ref={messagesEndRef} />
             </div>
             <div className="p-2 md:p-3 border-t border-border/30 flex gap-2">
               <Input
-                placeholder="Type a message..."
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                disabled={!rtc.isDataChannelOpen}
+                placeholder={rtc.isDataChannelOpen ? "Type a message..." : "Waiting for connection..."}
                 className="glass border-border/50 bg-muted/30 text-xs md:text-sm h-9 md:h-10"
               />
               <Button
+                onClick={handleSendMessage}
+                disabled={!rtc.isDataChannelOpen || !messageInput.trim()}
                 size="icon"
                 className="bg-gradient-to-r from-primary to-secondary shrink-0 w-9 h-9 md:w-10 md:h-10"
               >
