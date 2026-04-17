@@ -236,11 +236,30 @@ export function useWebRTC(): WebRTCHook {
   );
 
   const closeConnection = useCallback(() => {
+    try { dataChannelRef.current?.close(); } catch { /* ignore */ }
+    dataChannelRef.current = null;
+    setIsDataChannelOpen(false);
     pcRef.current?.close();
     pcRef.current = null;
     remoteStreamRef.current = new MediaStream();
     setRemoteStream(null);
     pendingCandidatesRef.current = [];
+  }, []);
+
+  const sendChatMessage = useCallback((text: string) => {
+    const channel = dataChannelRef.current;
+    if (!channel || channel.readyState !== "open") return false;
+    try {
+      channel.send(JSON.stringify({ type: "chat", text }));
+      return true;
+    } catch (err) {
+      console.error("Failed to send chat message:", err);
+      return false;
+    }
+  }, []);
+
+  const onChatMessage = useCallback((callback: (text: string) => void) => {
+    chatMessageCallbackRef.current = callback;
   }, []);
 
   const toggleMute = useCallback(() => {
