@@ -117,12 +117,18 @@ export function useWebRTC(): WebRTCHook {
       setRemoteStream(new MediaStream(remote.getTracks()));
     };
 
+    // Incoming data channel (for the answerer)
+    pc.ondatachannel = (e) => {
+      console.log("[WebRTC] Received data channel");
+      setupDataChannel(e.channel);
+    };
+
     // Add local tracks immediately if available
     addLocalTracksToPC(pc);
 
     pcRef.current = pc;
     return pc;
-  }, [addLocalTracksToPC]);
+  }, [addLocalTracksToPC, setupDataChannel]);
 
   const startLocalStream = useCallback(async (): Promise<MediaStream | null> => {
     // If we already have a stream, return it
