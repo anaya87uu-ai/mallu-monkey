@@ -99,7 +99,7 @@ const UsersTab = ({ profiles, onToggleBan }: UsersTabProps) => {
                   <TableCell className="text-muted-foreground text-xs">{i + 1}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-sm">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center text-sm">
                         {profile.gender === "girl" ? "👧" : "👦"}
                       </div>
                       <span className="font-medium text-sm">{profile.display_name || "Anonymous"}</span>
