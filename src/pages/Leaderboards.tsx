@@ -56,7 +56,7 @@ const LeaderboardRow = ({
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: rank * 0.05 }}
       className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-        isTop3 ? "glass-card border border-primary/20" : "hover:bg-muted/30"
+        isTop3 ? "glass-card border border-primary/30 bg-mint/30" : "hover:bg-mint/40"
       }`}
     >
       <div className="w-8 h-8 flex items-center justify-center shrink-0">
@@ -162,8 +162,8 @@ const Leaderboards = () => {
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] px-4 py-8 pb-20 overflow-hidden">
-      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-10 bg-primary -top-40 -right-40 animate-float" />
-      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-10 bg-secondary bottom-0 -left-32 animate-float-delayed" />
+      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-30 bg-mint -top-40 -right-40 animate-float" />
+      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-25 bg-accent/30 bottom-0 -left-32 animate-float-delayed" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -171,18 +171,18 @@ const Leaderboards = () => {
         className="max-w-lg mx-auto"
       >
         <div className="text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 glow-primary">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 glow-primary">
             <Trophy className="w-7 h-7 text-primary-foreground" />
           </div>
-          <h1 className="font-display text-3xl font-bold">Leaderboards</h1>
+          <h1 className="font-display text-3xl font-bold gradient-text">Leaderboards</h1>
           <p className="text-muted-foreground mt-1 text-sm">Top players on mallumonkey.xyz</p>
           {isLive && (
-            <div className="flex items-center justify-center gap-1.5 mt-2 text-xs text-emerald-400">
+            <div className="flex items-center justify-center gap-1.5 mt-2 text-xs text-primary font-medium">
               <Wifi className="w-3.5 h-3.5" />
               <span>Live</span>
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
             </div>
           )}
@@ -193,7 +193,7 @@ const Leaderboards = () => {
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {LEVELS.map((l) => (
               <div key={l.level} className="flex flex-col items-center shrink-0 min-w-[48px]">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary/60 to-secondary/60 flex items-center justify-center text-[10px] font-bold text-primary-foreground">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[10px] font-bold text-primary-foreground">
                   {l.level}
                 </div>
                 <span className="text-[8px] text-muted-foreground mt-0.5">{l.name}</span>
