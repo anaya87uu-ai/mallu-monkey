@@ -119,15 +119,15 @@ const Admin = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-primary">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center glow-primary">
               <Shield className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-display text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
+              <h1 className="font-display text-2xl md:text-3xl font-bold gradient-text">Admin Dashboard</h1>
               <p className="text-muted-foreground text-sm">Manage users, reports & settings</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchAll} className="gap-2">
+          <Button variant="outline" size="sm" onClick={fetchAll} className="gap-2 hover:bg-mint/40 hover:border-primary/40">
             <RefreshCw className="w-4 h-4" /> <span className="hidden sm:inline">Refresh</span>
           </Button>
         </div>

@@ -8,17 +8,17 @@ interface AdminStatsProps {
 
 const AdminStats = ({ userCount, pendingReports, settingsCount }: AdminStatsProps) => {
   const stats = [
-    { label: "Total Users", value: userCount, icon: Users, color: "text-primary", bg: "from-primary/20 to-primary/5" },
-    { label: "Pending Reports", value: pendingReports, icon: Flag, color: "text-destructive", bg: "from-destructive/20 to-destructive/5" },
-    { label: "Settings", value: settingsCount, icon: Settings, color: "text-secondary", bg: "from-secondary/20 to-secondary/5" },
+    { label: "Total Users", value: userCount, icon: Users, color: "text-primary", bg: "from-mint/60 to-card" },
+    { label: "Pending Reports", value: pendingReports, icon: Flag, color: "text-destructive", bg: "from-destructive/15 to-card" },
+    { label: "Settings", value: settingsCount, icon: Settings, color: "text-accent", bg: "from-accent/15 to-card" },
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {stats.map((stat) => (
-        <div key={stat.label} className={`glass-card p-5 bg-gradient-to-br ${stat.bg}`}>
+        <div key={stat.label} className={`glass-card p-5 bg-gradient-to-br ${stat.bg} hover:shadow-[0_8px_24px_-8px_hsl(152_70%_38%/0.25)] transition-shadow`}>
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl bg-background/50 flex items-center justify-center ${stat.color}`}>
+            <div className={`w-10 h-10 rounded-xl bg-background/70 border border-border/40 flex items-center justify-center ${stat.color}`}>
               <stat.icon className="w-5 h-5" />
             </div>
             <div>
