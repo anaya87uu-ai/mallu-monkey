@@ -47,7 +47,7 @@ const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userNa
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20 flex items-center justify-center mx-auto"
+          className="w-20 h-20 rounded-2xl bg-mint border border-primary/30 flex items-center justify-center mx-auto shadow-[0_8px_24px_-8px_hsl(152_70%_38%/0.25)]"
         >
           <Users className="w-10 h-10 text-primary" />
         </motion.div>
@@ -58,7 +58,7 @@ const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userNa
         <Button
           onClick={mp.findGame}
           size="lg"
-          className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 glow-primary px-10"
+          className="bg-gradient-to-r from-primary to-accent hover:opacity-90 glow-primary px-10 text-primary-foreground"
         >
           <Users className="w-5 h-5 mr-2" /> Find Opponent
         </Button>
@@ -236,8 +236,8 @@ const TicTacToeGame = ({ userId }: { userId: string | null }) => {
             onClick={() => { setDifficulty(d); reset(); setLastResult(null); }}
             className={`transition-all ${
               difficulty === d
-                ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
-                : "glass border-border/50 hover:border-primary/30"
+                ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20"
+                : "glass border-border/50 hover:border-primary/40 hover:bg-mint/40"
             }`}
           >
             {d === "easy" ? "🟢" : d === "medium" ? "🟡" : "🔴"} {d.charAt(0).toUpperCase() + d.slice(1)}
@@ -323,15 +323,15 @@ const Games = () => {
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] px-4 py-8 pb-20 overflow-hidden">
-      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-10 bg-primary -top-40 -right-40 animate-float" />
-      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-10 bg-secondary bottom-0 -left-32 animate-float-delayed" />
+      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-30 bg-mint -top-40 -right-40 animate-float" />
+      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-25 bg-accent/30 bottom-0 -left-32 animate-float-delayed" />
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-lg mx-auto space-y-6">
         <div className="text-center">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 glow-primary">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 glow-primary">
             <Gamepad2 className="w-7 h-7 text-primary-foreground" />
           </div>
-          <h1 className="font-display text-3xl font-bold">Games & Rewards</h1>
+          <h1 className="font-display text-3xl font-bold gradient-text">Games & Rewards</h1>
           <p className="text-muted-foreground mt-1 text-sm">Play games, earn points, climb the ranks!</p>
         </div>
 
@@ -340,7 +340,7 @@ const Games = () => {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xs font-bold text-primary-foreground">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-bold text-primary-foreground">
                   {levelInfo.current.level}
                 </div>
                 <div>
@@ -387,8 +387,8 @@ const Games = () => {
                 onClick={() => setGameMode("multiplayer")}
                 className={`transition-all ${
                   gameMode === "multiplayer"
-                    ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
-                    : "glass border-border/50"
+                    ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20"
+                    : "glass border-border/50 hover:bg-mint/40"
                 }`}
               >
                 <Users className="w-4 h-4 mr-1" /> Multiplayer
@@ -399,8 +399,8 @@ const Games = () => {
                 onClick={() => setGameMode("bot")}
                 className={`transition-all ${
                   gameMode === "bot"
-                    ? "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20"
-                    : "glass border-border/50"
+                    ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20"
+                    : "glass border-border/50 hover:bg-mint/40"
                 }`}
               >
                 <Bot className="w-4 h-4 mr-1" /> vs Bot
@@ -440,14 +440,14 @@ const Games = () => {
                 </div>
                 <span className="text-muted-foreground">+</span>
                 <div className="glass p-3 rounded-xl text-center">
-                  <p className="text-2xl font-bold text-secondary">×🔥</p>
+                  <p className="text-2xl font-bold text-accent">×🔥</p>
                   <p className="text-[10px] text-muted-foreground">Streak Bonus</p>
                 </div>
               </div>
               <Button
                 onClick={handleDailyClaim}
                 disabled={claiming || !user}
-                className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-11 glow-primary"
+                className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 h-11 glow-primary"
               >
                 <Gift className="w-4 h-4 mr-2" />
                 {claiming ? "Claiming..." : user ? "Claim Daily Reward" : "Log in to Claim"}
@@ -466,7 +466,7 @@ const Games = () => {
                       whileHover={{ scale: 1.03 }}
                       className={`p-3 rounded-xl border text-center transition-all ${
                         earned
-                          ? "border-primary/30 bg-primary/5"
+                          ? "border-primary/40 bg-mint/50 shadow-[0_4px_16px_-6px_hsl(152_70%_38%/0.3)]"
                           : "border-border/20 opacity-50 grayscale"
                       }`}
                     >
