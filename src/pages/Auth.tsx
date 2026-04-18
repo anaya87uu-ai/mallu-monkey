@@ -56,9 +56,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 overflow-hidden">
-      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-15 bg-primary -top-40 -right-40 animate-float" />
-      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-15 bg-secondary bottom-0 -left-32 animate-float-delayed" />
+    <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 overflow-hidden bg-gradient-to-br from-background via-mint/40 to-background">
+      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-30 bg-primary/40 -top-40 -right-40 animate-float" />
+      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-30 bg-mint bottom-0 -left-32 animate-float-delayed" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -66,16 +66,16 @@ const Auth = () => {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 glow-primary">
+          <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4 glow-primary">
             <Cat className="w-7 h-7 text-primary-foreground" />
           </div>
-          <h1 className="font-display text-3xl font-bold">Join the Chat</h1>
+          <h1 className="font-display text-3xl font-bold text-forest">Join the Chat</h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Enter your name to start connecting
           </p>
         </div>
 
-        <div className="glass-card p-8">
+        <div className="bg-card border border-border rounded-2xl p-8 shadow-[0_20px_60px_-20px_hsl(152_70%_38%/0.2)]">
           <form onSubmit={handleGuest} className="space-y-5">
             <div>
               <label className="text-sm font-medium mb-2 block">Your Name</label>
@@ -87,7 +87,7 @@ const Auth = () => {
                   onChange={(e) => setGuestName(e.target.value)}
                   placeholder="Enter your name"
                   maxLength={50}
-                  className="pl-10 glass border-border/50 bg-muted/30 focus:border-primary/50"
+                  className="pl-10 bg-mint/40 border-border focus:border-primary focus:bg-card transition-colors"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-12 glow-primary"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 glow-primary transition-transform hover:-translate-y-0.5"
             >
               Start Chatting
             </Button>
@@ -144,7 +144,7 @@ const Auth = () => {
           <Button
             type="button"
             variant="outline"
-            className="w-full h-12 gap-3 glass border-border/50"
+            className="w-full h-12 gap-3 bg-card border-primary/30 text-forest hover:bg-mint hover:border-primary/60 hover:-translate-y-0.5 transition-all"
             onClick={handleGoogleSignIn}
             disabled={googleLoading}
           >

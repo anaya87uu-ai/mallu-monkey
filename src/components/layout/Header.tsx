@@ -59,10 +59,10 @@ const Header = () => {
   const displayLabel = user?.user_metadata?.display_name || user?.email || guestUser?.name || "Guest";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-primary/15 shadow-[0_1px_0_hsl(152_70%_38%/0.05)]">
       <div className="container flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-primary transition-all group-hover:scale-110">
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center glow-primary transition-all group-hover:scale-110">
             <Cat className="w-5 h-5 text-primary-foreground" />
           </div>
           <span className="font-display font-bold text-lg gradient-text">Mallu Monkey</span>
@@ -73,10 +73,10 @@ const Header = () => {
             <Link
               key={link.to}
               to={link.to}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 location.pathname === link.to
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? "text-primary-foreground bg-primary shadow-sm"
+                  : "text-muted-foreground hover:text-forest hover:bg-mint"
               }`}
             >
               {link.label}
@@ -105,7 +105,7 @@ const Header = () => {
             </>
           ) : (
             <Link to="/auth">
-              <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground glow-primary">
                 Join Chat
               </Button>
             </Link>
