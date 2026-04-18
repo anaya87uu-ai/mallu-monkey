@@ -13,7 +13,7 @@ const features = [
 ];
 
 const GlassOrb = ({ className }: { className?: string }) => (
-  <div className={`absolute rounded-full blur-3xl opacity-20 ${className}`} />
+  <div className={`absolute rounded-full blur-3xl opacity-40 ${className}`} />
 );
 
 const Index = () => {
@@ -32,10 +32,10 @@ const Index = () => {
 
   return (
   <div className="relative overflow-hidden">
-    {/* Background orbs */}
-    <GlassOrb className="w-96 h-96 bg-primary -top-48 -left-48 animate-float" />
-    <GlassOrb className="w-80 h-80 bg-secondary top-1/3 -right-40 animate-float-delayed" />
-    <GlassOrb className="w-64 h-64 bg-primary/50 bottom-20 left-1/4 animate-float" />
+    {/* Background orbs - soft mint tones */}
+    <GlassOrb className="w-96 h-96 bg-mint -top-48 -left-48 animate-float" />
+    <GlassOrb className="w-80 h-80 bg-primary/30 top-1/3 -right-40 animate-float-delayed" />
+    <GlassOrb className="w-64 h-64 bg-mint bottom-20 left-1/4 animate-float" />
 
     {/* Hero */}
     <section className="relative min-h-[90vh] flex items-center justify-center px-4">
@@ -45,7 +45,7 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight text-forest">
             Meet Strangers.{" "}
             <span className="gradient-text">Make Memories.</span>
           </h1>
@@ -54,12 +54,12 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/auth">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg px-8 h-14 glow-primary">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 h-14 glow-primary transition-transform hover:-translate-y-0.5">
                 Start Chatting <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
             <Link to="/auth">
-              <Button size="lg" variant="outline" className="glass border-border/50 hover:border-primary/50 text-lg px-8 h-14">
+              <Button size="lg" variant="outline" className="bg-card/80 border-primary/30 text-forest hover:bg-mint hover:border-primary/60 text-lg px-8 h-14">
                 Sign Up Free
               </Button>
             </Link>
@@ -87,12 +87,12 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="glass-card p-6 text-center group hover:border-primary/30 transition-all"
+              className="bg-card border border-border rounded-2xl p-6 text-center group hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-[0_12px_32px_-12px_hsl(152_70%_38%/0.25)]"
             >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-mint flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <f.icon className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
+              <h3 className="font-display font-semibold text-lg mb-2 text-forest">{f.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
@@ -107,14 +107,14 @@ const Index = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="glass-card p-10 md:p-16 text-center"
+          className="bg-gradient-to-br from-card to-mint border border-primary/20 rounded-3xl p-10 md:p-16 text-center shadow-[0_20px_60px_-20px_hsl(152_70%_38%/0.3)]"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-forest">
             Ready to <span className="gradient-text">Connect</span>?
           </h2>
           <p className="text-muted-foreground mb-8">Jump in and start meeting new people right now. No signup required.</p>
           <Link to="/auth">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg px-10 h-14 glow-primary">
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-10 h-14 glow-primary transition-transform hover:-translate-y-0.5">
               Start Video Chat <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>

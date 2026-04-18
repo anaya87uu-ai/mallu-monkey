@@ -199,7 +199,7 @@ const Chat = () => {
       {/* Video area */}
       <div className="flex-1 flex flex-col md:flex-row gap-1.5 md:gap-3 p-1.5 md:p-3 relative min-h-0">
         {/* Stranger video */}
-        <div className="flex-1 glass-card overflow-hidden relative min-h-0">
+        <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden relative min-h-0 border border-primary/30 shadow-[0_8px_32px_-8px_hsl(152_70%_38%/0.25)]">
           {isConnected && rtc.remoteStream && rtc.remoteStream.getTracks().length > 0 ? (
             <video
               ref={remoteVideoRef}
@@ -208,7 +208,7 @@ const Chat = () => {
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-muted/50 to-background flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
               <div className="text-center px-4">
                 {isSearching ? (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -232,11 +232,11 @@ const Chat = () => {
                         <Users className="w-5 h-5 md:w-7 md:h-7 text-primary" />
                       </motion.div>
                     </div>
-                    <p className="text-foreground font-display font-semibold text-sm md:text-lg">
+                    <p className="text-white font-display font-semibold text-sm md:text-lg">
                       Finding a stranger...
                     </p>
                     <motion.p
-                      className="text-xs md:text-sm text-muted-foreground mt-1"
+                      className="text-xs md:text-sm text-white/60 mt-1"
                       animate={{ opacity: [0.5, 1, 0.5] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
@@ -251,25 +251,25 @@ const Chat = () => {
                     <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 flex items-center justify-center mx-auto mb-2 md:mb-3">
                       <Users className="w-6 h-6 md:w-8 md:h-8 text-secondary" />
                     </div>
-                    <p className="text-foreground font-display font-semibold text-sm md:text-base">
+                    <p className="text-white font-display font-semibold text-sm md:text-base">
                       Connected!
                     </p>
-                    <p className="text-xs md:text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-white/60">
                       Waiting for video...
                     </p>
                   </motion.div>
                 ) : (
                   <div>
-                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-2 md:mb-3">
-                      <Video className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
+                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                      <Video className="w-6 h-6 md:w-8 md:h-8 text-white/70" />
                     </div>
-                    <p className="text-muted-foreground text-xs md:text-sm mb-3 md:mb-4">
+                    <p className="text-white/60 text-xs md:text-sm mb-3 md:mb-4">
                       No one connected yet
                     </p>
                     <Button
                       onClick={handleStart}
                       size="sm"
-                      className="bg-gradient-to-r from-primary to-secondary glow-primary text-xs md:text-sm"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-sm"
                     >
                       Find a Stranger
                     </Button>
@@ -301,7 +301,7 @@ const Chat = () => {
         </div>
 
         {/* Your video */}
-        <div className="flex-1 glass-card overflow-hidden relative min-h-0">
+        <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden relative min-h-0 border border-primary/30 shadow-[0_8px_32px_-8px_hsl(152_70%_38%/0.25)]">
           <video
             ref={localVideoRef}
             autoPlay
@@ -350,8 +350,8 @@ const Chat = () => {
                     <div
                       className={`max-w-[80%] px-3 py-1.5 rounded-2xl text-xs md:text-sm break-words ${
                         m.from === "you"
-                          ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-br-sm"
-                          : "bg-muted text-foreground rounded-bl-sm"
+                          ? "bg-primary text-primary-foreground rounded-br-sm shadow-sm"
+                          : "bg-mint text-forest rounded-bl-sm"
                       }`}
                     >
                       {m.text}
@@ -379,7 +379,7 @@ const Chat = () => {
                 onClick={handleSendMessage}
                 disabled={!rtc.isDataChannelOpen || !messageInput.trim()}
                 size="icon"
-                className="bg-gradient-to-r from-primary to-secondary shrink-0 w-9 h-9 md:w-10 md:h-10"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0 w-9 h-9 md:w-10 md:h-10"
               >
                 <Send className="w-3.5 h-3.5 md:w-4 md:h-4" />
               </Button>
@@ -425,7 +425,7 @@ const Chat = () => {
           {!isConnected && !isSearching && (
             <Button
               onClick={handleStart}
-              className="rounded-full h-9 md:h-12 px-3 md:px-6 bg-gradient-to-r from-primary to-secondary glow-primary text-xs md:text-base"
+              className="rounded-full h-9 md:h-12 px-3 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-base"
             >
               <Users className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" /> Find Stranger
             </Button>
@@ -438,7 +438,7 @@ const Chat = () => {
           {isConnected && (
             <Button
               onClick={handleSkip}
-              className="rounded-full h-9 md:h-12 px-3 md:px-6 bg-gradient-to-r from-primary to-secondary glow-primary text-xs md:text-base"
+              className="rounded-full h-9 md:h-12 px-3 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-base"
             >
               <SkipForward className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" /> Skip
             </Button>
