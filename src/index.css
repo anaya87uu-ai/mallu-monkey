@@ -140,8 +140,40 @@
     @apply glass glass-glow rounded-2xl;
   }
 
+  /* Apple-style heavier glass */
+  .glass-panel {
+    background: hsla(var(--glass-bg));
+    backdrop-filter: blur(28px) saturate(140%);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    border: 1px solid hsla(var(--glass-border));
+    border-radius: 1.25rem;
+    box-shadow:
+      0 24px 60px -24px hsl(152 70% 38% / 0.22),
+      0 2px 0 hsla(0 0% 100% / 0.6) inset,
+      0 -1px 0 hsla(152 40% 30% / 0.04) inset;
+  }
+
+  .glass-card-lg {
+    @apply glass-panel;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+  }
+
+  .glass-card-lg:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 32px 80px -28px hsl(152 70% 38% / 0.32),
+      0 2px 0 hsla(0 0% 100% / 0.7) inset;
+  }
+
   .gradient-text {
     background: linear-gradient(135deg, hsl(152 75% 32%), hsl(158 65% 22%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .dark .gradient-text {
+    background: linear-gradient(135deg, hsl(152 70% 60%), hsl(150 55% 80%));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -155,6 +187,77 @@
 
   .glow-cyan {
     box-shadow: 0 8px 24px -8px hsl(152 50% 50% / 0.3);
+  }
+
+  .display-xl {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  .display-lg {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+
+  .divider-soft {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsla(var(--glass-border)), transparent);
+  }
+
+  /* Ambient gradient mesh backdrop */
+  .ambient-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ambient-bg::before,
+  .ambient-bg::after {
+    content: "";
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(120px);
+    opacity: 0.55;
+  }
+
+  .ambient-bg::before {
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, hsl(152 70% 55% / 0.45), transparent 60%);
+    top: -20vw;
+    right: -15vw;
+    animation: aurora 22s ease-in-out infinite;
+  }
+
+  .ambient-bg::after {
+    width: 55vw;
+    height: 55vw;
+    background: radial-gradient(circle, hsl(150 60% 80% / 0.55), transparent 60%);
+    bottom: -20vw;
+    left: -15vw;
+    animation: aurora 26s ease-in-out infinite reverse;
+  }
+
+  .dark .ambient-bg::before {
+    background: radial-gradient(circle, hsl(152 70% 40% / 0.35), transparent 60%);
+  }
+  .dark .ambient-bg::after {
+    background: radial-gradient(circle, hsl(158 50% 25% / 0.4), transparent 60%);
+  }
+
+  /* Floating dock used by Chat controls */
+  .floating-dock {
+    @apply glass-panel;
+    border-radius: 9999px;
+    padding: 0.5rem;
   }
 }
 
@@ -170,6 +273,10 @@
   .animate-pulse-glow {
     animation: pulse-glow 3s ease-in-out infinite;
   }
+
+  .animate-aurora {
+    animation: aurora 24s ease-in-out infinite;
+  }
 }
 
 @keyframes float {
@@ -180,4 +287,10 @@
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
+}
+
+@keyframes aurora {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(4vw, -3vh) scale(1.1); }
+  66% { transform: translate(-3vw, 4vh) scale(0.95); }
 }

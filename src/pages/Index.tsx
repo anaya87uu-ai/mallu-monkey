@@ -52,74 +52,84 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] px-4 md:px-6 py-6 md:py-10 max-w-5xl mx-auto space-y-6 md:space-y-8">
+    <div className="min-h-[calc(100vh-4rem)] px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto space-y-8 md:space-y-10">
       {/* Greeting */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
-        <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold">
+        <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-1">Welcome back</p>
+        <h1 className="display-lg text-foreground">
           Hey, <span className="gradient-text">{userName}</span> 👋
         </h1>
-        <p className="text-muted-foreground text-sm md:text-base">Ready to connect and play?</p>
+        <p className="text-muted-foreground text-base">Ready to connect and play?</p>
       </motion.div>
 
-      {/* CTA */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+      {/* Hero CTA */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <Link to="/chat">
-          <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-12 glow-primary text-base">
-            <MessageCircle className="w-5 h-5 mr-2" /> Start Video Chat
-          </Button>
+          <div className="glass-panel relative overflow-hidden p-6 md:p-8 group cursor-pointer">
+            <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-primary/20 blur-3xl group-hover:bg-primary/30 transition-colors" />
+            <div className="relative flex items-center justify-between gap-4">
+              <div>
+                <h2 className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight mb-1">Start a video chat</h2>
+                <p className="text-sm text-muted-foreground">Meet someone new in seconds</p>
+              </div>
+              <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground glow-primary h-12 px-6 group-hover:scale-105 transition-transform">
+                <MessageCircle className="w-5 h-5 mr-2" /> Start
+              </Button>
+            </div>
+          </div>
         </Link>
       </motion.div>
 
       {/* Quick Actions */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {quickActions.map((action) => (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {quickActions.map((action, i) => (
           <Link key={action.to} to={action.to}>
-            <div className="glass-card p-4 md:p-6 hover:border-primary/30 transition-all group cursor-pointer h-full">
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+            <motion.div whileHover={{ y: -4 }} transition={{ delay: i * 0.03 }} className="glass-card-lg p-5 group cursor-pointer h-full">
+              <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg`}>
                 <action.icon className="w-5 h-5 text-white" />
               </div>
-              <p className="font-display font-semibold text-sm">{action.label}</p>
-              <p className="text-[11px] text-muted-foreground">{action.desc}</p>
-            </div>
+              <p className="font-display font-semibold text-sm text-foreground tracking-tight">{action.label}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{action.desc}</p>
+            </motion.div>
           </Link>
         ))}
       </motion.div>
 
-      {/* Level + Stats side-by-side on desktop */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-6 lg:space-y-0">
+      {/* Level + Stats */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-6 lg:space-y-0">
         {/* Level Card */}
-        <div className="glass-card p-5 md:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                <Star className="w-5 h-5 text-primary" />
+        <div className="glass-panel p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center glow-primary">
+                <Star className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <p className="font-display font-semibold text-sm">Level {level.level}</p>
+                <p className="font-display font-bold text-base text-foreground">Level {level.level}</p>
                 <p className="text-xs text-muted-foreground">{stats?.total_points ?? 0} points</p>
               </div>
             </div>
             {stats?.login_streak ? (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Zap className="w-3.5 h-3.5 text-primary" />
+              <div className="flex items-center gap-1 text-xs text-primary font-semibold px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                <Zap className="w-3.5 h-3.5" />
                 {stats.login_streak} day streak
               </div>
             ) : null}
           </div>
-          <div className="h-2 md:h-3 rounded-full bg-muted/50 overflow-hidden">
+          <div className="h-2.5 rounded-full bg-muted/60 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${level.progress}%` }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+              transition={{ duration: 0.9, delay: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+              className="h-full rounded-full bg-gradient-to-r from-primary to-accent shadow-[0_0_12px_hsl(var(--primary))]"
             />
           </div>
-          <p className="text-[10px] text-muted-foreground mt-1 text-right">{level.current}/{level.needed} XP</p>
+          <p className="text-[10px] text-muted-foreground mt-2 text-right">{level.current}/{level.needed} XP</p>
         </div>
 
         {/* Stats Grid */}
         <div>
-          <h2 className="font-display font-semibold text-lg mb-3">Your Stats</h2>
+          <h2 className="font-display font-semibold text-lg mb-3 text-foreground tracking-tight">Your Stats</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: "Total Chats", value: chatStats?.total_chats ?? 0, icon: MessageCircle },
@@ -127,16 +137,15 @@ const Index = () => {
               { label: "Games Won", value: stats?.games_won ?? 0, icon: Trophy },
               { label: "Games Played", value: stats?.games_played ?? 0, icon: Gamepad2 },
             ].map((stat) => (
-              <div key={stat.label} className="glass-card p-4 md:p-6 text-center">
+              <motion.div key={stat.label} whileHover={{ y: -2 }} className="glass-card-lg p-5 text-center">
                 <stat.icon className="w-5 h-5 text-primary mx-auto mb-2" />
-                <p className="font-display font-bold text-xl md:text-2xl">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground">{stat.label}</p>
-              </div>
+                <p className="font-display font-bold text-2xl text-foreground">{stat.value}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">{stat.label}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </motion.div>
-
     </div>
   );
 };
