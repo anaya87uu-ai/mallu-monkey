@@ -56,66 +56,69 @@ const Auth = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 overflow-hidden bg-gradient-to-br from-background via-mint/40 to-background">
-      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-30 bg-primary/40 -top-40 -right-40 animate-float" />
-      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-30 bg-mint bottom-0 -left-32 animate-float-delayed" />
-
+    <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4 glow-primary">
-            <Cat className="w-7 h-7 text-primary-foreground" />
-          </div>
-          <h1 className="font-display text-3xl font-bold text-forest">Join the Chat</h1>
+          <motion.div
+            initial={{ scale: 0, rotate: -45 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.15, type: "spring", stiffness: 180 }}
+            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-5 glow-primary"
+          >
+            <Cat className="w-8 h-8 text-primary-foreground" />
+          </motion.div>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">Join the chat</h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            Enter your name to start connecting
+            One step away from meeting someone new
           </p>
         </div>
 
-        <div className="bg-card border border-border rounded-2xl p-8 shadow-[0_20px_60px_-20px_hsl(152_70%_38%/0.2)]">
+        <div className="glass-panel p-8">
           <form onSubmit={handleGuest} className="space-y-5">
             <div>
-              <label className="text-sm font-medium mb-2 block">Your Name</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">Your Name</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   required
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
                   placeholder="Enter your name"
                   maxLength={50}
-                  className="pl-10 bg-mint/40 border-border focus:border-primary focus:bg-card transition-colors"
+                  className="pl-10 h-12 rounded-xl bg-background/60 border-border/60 focus:border-primary focus:bg-background transition-colors"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-3 block">I am a</label>
-              <RadioGroup value={guestGender} onValueChange={setGuestGender} className="flex gap-4">
-                <div className="flex-1">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">I am a</label>
+              <RadioGroup value={guestGender} onValueChange={setGuestGender} className="grid grid-cols-2 gap-3">
+                <div>
                   <RadioGroupItem value="boy" id="guest-boy" className="peer sr-only" />
                   <Label
                     htmlFor="guest-boy"
-                    className={`flex items-center justify-center gap-2 p-3 rounded-xl cursor-pointer transition-all border ${
+                    className={`flex items-center justify-center gap-2 h-12 rounded-xl cursor-pointer transition-all border ${
                       guestGender === "boy"
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border/50 glass text-muted-foreground hover:border-primary/30"
+                        ? "border-primary bg-primary/10 text-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.08)]"
+                        : "border-border/50 bg-background/40 text-muted-foreground hover:border-primary/30"
                     }`}
                   >
                     👦 Boy
                   </Label>
                 </div>
-                <div className="flex-1">
+                <div>
                   <RadioGroupItem value="girl" id="guest-girl" className="peer sr-only" />
                   <Label
                     htmlFor="guest-girl"
-                    className={`flex items-center justify-center gap-2 p-3 rounded-xl cursor-pointer transition-all border ${
+                    className={`flex items-center justify-center gap-2 h-12 rounded-xl cursor-pointer transition-all border ${
                       guestGender === "girl"
-                        ? "border-secondary bg-secondary/10 text-secondary"
-                        : "border-border/50 glass text-muted-foreground hover:border-secondary/30"
+                        ? "border-primary bg-primary/10 text-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.08)]"
+                        : "border-border/50 bg-background/40 text-muted-foreground hover:border-primary/30"
                     }`}
                   >
                     👧 Girl
@@ -126,25 +129,23 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 glow-primary transition-transform hover:-translate-y-0.5"
+              className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground h-12 glow-primary transition-all hover:-translate-y-0.5"
             >
               Start Chatting
             </Button>
           </form>
 
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/50" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-card px-3 text-muted-foreground">or</span>
+          <div className="relative my-6">
+            <div className="divider-soft" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="bg-card px-3 text-[10px] uppercase tracking-widest text-muted-foreground">or continue with</span>
             </div>
           </div>
 
           <Button
             type="button"
             variant="outline"
-            className="w-full h-12 gap-3 bg-card border-primary/30 text-forest hover:bg-mint hover:border-primary/60 hover:-translate-y-0.5 transition-all"
+            className="w-full h-12 rounded-xl gap-3 bg-background/60 border-border/60 hover:bg-mint/40 hover:border-primary/40 hover:-translate-y-0.5 transition-all"
             onClick={handleGoogleSignIn}
             disabled={googleLoading}
           >
@@ -161,6 +162,10 @@ const Auth = () => {
             Sign in with Google
           </Button>
         </div>
+
+        <p className="text-center text-xs text-muted-foreground mt-6">
+          By continuing you agree to our <a href="/terms" className="text-primary hover:underline">Terms</a> and <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
+        </p>
       </motion.div>
     </div>
   );
