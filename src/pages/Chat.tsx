@@ -389,16 +389,16 @@ const Chat = () => {
       </div>
 
       {/* Controls */}
-      <div className="p-1.5 md:p-4 shrink-0">
-        <div className="glass-card p-2 md:p-4 flex items-center justify-center gap-1.5 md:gap-3 max-w-lg mx-auto">
+      <div className="p-2 md:p-4 shrink-0">
+        <div className="floating-dock flex items-center justify-center gap-1.5 md:gap-2 max-w-fit mx-auto">
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={rtc.toggleMute}
-            className={`rounded-full w-9 h-9 md:w-12 md:h-12 glass border-border/50 ${
+            className={`rounded-full w-10 h-10 md:w-12 md:h-12 transition-all ${
               rtc.isMuted
-                ? "bg-destructive/20 border-destructive/50 text-destructive"
-                : ""
+                ? "bg-destructive/15 text-destructive hover:bg-destructive/25"
+                : "hover:bg-mint/40"
             }`}
           >
             {rtc.isMuted ? (
@@ -410,13 +410,13 @@ const Chat = () => {
 
 
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={() => setChatOpen(!chatOpen)}
-            className={`rounded-full w-9 h-9 md:w-12 md:h-12 glass border-border/50 ${
+            className={`rounded-full w-10 h-10 md:w-12 md:h-12 transition-all ${
               chatOpen
-                ? "bg-primary/20 border-primary/50 text-primary"
-                : ""
+                ? "bg-primary/15 text-primary hover:bg-primary/25"
+                : "hover:bg-mint/40"
             }`}
           >
             <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
@@ -425,9 +425,9 @@ const Chat = () => {
           {!isConnected && !isSearching && (
             <Button
               onClick={handleStart}
-              className="rounded-full h-9 md:h-12 px-3 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-base"
+              className="rounded-full h-10 md:h-12 px-4 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-sm gap-1.5"
             >
-              <Users className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" /> Find Stranger
+              <Users className="w-4 h-4 md:w-5 md:h-5" /> Find Stranger
             </Button>
           )}
 
@@ -438,16 +438,16 @@ const Chat = () => {
           {isConnected && (
             <Button
               onClick={handleSkip}
-              className="rounded-full h-9 md:h-12 px-3 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-base"
+              className="rounded-full h-10 md:h-12 px-4 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-sm gap-1.5"
             >
-              <SkipForward className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" /> Skip
+              <SkipForward className="w-4 h-4 md:w-5 md:h-5" /> Skip
             </Button>
           )}
 
           {(isConnected || isSearching) && (
             <Button
               onClick={handleEnd}
-              className="rounded-full w-9 h-9 md:w-12 md:h-12 bg-destructive hover:bg-destructive/90"
+              className="rounded-full w-10 h-10 md:w-12 md:h-12 bg-destructive hover:bg-destructive/90"
               size="icon"
             >
               <Phone className="w-4 h-4 md:w-5 md:h-5 rotate-[135deg]" />

@@ -114,20 +114,26 @@ const Admin = () => {
   const pendingReports = reports.filter((r) => r.status === "pending").length;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 md:py-10">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 md:space-y-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="space-y-7 md:space-y-9">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center glow-primary">
-              <Shield className="w-6 h-6 text-primary-foreground" />
-            </div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <motion.div
+              initial={{ scale: 0, rotate: -30 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 180 }}
+              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center glow-primary shrink-0"
+            >
+              <Shield className="w-7 h-7 text-primary-foreground" />
+            </motion.div>
             <div>
-              <h1 className="font-display text-2xl md:text-3xl font-bold gradient-text">Admin Dashboard</h1>
-              <p className="text-muted-foreground text-sm">Manage users, reports & settings</p>
+              <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-0.5">Control panel</p>
+              <h1 className="font-display text-2xl md:text-3xl font-bold gradient-text tracking-tight">Admin Dashboard</h1>
+              <p className="text-muted-foreground text-sm hidden sm:block">Manage users, reports & settings</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchAll} className="gap-2 hover:bg-mint/40 hover:border-primary/40">
+          <Button variant="outline" size="sm" onClick={fetchAll} className="rounded-full gap-2 bg-background/60 border-border/60 hover:bg-mint/40 hover:border-primary/40 shrink-0">
             <RefreshCw className="w-4 h-4" /> <span className="hidden sm:inline">Refresh</span>
           </Button>
         </div>
@@ -137,20 +143,22 @@ const Admin = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="users">
-          <TabsList className="glass w-full mb-6">
-            <TabsTrigger value="users" className="flex-1 gap-2">
-              <Users className="w-4 h-4" /> <span className="hidden sm:inline">Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex-1 gap-2">
-              <Flag className="w-4 h-4" /> <span className="hidden sm:inline">Reports</span>
-              {pendingReports > 0 && (
-                <Badge variant="destructive" className="ml-1 text-xs">{pendingReports}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex-1 gap-2">
-              <Settings className="w-4 h-4" /> <span className="hidden sm:inline">Settings</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="sticky top-16 z-30 -mx-4 px-4 py-3 mb-6 bg-background/60 backdrop-blur-xl">
+            <TabsList className="glass-panel w-full p-1 rounded-full h-auto">
+              <TabsTrigger value="users" className="flex-1 gap-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
+                <Users className="w-4 h-4" /> <span className="hidden sm:inline">Users</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex-1 gap-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
+                <Flag className="w-4 h-4" /> <span className="hidden sm:inline">Reports</span>
+                {pendingReports > 0 && (
+                  <Badge variant="destructive" className="ml-1 text-xs">{pendingReports}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex-1 gap-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
+                <Settings className="w-4 h-4" /> <span className="hidden sm:inline">Settings</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="users">
             <UsersTab profiles={profiles} onToggleBan={toggleBan} />

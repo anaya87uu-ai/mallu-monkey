@@ -161,23 +161,26 @@ const Leaderboards = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] px-4 py-8 pb-20 overflow-hidden">
-      <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-30 bg-mint -top-40 -right-40 animate-float" />
-      <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-25 bg-accent/30 bottom-0 -left-32 animate-float-delayed" />
-
+    <div className="relative min-h-[calc(100vh-4rem)] px-4 py-8 pb-24">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="max-w-lg mx-auto"
       >
         <div className="text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 glow-primary">
-            <Trophy className="w-7 h-7 text-primary-foreground" />
-          </div>
-          <h1 className="font-display text-3xl font-bold gradient-text">Leaderboards</h1>
+          <motion.div
+            initial={{ scale: 0, rotate: -20 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.1, type: "spring", stiffness: 180 }}
+            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 glow-primary"
+          >
+            <Trophy className="w-8 h-8 text-primary-foreground" />
+          </motion.div>
+          <h1 className="display-lg gradient-text">Leaderboards</h1>
           <p className="text-muted-foreground mt-1 text-sm">Top players on mallumonkey.xyz</p>
           {isLive && (
-            <div className="flex items-center justify-center gap-1.5 mt-2 text-xs text-primary font-medium">
+            <div className="inline-flex items-center justify-center gap-1.5 mt-3 text-xs text-primary font-medium px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
               <Wifi className="w-3.5 h-3.5" />
               <span>Live</span>
               <span className="relative flex h-2 w-2">
