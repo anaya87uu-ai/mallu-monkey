@@ -1,11 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Cat, Menu, X, LogOut, UserCircle, Sun, Moon } from "lucide-react";
+import { Cat, Menu, X, LogOut, UserCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useTheme } from "@/hooks/useTheme";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -20,7 +19,6 @@ const Header = () => {
   const [guestUser, setGuestUser] = useState<any>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const stored = localStorage.getItem("guest_user");
@@ -98,15 +96,6 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="rounded-full text-muted-foreground hover:text-foreground hover:bg-mint/40"
-          >
-            {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </Button>
           {isLoggedIn ? (
             <>
               {user ? (
@@ -135,15 +124,6 @@ const Header = () => {
         </div>
 
         <div className="md:hidden flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="rounded-full text-muted-foreground"
-          >
-            {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-          </Button>
           <button className="text-foreground p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
