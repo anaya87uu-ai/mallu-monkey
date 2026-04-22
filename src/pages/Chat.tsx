@@ -295,8 +295,13 @@ const Chat = () => {
               "Stranger"
             )}
           </div>
-          <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-2 py-0.5 md:px-3 md:py-1 rounded-md bg-background/40 backdrop-blur-sm text-[9px] md:text-[11px] text-foreground/50 z-10 font-medium tracking-wide select-none pointer-events-none">
-            mallumonkey.xyz
+          <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-10 select-none pointer-events-none">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full bg-background/30 backdrop-blur-md border border-white/15 shadow-[0_4px_16px_-4px_hsl(152_70%_38%/0.4)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary))]" />
+              <span className="text-[10px] md:text-xs font-display font-semibold tracking-wider text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                mallumonkey<span className="text-primary">.xyz</span>
+              </span>
+            </div>
           </div>
         </div>
 
