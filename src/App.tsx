@@ -14,8 +14,8 @@ import Chat from "./pages/Chat";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
-import Account from "./pages/Account";
 import Games from "./pages/Games";
+import { Navigate } from "react-router-dom";
 import Leaderboards from "./pages/Leaderboards";
 import NotFound from "./pages/NotFound";
 
@@ -39,7 +39,7 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/account" element={<Account />} />
+              <Route path="/account" element={<Navigate to="/" replace />} />
               <Route path="/games" element={<Games />} />
               <Route path="/leaderboards" element={<Leaderboards />} />
             </Route>
