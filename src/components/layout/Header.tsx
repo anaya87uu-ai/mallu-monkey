@@ -98,18 +98,9 @@ const Header = () => {
         <div className="hidden md:flex items-center gap-2">
           {isLoggedIn ? (
             <>
-              {user ? (
-                <Link to="/account">
-                  <Button variant="ghost" size="sm" className="rounded-full text-muted-foreground hover:text-foreground hover:bg-mint/40">
-                    <UserCircle className="w-4 h-4 mr-1.5" />
-                    {displayLabel}
-                  </Button>
-                </Link>
-              ) : (
-                <span className="text-sm text-muted-foreground flex items-center gap-1 px-3">
-                  <UserCircle className="w-4 h-4" /> {displayLabel}
-                </span>
-              )}
+              <span className="text-sm text-muted-foreground flex items-center gap-1 px-3">
+                <UserCircle className="w-4 h-4" /> {displayLabel}
+              </span>
               <Button variant="outline" size="sm" className="rounded-full glass border-border/50 hover:border-destructive/50" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-1" /> Log Out
               </Button>
