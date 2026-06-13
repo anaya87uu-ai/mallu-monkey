@@ -322,7 +322,7 @@ const Games = () => {
   const currentUserName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || guestUser?.name || "Player";
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] px-4 py-8 pb-24">
+    <div className="relative min-h-[calc(100vh-4rem)] px-4 py-6 md:py-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-lg mx-auto space-y-6">
         <div className="text-center">
           <motion.div

@@ -60,9 +60,19 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-body antialiased;
     transition: background-color 0.4s ease, color 0.4s ease;
+    font-size: 16px;
+  }
+
+  @media (max-width: 767px) {
+    body { font-size: 15.5px; }
+    button, a { -webkit-tap-highlight-color: transparent; }
   }
 
   *, *::before, *::after {
@@ -74,6 +84,12 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', sans-serif;
   }
+}
+
+@layer utilities {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .tap-target { min-width: 44px; min-height: 44px; }
 }
 
 @layer components {

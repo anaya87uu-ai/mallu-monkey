@@ -161,7 +161,7 @@ const Leaderboards = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] px-4 py-8 pb-24">
+    <div className="relative min-h-[calc(100vh-4rem)] px-4 py-6 md:py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
