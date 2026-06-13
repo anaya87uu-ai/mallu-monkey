@@ -394,22 +394,25 @@ const Chat = () => {
       </div>
 
       {/* Controls */}
-      <div className="p-2 md:p-4 shrink-0">
+      <div
+        className="p-2 md:p-4 shrink-0"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
+      >
         <div className="floating-dock flex items-center justify-center gap-1.5 md:gap-2 max-w-fit mx-auto">
           <Button
             variant="ghost"
             size="icon"
             onClick={rtc.toggleMute}
-            className={`rounded-full w-10 h-10 md:w-12 md:h-12 transition-all ${
+            className={`rounded-full w-12 h-12 md:w-12 md:h-12 transition-all ${
               rtc.isMuted
                 ? "bg-destructive/15 text-destructive hover:bg-destructive/25"
                 : "hover:bg-mint/40"
             }`}
           >
             {rtc.isMuted ? (
-              <MicOff className="w-4 h-4 md:w-5 md:h-5" />
+              <MicOff className="w-5 h-5" />
             ) : (
-              <Mic className="w-4 h-4 md:w-5 md:h-5" />
+              <Mic className="w-5 h-5" />
             )}
           </Button>
 
