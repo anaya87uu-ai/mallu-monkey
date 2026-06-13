@@ -421,21 +421,21 @@ const Chat = () => {
             variant="ghost"
             size="icon"
             onClick={() => setChatOpen(!chatOpen)}
-            className={`rounded-full w-10 h-10 md:w-12 md:h-12 transition-all ${
+            className={`rounded-full w-12 h-12 transition-all ${
               chatOpen
                 ? "bg-primary/15 text-primary hover:bg-primary/25"
                 : "hover:bg-mint/40"
             }`}
           >
-            <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
+            <MessageSquare className="w-5 h-5" />
           </Button>
 
           {!isConnected && !isSearching && (
             <Button
               onClick={handleStart}
-              className="rounded-full h-10 md:h-12 px-4 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-sm gap-1.5"
+              className="rounded-full h-12 px-5 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-sm gap-1.5"
             >
-              <Users className="w-4 h-4 md:w-5 md:h-5" /> Find Stranger
+              <Users className="w-5 h-5" /> Find Stranger
             </Button>
           )}
 
@@ -446,19 +446,19 @@ const Chat = () => {
           {isConnected && (
             <Button
               onClick={handleSkip}
-              className="rounded-full h-10 md:h-12 px-4 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-xs md:text-sm gap-1.5"
+              className="rounded-full h-12 px-5 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary text-sm gap-1.5"
             >
-              <SkipForward className="w-4 h-4 md:w-5 md:h-5" /> Skip
+              <SkipForward className="w-5 h-5" /> Skip
             </Button>
           )}
 
           {(isConnected || isSearching) && (
             <Button
               onClick={handleEnd}
-              className="rounded-full w-10 h-10 md:w-12 md:h-12 bg-destructive hover:bg-destructive/90"
+              className="rounded-full w-12 h-12 bg-destructive hover:bg-destructive/90"
               size="icon"
             >
-              <Phone className="w-4 h-4 md:w-5 md:h-5 rotate-[135deg]" />
+              <Phone className="w-5 h-5 rotate-[135deg]" />
             </Button>
           )}
         </div>
