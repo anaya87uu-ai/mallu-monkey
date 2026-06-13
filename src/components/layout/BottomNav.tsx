@@ -13,11 +13,12 @@ const navItems = [
 const BottomNav = () => {
   const location = useLocation();
   const [meOpen, setMeOpen] = useState(false);
+  const isChat = location.pathname.startsWith("/chat");
 
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 md:hidden px-3 pt-2"
+        className={`fixed bottom-0 left-0 right-0 z-50 md:hidden px-3 pt-2 ${isChat ? "hidden" : ""}`}
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
       >
         <div className="glass-panel flex items-stretch justify-around h-16 rounded-2xl px-1">
