@@ -1,50 +1,69 @@
+## Mobile UI Redesign Pass
 
-The theme is already green/white (just applied). The user is asking again — likely wanting more polish on top of the token swap, since just changing colors didn't transform the look enough. Many components still carry dark-theme assumptions (dark video backdrops, glow effects tuned for dark bg, gradient text that may look weak on white).
+A full mobile-first polish across every screen, keeping the existing emerald glassy/glowy aesthetic but tightening composition, density, touch targets, and the broken Account nav tab.
 
-## Polish Green & White Theme Across Key Pages
+### 1. Bottom Nav — replace Account with Profile/Logout menu
+File: `src/components/layout/BottomNav.tsx`
 
-### Goal
-The color tokens are already green/white, but the UI still feels like a recolored dark theme. Refine components so the light emerald aesthetic feels intentional, clean, and modern.
+- Drop the dead `/account` link.
+- Final 5 tabs: Home, Chat, Games, Leaders, **Me** (UserCircle).
+- "Me" opens a shadcn `Drawer` (bottom sheet) with:
+  - Avatar + display name + guest/Google badge
+  - Quick links: About, Contact, Privacy, Terms
+  - Admin link (only if `useAdminAuth` returns admin)
+  - Destructive "Log Out" button (reuses Header's signOut logic — extract to a tiny `useAuthSession` hook so Header + BottomNav share it).
+- Bump tab height to `h-16`, add `pb-[env(safe-area-inset-bottom)]` so iOS home-indicator doesn't overlap.
+- Active tab: filled glass pill + emerald glow (already there, refine sizing).
 
-### Changes
+### 2. Header — mobile compaction
+File: `src/components/layout/Header.tsx`
 
-**1. `src/index.css` — Refine glass + glow for light mode**
-- Soften glass: brighter white base, subtle emerald-tinted border
-- Replace heavy glow shadows (designed for dark bg) with soft emerald drop shadows
-- Stronger `gradient-text` (emerald → deep green, not washed out)
-- Add a subtle dotted/grid background pattern for depth
+- On mobile, hide the hamburger menu entirely (nav lives in BottomNav now). Keep only logo + Join Chat CTA when logged out.
+- Logged-in mobile header shows logo only (profile lives in bottom drawer).
+- Add safe-area top padding.
 
-**2. `src/pages/Welcome.tsx` — Hero refresh**
-- Lighten floating orbs (lower opacity, emerald/mint tones)
-- Stronger headline contrast (deep forest text)
-- Replace `glow-primary` with crisp emerald shadow on CTA
-- Feature cards: white surface, emerald icon backgrounds, soft shadow on hover
+### 3. Layout shell
+File: `src/components/layout/Layout.tsx`
 
-**3. `src/components/layout/Header.tsx`**
-- White glass header with emerald bottom border
-- Active nav link: emerald pill background
-- Logo gradient tuned for white bg
+- `pb-24` on `<main>` for mobile (clears taller bottom dock + safe area).
+- Hide `<Footer />` on mobile (`hidden md:block`) — footer content already accessible via Me drawer. Keeps mobile feeling app-like, not webby.
 
-**4. `src/pages/Auth.tsx`**
-- Card on soft mint-tinted background
-- Google button: white with emerald border + hover lift
-- Cleaner input styling
+### 4. Page-by-page mobile composition tightening
 
-**5. `src/pages/Chat.tsx`**
-- Keep video area dark (videos need dark backdrop) — wrap in a `bg-slate-900` container with emerald accent border
-- Light controls bar with emerald active states
-- Chat bubbles: emerald for "you", light gray for stranger
+**Welcome (`src/pages/Welcome.tsx`)** — hero stack: condense to one 100dvh viewport on mobile (no scroll for primary CTA). Bigger glass age-gate card, full-width primary CTA, secondary actions as ghost pills.
 
-**6. `tailwind.config.ts`** — Add `mint` and `forest` color shortcuts for reuse.
+**Index/Home (`src/pages/Index.tsx`)** — convert feature grid to a vertical snap carousel on mobile; sticky "Start Chat" CTA bar above bottom nav.
+
+**Chat (`src/pages/Chat.tsx`)** — already video-first; mobile tweaks:
+- Floating dock: thumb-reachable, raised above bottom nav, larger 56px circular controls.
+- Local PiP: smaller (96×128), draggable corner, rounded-2xl.
+- Watermark + stranger-info chips: top inset respects notch.
+- Report button moved into a top-right glass icon button.
+
+**Games (`src/pages/Games.tsx`)** — single-column card stack, larger tap zones for game tiles.
+
+**Leaderboards (`src/pages/Leaderboards.tsx`)** — switch table → glass card list rows on mobile (rank chip + avatar + name + points). Sticky filter tabs.
+
+**Auth (`src/pages/Auth.tsx`)** — full-bleed glass card, larger inputs (h-12), bigger Google button.
+
+**About / Contact / Privacy / Terms / NotFound** — consistent mobile padding (`px-4`), bumped body line-height, glass section cards instead of flat text walls.
+
+**Admin (`src/pages/Admin.tsx`)** — tabs become a scrollable segmented control on mobile; stats cards in 2-col grid.
+
+### 5. Global mobile primitives (`src/index.css`)
+
+- Add `.glass-dock` variant tuned for bottom positioning (stronger top highlight, deeper bottom shadow).
+- Add safe-area utilities: `.safe-top`, `.safe-bottom`.
+- Bump minimum interactive target to 44×44 via a `.tap` utility used on small icon buttons.
+- Slightly increase base font-size on `<768px` (15px → 16px) for readability.
 
 ### Out of scope
-- Games, Leaderboards, Admin pages (token-only update is sufficient for now)
-- Adding a dark mode toggle
+- No backend/WebRTC/auth logic changes.
+- No new pages or routes.
+- Color tokens and fonts unchanged.
 
-### Files to edit
-- `src/index.css`
-- `src/pages/Welcome.tsx`
-- `src/components/layout/Header.tsx`
-- `src/pages/Auth.tsx`
-- `src/pages/Chat.tsx`
-- `tailwind.config.ts`
+### Technical notes
+- New file: `src/hooks/useAuthSession.ts` — shared session+logout (refactor from Header).
+- New component: `src/components/layout/ProfileDrawer.tsx` — used by BottomNav "Me" tab.
+- Reuse existing shadcn `Drawer` (vaul) — already in project.
+- All edits frontend-only.
