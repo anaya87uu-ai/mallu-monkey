@@ -29,7 +29,7 @@ const Welcome = () => {
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative min-h-[88vh] flex items-center justify-center px-4 pt-8 pb-20">
+      <section className="relative min-h-[calc(100dvh-4rem)] md:min-h-[88vh] flex items-center justify-center px-4 pt-6 pb-12 md:pb-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
