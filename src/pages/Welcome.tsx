@@ -53,14 +53,14 @@ const Welcome = () => {
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
             Video chat with random people from around the world. Anonymous, instant, and unforgettable connections.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <Link to="/auth">
-              <Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 h-13 glow-primary transition-all hover:-translate-y-0.5 hover:scale-[1.02]">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center max-w-sm sm:max-w-none mx-auto">
+            <Link to="/auth" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 h-13 glow-primary transition-all hover:-translate-y-0.5 hover:scale-[1.02]">
                 Start Chatting <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Link to="/auth">
-              <Button size="lg" variant="ghost" className="rounded-full text-base px-8 h-13 hover:bg-mint/40">
+            <Link to="/auth" className="w-full sm:w-auto">
+              <Button size="lg" variant="ghost" className="w-full sm:w-auto rounded-full text-base px-8 h-13 hover:bg-mint/40">
                 Sign Up Free
               </Button>
             </Link>
