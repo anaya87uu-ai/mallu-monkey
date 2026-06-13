@@ -7,10 +7,15 @@ const Layout = () => (
   <div className="min-h-screen flex flex-col relative">
     <div className="ambient-bg" aria-hidden="true" />
     <Header />
-    <main className="flex-1 pt-16 pb-20 md:pb-0">
+    <main
+      className="flex-1 pt-16 md:pb-0"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 6rem)" }}
+    >
       <Outlet />
     </main>
-    <Footer />
+    <div className="hidden md:block">
+      <Footer />
+    </div>
     <BottomNav />
   </div>
 );
