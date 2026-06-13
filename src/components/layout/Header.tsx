@@ -1,10 +1,8 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Cat, Menu, X, LogOut, UserCircle } from "lucide-react";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation } from "react-router-dom";
+import { Cat, LogOut, UserCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -13,55 +11,16 @@ const navLinks = [
 ];
 
 const Header = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [guestUser, setGuestUser] = useState<any>(null);
   const location = useLocation();
-  const navigate = useNavigate();
+  const { isLoggedIn, displayLabel, logout } = useAuthSession();
 
   useEffect(() => {
-    const stored = localStorage.getItem("guest_user");
-    if (stored) setGuestUser(JSON.parse(stored));
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        localStorage.setItem("user", JSON.stringify({ id: session.user.id, email: session.user.email, display_name: session.user.user_metadata?.display_name }));
-        localStorage.removeItem("guest_user");
-        setGuestUser(null);
-      } else {
-        localStorage.removeItem("user");
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        localStorage.setItem("user", JSON.stringify({ id: session.user.id, email: session.user.email, display_name: session.user.user_metadata?.display_name }));
-      }
-    });
-
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      subscription.unsubscribe();
-      window.removeEventListener("scroll", onScroll);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    localStorage.removeItem("user");
-    localStorage.removeItem("guest_user");
-    setGuestUser(null);
-    toast.success("Logged out");
-    navigate("/");
-  };
-
-  const isLoggedIn = !!user || !!guestUser;
-  const displayLabel = user?.user_metadata?.display_name || user?.email || guestUser?.name || "Guest";
 
   return (
     <header
@@ -70,6 +29,7 @@ const Header = () => {
           ? "bg-background/75 backdrop-blur-2xl border-b border-primary/15 shadow-[0_8px_32px_-12px_hsl(152_70%_38%/0.15)]"
           : "bg-background/40 backdrop-blur-xl border-b border-transparent"
       }`}
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="container flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2.5 group">
@@ -101,7 +61,7 @@ const Header = () => {
               <span className="text-sm text-muted-foreground flex items-center gap-1 px-3">
                 <UserCircle className="w-4 h-4" /> {displayLabel}
               </span>
-              <Button variant="outline" size="sm" className="rounded-full glass border-border/50 hover:border-destructive/50" onClick={handleLogout}>
+              <Button variant="outline" size="sm" className="rounded-full glass border-border/50 hover:border-destructive/50" onClick={logout}>
                 <LogOut className="w-4 h-4 mr-1" /> Log Out
               </Button>
             </>
@@ -114,51 +74,17 @@ const Header = () => {
           )}
         </div>
 
-        <div className="md:hidden flex items-center gap-1">
-          <button className="text-foreground p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+        {/* Mobile: only show Join CTA when logged out; profile lives in bottom nav */}
+        <div className="md:hidden">
+          {!isLoggedIn && (
+            <Link to="/auth">
+              <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground glow-primary h-9 px-4 text-xs">
+                Join
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden overflow-hidden"
-          >
-            <div className="container px-4 pb-4 pt-2 flex flex-col gap-1.5">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMobileOpen(false)}
-                  className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    location.pathname === link.to
-                      ? "text-primary bg-primary/10 border border-primary/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-mint/30"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="flex gap-3 mt-2">
-                {isLoggedIn ? (
-                  <Button variant="outline" className="w-full rounded-xl glass border-border/50" onClick={() => { setMobileOpen(false); handleLogout(); }}>
-                    <LogOut className="w-4 h-4 mr-1" /> Log Out
-                  </Button>
-                ) : (
-                  <Link to="/auth" className="flex-1" onClick={() => setMobileOpen(false)}>
-                    <Button className="w-full rounded-xl bg-primary text-primary-foreground glow-primary">Join Chat</Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
   );
 };
