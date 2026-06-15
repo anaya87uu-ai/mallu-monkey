@@ -1,16 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Video, Shield, Users, Zap, ArrowRight, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Video, Gamepad2, ArrowRight, MessageCircle } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-const features = [
-  { icon: Video, title: "HD Video Chat", desc: "Crystal clear video & voice with people worldwide." },
-  { icon: Shield, title: "Anonymous & Safe", desc: "No personal info required. Real privacy, real talk." },
-  { icon: Users, title: "Gender Filter", desc: "Match with boys, girls, or anyone you prefer." },
-  { icon: Zap, title: "Instant Skip", desc: "One tap to skip and meet someone new." },
-];
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -27,110 +19,135 @@ const Welcome = () => {
   }, [navigate]);
 
   return (
-    <div className="relative">
-      {/* Hero */}
-      <section className="relative min-h-[calc(100dvh-4rem)] md:min-h-[88vh] flex items-center justify-center px-4 pt-6 pb-12 md:pb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-          className="text-center max-w-4xl mx-auto"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel mb-8 text-xs font-medium text-primary"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            Live · meet someone new in seconds
-          </motion.div>
+    <div className="relative min-h-[calc(100dvh-4rem)] flex flex-col overflow-hidden">
+      {/* Decorative background glows */}
+      <div className="absolute -top-24 -right-12 w-64 h-64 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+      <div className="absolute top-40 -left-12 w-48 h-48 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
-          <h1 className="display-xl mb-6 text-foreground">
-            Meet Strangers.<br />
-            <span className="gradient-text">Make Memories.</span>
+      <main className="relative z-10 flex-1 px-5 pt-6 pb-24 max-w-md md:max-w-2xl mx-auto w-full">
+        {/* Live badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-3 py-1 bg-card border border-primary/20 rounded-full shadow-sm mb-6"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+          </span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
+            2,481 Live Now
+          </span>
+        </motion.div>
+
+        {/* Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="space-y-4 mb-10"
+        >
+          <h1 className="font-display text-4xl md:text-6xl font-extrabold text-foreground leading-[1.05] tracking-tight">
+            Meet Strangers.
+            <br />
+            <span className="text-primary">Make Memories.</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-muted-foreground text-base md:text-lg leading-relaxed pr-4 font-medium max-w-xl">
             Video chat with random people from around the world. Anonymous, instant, and unforgettable connections.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center max-w-sm sm:max-w-none mx-auto">
-            <Link to="/auth" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 h-13 glow-primary transition-all hover:-translate-y-0.5 hover:scale-[1.02]">
-                Start Chatting <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link to="/auth" className="w-full sm:w-auto">
-              <Button size="lg" variant="ghost" className="w-full sm:w-auto rounded-full text-base px-8 h-13 hover:bg-mint/40">
-                Sign Up Free
-              </Button>
-            </Link>
-          </div>
         </motion.div>
-      </section>
 
-      {/* Features */}
-      <section className="relative py-20 px-4">
-        <div className="container max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-14"
-          >
-            <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3">Why us</p>
-            <h2 className="display-lg text-foreground">
-              Built for <span className="gradient-text">real connection</span>
-            </h2>
-          </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {features.map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.5 }}
-                whileHover={{ y: -4 }}
-                className="glass-card-lg p-7 group"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-5 group-hover:scale-110 transition-transform glow-primary">
-                  <f.icon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="font-display font-semibold text-lg mb-2 text-foreground tracking-tight">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        {/* Features grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-2 gap-3 mb-10"
+        >
+          <FeatureCard
+            icon={Video}
+            title="Video Chat"
+            desc="HD instant matches"
+            iconClass="bg-primary/10 text-primary"
+          />
+          <FeatureCard
+            icon={Gamepad2}
+            title="Play Games"
+            desc="Tic-Tac-Toe & more"
+            iconClass="bg-accent/15 text-accent-foreground"
+          />
+          <FeatureCard
+            icon={MessageCircle}
+            title="Live Chat"
+            desc="Text while you video"
+            iconClass="bg-secondary/15 text-secondary-foreground"
+          />
+          <FeatureCard
+            icon={ArrowRight}
+            title="One Tap Skip"
+            desc="Next stranger fast"
+            iconClass="bg-primary/10 text-primary"
+          />
+        </motion.div>
 
-      {/* CTA */}
-      <section className="relative py-24 px-4">
-        <div className="container max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="glass-panel p-12 md:p-16 text-center relative overflow-hidden"
-          >
-            <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-primary/20 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-accent/15 blur-3xl" />
-            <div className="relative">
-              <h2 className="display-lg mb-4 text-foreground">
-                Ready to <span className="gradient-text">connect</span>?
-              </h2>
-              <p className="text-muted-foreground mb-8 text-lg">Jump in and start meeting new people right now. No signup required.</p>
-              <Link to="/auth">
-                <Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-base px-10 h-13 glow-primary transition-all hover:-translate-y-0.5">
-                  Start Video Chat <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+        {/* CTA Stack */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="space-y-3"
+        >
+          <Link to="/auth" className="block">
+            <button className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] transition-transform">
+              Start Chatting
+              <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
+            </button>
+          </Link>
+          <Link to="/auth" className="block">
+            <button className="w-full py-3 text-muted-foreground hover:text-foreground font-bold text-sm transition-colors">
+              Sign Up Free
+            </button>
+          </Link>
+        </motion.div>
+
+        {/* Trust strip */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25 }}
+          className="mt-10 flex items-center justify-center gap-4 text-[11px] text-muted-foreground"
+        >
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" /> 18+ only
+          </span>
+          <span className="w-px h-3 bg-border" />
+          <span>Moderated 24/7</span>
+          <span className="w-px h-3 bg-border" />
+          <span>Anonymous</span>
+        </motion.div>
+      </main>
     </div>
   );
 };
+
+const FeatureCard = ({
+  icon: Icon,
+  title,
+  desc,
+  iconClass,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  desc: string;
+  iconClass: string;
+}) => (
+  <div className="bg-card p-4 rounded-2xl border border-border/60 shadow-sm">
+    <div className={`w-10 h-10 ${iconClass} rounded-lg flex items-center justify-center mb-3`}>
+      <Icon className="w-5 h-5" />
+    </div>
+    <h3 className="text-sm font-bold text-foreground">{title}</h3>
+    <p className="text-[11px] text-muted-foreground mt-1">{desc}</p>
+  </div>
+);
 
 export default Welcome;
