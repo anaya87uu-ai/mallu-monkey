@@ -70,7 +70,7 @@ export const useAuthSession = () => {
 
   const isLoggedIn = !!user || !!guestUser;
   const displayLabel =
-    user?.user_metadata?.display_name || user?.email || guestUser?.name || "Guest";
+    user?.user_metadata?.display_name || user?.email?.split("@")[0] || guestUser?.name || "Guest";
   const isGuest = !user && !!guestUser;
 
   return { user, guestUser, isLoggedIn, displayLabel, isGuest, logout };
