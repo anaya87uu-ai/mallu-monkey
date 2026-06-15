@@ -14,11 +14,10 @@ const Layout = () => {
       <main
         className="flex-1 pt-16 md:pb-0"
         style={{
-          paddingBottom: isChat
-            ? "0"
-            : "calc(env(safe-area-inset-bottom) + 6rem)",
+          paddingBottom: "calc(env(safe-area-inset-bottom) + 6rem)",
         }}
       >
+
         <Outlet />
       </main>
       <div className="hidden md:block">

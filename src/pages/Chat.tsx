@@ -195,7 +195,7 @@ const Chat = () => {
   const isConnected = match.state === "connected";
 
   return (
-    <div className="h-[calc(100dvh-3.5rem)] md:h-[calc(100vh-4rem)] flex flex-col relative overflow-hidden">
+    <div className="h-[calc(100dvh-3.5rem-6rem)] md:h-[calc(100vh-4rem)] flex flex-col relative overflow-hidden">
       {/* Video area */}
       <div className="flex-1 flex flex-col md:flex-row gap-1.5 md:gap-3 p-1.5 md:p-3 relative min-h-0">
         {/* Stranger video */}
