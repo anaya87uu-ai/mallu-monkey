@@ -26,7 +26,7 @@ const Index = () => {
         navigate("/welcome", { replace: true });
         return;
       }
-      setUserName(session.user.user_metadata?.display_name || session.user.email || "User");
+      setUserName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.user_metadata?.display_name || session.user.email?.split("@")[0] || "User");
       supabase.from("user_points").select("*").eq("user_id", session.user.id).maybeSingle().then(({ data }) => {
         if (data) setStats(data);
       });
