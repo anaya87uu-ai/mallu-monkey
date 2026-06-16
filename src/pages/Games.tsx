@@ -319,7 +319,7 @@ const Games = () => {
   const earnedBadges = (userPoints?.badges as string[]) || [];
 
   const currentUserId = user?.id || (guestUser ? `guest_${guestUser.name}` : null);
-  const currentUserName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || guestUser?.name || "Player";
+  const currentUserName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.user_metadata?.display_name || user?.email?.split("@")[0] || guestUser?.name || "Player";
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] px-4 py-6 md:py-8">
