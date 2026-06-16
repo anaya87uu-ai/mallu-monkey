@@ -276,18 +276,12 @@ const TicTacToeGame = ({ userId }: { userId: string | null }) => {
 /* ─── Main Games Page ─── */
 const Games = () => {
   const [user, setUser] = useState<any>(null);
-  const [guestUser, setGuestUser] = useState<any>(null);
   const [userPoints, setUserPoints] = useState<any>(null);
   const [claiming, setClaiming] = useState(false);
   const [gameMode, setGameMode] = useState<"bot" | "multiplayer">("multiplayer");
 
   useEffect(() => {
     const load = async () => {
-      const guest = localStorage.getItem("guest_user");
-      if (guest) {
-        setGuestUser(JSON.parse(guest));
-        return;
-      }
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
@@ -318,8 +312,8 @@ const Games = () => {
   const levelInfo = userPoints ? getLevelInfo(userPoints.total_points || 0) : null;
   const earnedBadges = (userPoints?.badges as string[]) || [];
 
-  const currentUserId = user?.id || (guestUser ? `guest_${guestUser.name}` : null);
-  const currentUserName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.user_metadata?.display_name || user?.email?.split("@")[0] || guestUser?.name || "Player";
+  const currentUserId = user?.id || null;
+  const currentUserName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Player";
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] px-4 py-6 md:py-8">

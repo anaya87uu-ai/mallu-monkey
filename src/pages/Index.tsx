@@ -10,17 +10,9 @@ const Index = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<any>(null);
   const [chatStats, setChatStats] = useState<any>(null);
-  const [isGuest, setIsGuest] = useState(false);
   const [userName, setUserName] = useState("User");
 
   useEffect(() => {
-    const guest = localStorage.getItem("guest_user");
-    if (guest) {
-      const g = JSON.parse(guest);
-      setIsGuest(true);
-      setUserName(g.name || "Guest");
-      return;
-    }
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate("/welcome", { replace: true });

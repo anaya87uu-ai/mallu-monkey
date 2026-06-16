@@ -1,11 +1,11 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import BottomNav from "./BottomNav";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 const Layout = () => {
-  const location = useLocation();
-  const isChat = location.pathname.startsWith("/chat");
+  const { isLoggedIn } = useAuthSession();
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -14,16 +14,17 @@ const Layout = () => {
       <main
         className="flex-1 pt-16 md:pb-0"
         style={{
-          paddingBottom: "calc(env(safe-area-inset-bottom) + 6rem)",
+          paddingBottom: isLoggedIn
+            ? "calc(env(safe-area-inset-bottom) + 6rem)"
+            : "env(safe-area-inset-bottom)",
         }}
       >
-
         <Outlet />
       </main>
       <div className="hidden md:block">
         <Footer />
       </div>
-      <BottomNav />
+      {isLoggedIn && <BottomNav />}
     </div>
   );
 };
