@@ -26,7 +26,7 @@ const links = [
 ];
 
 const ProfileDrawer = ({ open, onOpenChange }: Props) => {
-  const { isLoggedIn, displayLabel, isGuest, logout } = useAuthSession();
+  const { isLoggedIn, displayLabel, logout } = useAuthSession();
   const { isAdmin } = useAdminAuth();
   const initial = (displayLabel || "?")[0].toUpperCase();
 
@@ -43,11 +43,7 @@ const ProfileDrawer = ({ open, onOpenChange }: Props) => {
                 {isLoggedIn ? displayLabel : "Not signed in"}
               </DrawerTitle>
               <DrawerDescription className="text-xs">
-                {isLoggedIn
-                  ? isGuest
-                    ? "Guest account"
-                    : "Signed in with Google"
-                  : "Sign in to save points & streaks"}
+                {isLoggedIn ? "Signed in with Google" : "Sign in to save points & streaks"}
               </DrawerDescription>
             </div>
           </div>

@@ -3,25 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-interface GuestUser {
-  name: string;
-  gender?: string;
-}
-
 export const useAuthSession = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [guestUser, setGuestUser] = useState<GuestUser | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("guest_user");
-    if (stored) {
-      try {
-        setGuestUser(JSON.parse(stored));
-      } catch {
-        /* ignore */
-      }
-    }
+    // Clean up any legacy guest data
+    localStorage.removeItem("guest_user");
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
@@ -34,8 +22,6 @@ export const useAuthSession = () => {
             display_name: session.user.user_metadata?.display_name,
           }),
         );
-        localStorage.removeItem("guest_user");
-        setGuestUser(null);
       } else {
         localStorage.removeItem("user");
       }
@@ -61,22 +47,19 @@ export const useAuthSession = () => {
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
     localStorage.removeItem("user");
-    localStorage.removeItem("guest_user");
-    setGuestUser(null);
     setUser(null);
     toast.success("Logged out");
     navigate("/welcome");
   }, [navigate]);
 
-  const isLoggedIn = !!user || !!guestUser;
+  const isLoggedIn = !!user;
   const displayLabel =
     user?.user_metadata?.full_name ||
     user?.user_metadata?.name ||
     user?.user_metadata?.display_name ||
     user?.email?.split("@")[0] ||
-    guestUser?.name ||
-    "Guest";
-  const isGuest = !user && !!guestUser;
+    "User";
+  const isGuest = false;
 
-  return { user, guestUser, isLoggedIn, displayLabel, isGuest, logout };
+  return { user, guestUser: null, isLoggedIn, displayLabel, isGuest, logout };
 };

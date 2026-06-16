@@ -1,24 +1,17 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Cat, User, Loader2 } from "lucide-react";
+import { Cat, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [guestName, setGuestName] = useState("");
-  const [guestGender, setGuestGender] = useState("boy");
   const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("guest_user");
-    if (stored) navigate("/chat", { replace: true });
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) navigate("/chat", { replace: true });
     });
@@ -44,17 +37,6 @@ const Auth = () => {
     }
   };
 
-  const handleGuest = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!guestName.trim()) {
-      toast.error("Please enter your name");
-      return;
-    }
-    localStorage.setItem("guest_user", JSON.stringify({ name: guestName.trim(), gender: guestGender }));
-    toast.success(`Welcome, ${guestName.trim()}!`);
-    navigate("/chat", { state: { guestName: guestName.trim(), guestGender } });
-  };
-
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
       <motion.div
@@ -72,76 +54,13 @@ const Auth = () => {
           >
             <Cat className="w-8 h-8 text-primary-foreground" />
           </motion.div>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">Join the chat</h1>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">Sign in to continue</h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            One step away from meeting someone new
+            Use your Google account to start chatting
           </p>
         </div>
 
         <div className="glass-panel p-8">
-          <form onSubmit={handleGuest} className="space-y-5">
-            <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">Your Name</label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  required
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  placeholder="Enter your name"
-                  maxLength={50}
-                  className="pl-10 h-12 rounded-xl bg-background/60 border-border/60 focus:border-primary focus:bg-background transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">I am a</label>
-              <RadioGroup value={guestGender} onValueChange={setGuestGender} className="grid grid-cols-2 gap-3">
-                <div>
-                  <RadioGroupItem value="boy" id="guest-boy" className="peer sr-only" />
-                  <Label
-                    htmlFor="guest-boy"
-                    className={`flex items-center justify-center gap-2 h-12 rounded-xl cursor-pointer transition-all border ${
-                      guestGender === "boy"
-                        ? "border-primary bg-primary/10 text-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.08)]"
-                        : "border-border/50 bg-background/40 text-muted-foreground hover:border-primary/30"
-                    }`}
-                  >
-                    👦 Boy
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem value="girl" id="guest-girl" className="peer sr-only" />
-                  <Label
-                    htmlFor="guest-girl"
-                    className={`flex items-center justify-center gap-2 h-12 rounded-xl cursor-pointer transition-all border ${
-                      guestGender === "girl"
-                        ? "border-primary bg-primary/10 text-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.08)]"
-                        : "border-border/50 bg-background/40 text-muted-foreground hover:border-primary/30"
-                    }`}
-                  >
-                    👧 Girl
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground h-12 glow-primary transition-all hover:-translate-y-0.5"
-            >
-              Start Chatting
-            </Button>
-          </form>
-
-          <div className="relative my-6">
-            <div className="divider-soft" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="bg-card px-3 text-[10px] uppercase tracking-widest text-muted-foreground">or continue with</span>
-            </div>
-          </div>
-
           <Button
             type="button"
             variant="outline"
@@ -161,6 +80,10 @@ const Auth = () => {
             )}
             Sign in with Google
           </Button>
+
+          <p className="text-center text-[11px] text-muted-foreground mt-5">
+            You must be 18+ to use this app.
+          </p>
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">

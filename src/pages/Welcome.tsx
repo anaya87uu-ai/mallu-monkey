@@ -8,11 +8,7 @@ const Welcome = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const guest = localStorage.getItem("guest_user");
-    if (guest) {
-      navigate("/chat", { replace: true });
-      return;
-    }
+    localStorage.removeItem("guest_user");
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) navigate("/chat", { replace: true });
     });
@@ -99,15 +95,13 @@ const Welcome = () => {
         >
           <Link to="/auth" className="block">
             <button className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] transition-transform">
-              Start Chatting
+              Sign in with Google
               <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
             </button>
           </Link>
-          <Link to="/auth" className="block">
-            <button className="w-full py-3 text-muted-foreground hover:text-foreground font-bold text-sm transition-colors">
-              Sign Up Free
-            </button>
-          </Link>
+          <p className="text-center text-[11px] text-muted-foreground pt-1">
+            Google account required • Free forever
+          </p>
         </motion.div>
 
         {/* Trust strip */}
