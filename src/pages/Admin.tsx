@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, Users, Flag, Settings, Loader2, RefreshCw } from "lucide-react";
@@ -8,42 +8,24 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminData, type AdminProfile, type AdminReport, type AdminSetting } from "@/hooks/useAdminData";
 import AdminStats from "@/components/admin/AdminStats";
 import UsersTab from "@/components/admin/UsersTab";
 import ReportsTab from "@/components/admin/ReportsTab";
 import SettingsTab from "@/components/admin/SettingsTab";
-
-interface Profile {
-  id: string;
-  user_id: string;
-  display_name: string | null;
-  gender: string | null;
-  is_banned: boolean;
-  created_at: string;
-}
-
-interface Report {
-  id: string;
-  reporter_id: string | null;
-  reported_user_id: string;
-  reason: string;
-  status: string;
-  created_at: string;
-}
-
-interface SiteSetting {
-  id: string;
-  key: string;
-  value: string;
-}
+import UserDetailDrawer from "@/components/admin/UserDetailDrawer";
+import ReportDetailDialog from "@/components/admin/ReportDetailDialog";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { isAdmin, loading: authLoading } = useAdminAuth();
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [reports, setReports] = useState<Report[]>([]);
-  const [settings, setSettings] = useState<SiteSetting[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { isAdmin, loading: authLoading, userId } = useAdminAuth();
+  const {
+    profiles, reports, settings, loading, refreshing, lastFetched, error,
+    fetchAll, patchProfile, patchReport, patchSetting,
+  } = useAdminData(isAdmin);
+
+  const [selectedProfile, setSelectedProfile] = useState<AdminProfile | null>(null);
+  const [selectedReport, setSelectedReport] = useState<AdminReport | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAdmin) {
@@ -52,125 +34,181 @@ const Admin = () => {
     }
   }, [authLoading, isAdmin, navigate]);
 
-  useEffect(() => {
-    if (isAdmin) fetchAll();
-  }, [isAdmin]);
-
-  const fetchAll = async () => {
-    setLoading(true);
-    const [profilesRes, reportsRes, settingsRes] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("reports").select("*").order("created_at", { ascending: false }),
-      supabase.from("site_settings").select("*"),
-    ]);
-    if (profilesRes.data) setProfiles(profilesRes.data);
-    if (reportsRes.data) setReports(reportsRes.data);
-    if (settingsRes.data) setSettings(settingsRes.data as unknown as SiteSetting[]);
-    setLoading(false);
-  };
-
-  const toggleBan = async (profile: Profile) => {
-    const newBanned = !profile.is_banned;
+  const setBanned = async (profile: AdminProfile, banned: boolean, silent = false) => {
+    if (profile.user_id === userId) {
+      toast.error("You can't ban yourself");
+      return false;
+    }
     const { error } = await supabase
       .from("profiles")
-      .update({ is_banned: newBanned, banned_at: newBanned ? new Date().toISOString() : null })
+      .update({ is_banned: banned, banned_at: banned ? new Date().toISOString() : null })
       .eq("id", profile.id);
-    if (error) { toast.error("Failed to update user"); return; }
-    toast.success(newBanned ? "User banned" : "User unbanned");
-    setProfiles((prev) => prev.map((p) => (p.id === profile.id ? { ...p, is_banned: newBanned } : p)));
+    if (error) { toast.error(error.message || "Failed to update user"); return false; }
+    if (!silent) toast.success(banned ? "User banned" : "User unbanned");
+    patchProfile(profile.id, { is_banned: banned, banned_at: banned ? new Date().toISOString() : null });
+    return true;
+  };
+
+  const toggleBan = (profile: AdminProfile) => setBanned(profile, !profile.is_banned);
+
+  const bulkBan = async (list: AdminProfile[], ban: boolean) => {
+    const targets = list.filter((p) => p.user_id !== userId);
+    if (targets.length === 0) { toast.error("Nothing to update"); return; }
+    let ok = 0;
+    for (const p of targets) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await setBanned(p, ban, true)) ok++;
+    }
+    toast.success(`${ban ? "Banned" : "Unbanned"} ${ok} user${ok !== 1 ? "s" : ""}`);
   };
 
   const resolveReport = async (reportId: string, status: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
+    if (!userId) { toast.error("Session expired, refresh and try again"); return; }
     const { error } = await supabase
       .from("reports")
-      .update({ status, resolved_by: session?.user?.id, resolved_at: new Date().toISOString() })
+      .update({ status, resolved_by: userId, resolved_at: new Date().toISOString() })
       .eq("id", reportId);
-    if (error) { toast.error("Failed to update report"); return; }
+    if (error) { toast.error(error.message || "Failed to update report"); return; }
     toast.success(`Report ${status}`);
-    setReports((prev) => prev.map((r) => (r.id === reportId ? { ...r, status } : r)));
+    patchReport(reportId, { status, resolved_by: userId, resolved_at: new Date().toISOString() });
   };
 
-  const updateSetting = async (setting: SiteSetting, newValue: string) => {
+  const updateSetting = async (setting: AdminSetting, newValue: unknown) => {
+    // Send the native JS value — the column is jsonb, PostgREST handles encoding.
     const { error } = await supabase
       .from("site_settings")
-      .update({ value: JSON.stringify(newValue) })
+      .update({ value: newValue as any })
       .eq("id", setting.id);
-    if (error) { toast.error("Failed to update setting"); return; }
+    if (error) { toast.error(error.message || "Failed to update setting"); return; }
     toast.success("Setting updated");
-    setSettings((prev) => prev.map((s) => (s.id === setting.id ? { ...s, value: newValue } : s)));
+    patchSetting(setting.id, { value: newValue });
   };
 
-  if (authLoading || loading) {
+  const pendingReports = useMemo(() => reports.filter((r) => r.status === "pending").length, [reports]);
+  const bannedCount = useMemo(() => profiles.filter((p) => p.is_banned).length, [profiles]);
+  const activeCount = useMemo(() => {
+    const since = Date.now() - 24 * 60 * 60 * 1000;
+    return profiles.filter((p) => new Date(p.updated_at).getTime() >= since).length;
+  }, [profiles]);
+
+  if (authLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
-
   if (!isAdmin) return null;
 
-  const pendingReports = reports.filter((r) => r.status === "pending").length;
-
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="space-y-7 md:space-y-9">
+    <div className="max-w-6xl mx-auto px-4 py-6 md:py-10">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6 md:space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <motion.div
               initial={{ scale: 0, rotate: -30 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.1, type: "spring", stiffness: 180 }}
-              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center glow-primary shrink-0"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shrink-0"
             >
-              <Shield className="w-7 h-7 text-primary-foreground" />
+              <Shield className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
             </motion.div>
-            <div>
-              <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-0.5">Control panel</p>
-              <h1 className="font-display text-2xl md:text-3xl font-bold gradient-text tracking-tight">Admin Dashboard</h1>
-              <p className="text-muted-foreground text-sm hidden sm:block">Manage users, reports & settings</p>
+            <div className="min-w-0">
+              <p className="text-[10px] md:text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-0.5">Control panel</p>
+              <h1 className="font-display text-xl md:text-3xl font-bold gradient-text tracking-tight truncate">Admin Dashboard</h1>
+              <p className="text-muted-foreground text-xs md:text-sm truncate">
+                {lastFetched ? `Updated ${new Date(lastFetched).toLocaleTimeString()}` : "Manage users, reports & settings"}
+              </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchAll} className="rounded-full gap-2 bg-background/60 border-border/60 hover:bg-mint/40 hover:border-primary/40 shrink-0">
-            <RefreshCw className="w-4 h-4" /> <span className="hidden sm:inline">Refresh</span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchAll()}
+            disabled={refreshing}
+            className="rounded-full gap-2 bg-background/60 border-border/60 hover:bg-mint/40 hover:border-primary/40 shrink-0"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
         </div>
 
+        {error && (
+          <div className="glass-panel border-destructive/40 rounded-xl px-4 py-3 text-sm text-destructive">
+            {error} · <button className="underline" onClick={() => fetchAll()}>Retry</button>
+          </div>
+        )}
+
         {/* Stats */}
-        <AdminStats userCount={profiles.length} pendingReports={pendingReports} settingsCount={settings.length} />
+        <AdminStats
+          userCount={profiles.length}
+          activeCount={activeCount}
+          pendingReports={pendingReports}
+          bannedCount={bannedCount}
+        />
 
         {/* Tabs */}
         <Tabs defaultValue="users">
-          <div className="sticky top-16 z-30 -mx-4 px-4 py-3 mb-6 bg-background/60 backdrop-blur-xl">
+          <div className="sticky top-16 z-30 -mx-4 px-4 py-3 mb-6 bg-background/85 backdrop-blur-xl border-b border-border/40">
             <TabsList className="glass-panel w-full p-1 rounded-full h-auto">
               <TabsTrigger value="users" className="flex-1 gap-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
-                <Users className="w-4 h-4" /> <span className="hidden sm:inline">Users</span>
+                <Users className="w-4 h-4" />
+                <span className="hidden sm:inline">Users</span>
+                <Badge variant="secondary" className="text-[10px] px-1.5">{profiles.length}</Badge>
               </TabsTrigger>
               <TabsTrigger value="reports" className="flex-1 gap-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
-                <Flag className="w-4 h-4" /> <span className="hidden sm:inline">Reports</span>
-                {pendingReports > 0 && (
-                  <Badge variant="destructive" className="ml-1 text-xs">{pendingReports}</Badge>
-                )}
+                <Flag className="w-4 h-4" />
+                <span className="hidden sm:inline">Reports</span>
+                {pendingReports > 0 && <Badge variant="destructive" className="text-[10px] px-1.5">{pendingReports}</Badge>}
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex-1 gap-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
-                <Settings className="w-4 h-4" /> <span className="hidden sm:inline">Settings</span>
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Settings</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="users">
-            <UsersTab profiles={profiles} onToggleBan={toggleBan} />
+            <UsersTab
+              profiles={profiles}
+              loading={loading}
+              currentUserId={userId}
+              onToggleBan={toggleBan}
+              onBulkBan={bulkBan}
+              onSelectUser={setSelectedProfile}
+            />
           </TabsContent>
           <TabsContent value="reports">
-            <ReportsTab reports={reports} onResolve={resolveReport} />
+            <ReportsTab
+              reports={reports}
+              profiles={profiles}
+              loading={loading}
+              onResolve={resolveReport}
+              onSelectReport={setSelectedReport}
+            />
           </TabsContent>
           <TabsContent value="settings">
             <SettingsTab settings={settings} onUpdate={updateSetting} />
           </TabsContent>
         </Tabs>
       </motion.div>
+
+      <UserDetailDrawer
+        profile={selectedProfile}
+        currentUserId={userId}
+        open={!!selectedProfile}
+        onOpenChange={(o) => !o && setSelectedProfile(null)}
+        onToggleBan={(p) => toggleBan(p)}
+      />
+      <ReportDetailDialog
+        report={selectedReport}
+        profiles={profiles}
+        open={!!selectedReport}
+        onOpenChange={(o) => !o && setSelectedReport(null)}
+        onResolve={resolveReport}
+        onBanReported={(p) => { setBanned(p, true); setSelectedReport(null); }}
+      />
     </div>
   );
 };
