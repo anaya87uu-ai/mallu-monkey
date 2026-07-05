@@ -218,11 +218,13 @@ const Chat = () => {
   };
 
   const handleSkip = () => {
+    finalizeChat();
     rtc.closeConnection();
     match.skip();
   };
 
   const handleEnd = () => {
+    finalizeChat();
     rtc.closeConnection();
     match.stopSearching();
   };
