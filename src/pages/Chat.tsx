@@ -38,10 +38,42 @@ const Chat = () => {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasInitiatedRef = useRef(false);
+  const chatStartRef = useRef<number | null>(null);
 
   const geoInfo = useGeoLocation();
   const match = useStrangerMatch();
   const rtc = useWebRTC();
+
+  // Finalize a chat: award points based on how long the user was connected
+  const finalizeChat = useCallback(async () => {
+    const start = chatStartRef.current;
+    chatStartRef.current = null;
+    if (!start) return;
+    const seconds = Math.round((Date.now() - start) / 1000);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const uid = session?.user?.id;
+      if (!uid) return;
+      const displayName =
+        session.user.user_metadata?.full_name ||
+        session.user.user_metadata?.name ||
+        session.user.user_metadata?.display_name ||
+        session.user.email?.split("@")[0];
+      const result = await recordChatCompleted(uid, displayName, seconds);
+      if (result && result.awarded > 0) {
+        toast.success(`+${result.awarded} pts for ${Math.floor(seconds / 60)}m ${seconds % 60}s chat`);
+      }
+    } catch (e) {
+      console.error("[Chat] recordChatCompleted failed", e);
+    }
+  }, []);
+
+  // Start timer when a match connects
+  useEffect(() => {
+    if (match.state === "connected" && chatStartRef.current === null) {
+      chatStartRef.current = Date.now();
+    }
+  }, [match.state]);
 
   const handleNudityDetected = useCallback(() => {
     rtc.closeConnection();
