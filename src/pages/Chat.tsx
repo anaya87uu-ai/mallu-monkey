@@ -119,10 +119,11 @@ const Chat = () => {
   useEffect(() => {
     match.onStrangerLeft(() => {
       console.log("[Chat] Stranger left, auto-skipping...");
+      finalizeChat();
       rtc.closeConnection();
       match.skip();
     });
-  }, [match, rtc]);
+  }, [match, rtc, finalizeChat]);
 
   // Handle incoming signals
   useEffect(() => {
