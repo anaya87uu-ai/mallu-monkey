@@ -145,3 +145,60 @@ export async function claimDailyReward(userId: string) {
     message: `+${totalReward} points! (${POINT_VALUES.daily_claim} daily + ${streakBonus} streak bonus)`,
   };
 }
+
+/**
+ * Record a completed chat: upserts chat_stats (increments totals) and
+ * awards points based on chat duration (chat_per_minute per full minute + chat_complete bonus).
+ */
+export async function recordChatCompleted(
+  userId: string,
+  displayName: string | undefined,
+  seconds: number,
+) {
+  if (!userId || !Number.isFinite(seconds) || seconds < 3) return; // ignore blips
+
+  // Fetch existing stats to increment
+  const { data: existing } = await supabase
+    .from("chat_stats")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const totalChats = (existing?.total_chats || 0) + 1;
+  const totalSeconds = (existing?.total_chat_seconds || 0) + seconds;
+  const longest = Math.max(existing?.longest_chat_seconds || 0, seconds);
+
+  if (existing) {
+    await supabase
+      .from("chat_stats")
+      .update({
+        total_chats: totalChats,
+        total_chat_seconds: totalSeconds,
+        longest_chat_seconds: longest,
+        display_name: displayName || existing.display_name || "Anonymous",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", userId);
+  } else {
+    await supabase.from("chat_stats").insert({
+      user_id: userId,
+      display_name: displayName || "Anonymous",
+      total_chats: totalChats,
+      total_chat_seconds: totalSeconds,
+      longest_chat_seconds: longest,
+    });
+  }
+
+  // Award points: per-minute + a small completion bonus
+  const minutes = Math.floor(seconds / 60);
+  const awarded = minutes * POINT_VALUES.chat_per_minute + POINT_VALUES.chat_complete;
+
+  const badges: string[] = [];
+  const current = await getOrCreateUserPoints(userId, displayName);
+  const existingBadges: string[] = (current?.badges as string[]) || [];
+  if (!existingBadges.includes("first_chat")) badges.push("first_chat");
+  if (totalChats >= 10 && !existingBadges.includes("social_10")) badges.push("social_10");
+
+  await addPoints(userId, awarded, badges);
+  return { awarded, minutes, totalChats };
+}
