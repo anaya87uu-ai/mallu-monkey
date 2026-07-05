@@ -18,6 +18,8 @@ import { useStrangerMatch } from "@/hooks/useStrangerMatch";
 import { useWebRTC } from "@/hooks/useWebRTC";
 import { useNudityDetection } from "@/hooks/useNudityDetection";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
+import { supabase } from "@/integrations/supabase/client";
+import { recordChatCompleted } from "@/lib/points";
 
 interface ChatMessage {
   id: string;
