@@ -102,12 +102,21 @@ const Leaderboards = () => {
   const [isLive, setIsLive] = useState(false);
 
   const fetchAll = async () => {
-    const [pointsRes, chatRes] = await Promise.all([
+    const [pointsRes, chatRes, profilesRes] = await Promise.all([
       supabase.from("user_points").select("*").order("total_points", { ascending: false }).limit(50),
       supabase.from("chat_stats").select("*").order("total_chats", { ascending: false }).limit(50),
+      supabase.from("profiles").select("user_id, display_name"),
     ]);
-    if (pointsRes.data) setStats(pointsRes.data as unknown as PointsStat[]);
-    if (chatRes.data) setChatStats(chatRes.data as unknown as ChatStat[]);
+    const nameMap = new Map<string, string>();
+    (profilesRes.data || []).forEach((p: any) => {
+      if (p.display_name) nameMap.set(p.user_id, p.display_name);
+    });
+    const applyName = (row: any) => ({
+      ...row,
+      display_name: nameMap.get(row.user_id) || row.display_name || "Anonymous",
+    });
+    if (pointsRes.data) setStats((pointsRes.data as any[]).map(applyName) as unknown as PointsStat[]);
+    if (chatRes.data) setChatStats((chatRes.data as any[]).map(applyName) as unknown as ChatStat[]);
     setLoading(false);
   };
 
