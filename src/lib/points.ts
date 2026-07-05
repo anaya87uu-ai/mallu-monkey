@@ -25,6 +25,7 @@ export const BADGES = [
 export const POINT_VALUES = {
   daily_claim: 25,
   chat_complete: 10,
+  chat_per_minute: 2, // points per minute of chat time
   game_win: 20,
   game_play: 5,
   streak_bonus: 10, // per day of streak
