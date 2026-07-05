@@ -76,9 +76,10 @@ const Chat = () => {
   }, [match.state]);
 
   const handleNudityDetected = useCallback(() => {
+    finalizeChat();
     rtc.closeConnection();
     match.skip();
-  }, [rtc, match]);
+  }, [rtc, match, finalizeChat]);
 
   useNudityDetection({
     remoteVideoRef,
