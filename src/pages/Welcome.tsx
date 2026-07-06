@@ -15,9 +15,16 @@ import {
   UserCheck,
   Zap,
   PlayCircle,
+  HelpCircle,
 } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const Welcome = () => {
   const navigate = useNavigate();
