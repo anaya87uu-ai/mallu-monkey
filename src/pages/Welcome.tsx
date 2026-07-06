@@ -331,8 +331,61 @@ const Welcome = () => {
         </div>
       </section>
 
+      {/* ============ FAQ ============ */}
+      <section id="faq" className="relative z-10 px-5 pb-20 max-w-4xl mx-auto w-full">
+        <div className="text-center md:text-left">
+          <SectionEyebrow>FAQ</SectionEyebrow>
+          <SectionTitle>Questions, answered</SectionTitle>
+          <p className="mt-3 text-muted-foreground text-sm md:text-base max-w-xl">
+            Everything you need to know about matching, safety, and what happens if things go wrong.
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          className="mt-8 grid md:grid-cols-2 gap-6 md:gap-8"
+        >
+          {FAQ_GROUPS.map((group) => (
+            <div key={group.title}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                  <group.icon className="w-4 h-4" />
+                </div>
+                <h3 className="font-display text-base font-bold">{group.title}</h3>
+              </div>
+              <Accordion type="single" collapsible className="glass-card px-4 md:px-5">
+                {group.items.map((item, i) => (
+                  <AccordionItem
+                    key={item.q}
+                    value={`${group.title}-${i}`}
+                    className="border-border/50 last:border-0"
+                  >
+                    <AccordionTrigger className="text-sm font-semibold text-left hover:no-underline py-4">
+                      {item.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
+                      {item.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          ))}
+        </motion.div>
+
+        <div className="mt-8 text-center text-xs text-muted-foreground">
+          Still stuck?{" "}
+          <Link to="/contact" className="text-primary font-semibold hover:underline">
+            Contact our team
+          </Link>
+        </div>
+      </section>
+
       {/* ============ FINAL CTA ============ */}
       <section className="relative z-10 px-5 pb-24 max-w-3xl mx-auto w-full text-center">
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
