@@ -1,53 +1,57 @@
-## Admin dashboard: bugs, polish, features
+# Welcome Page Redesign
 
-### Bugs to fix
+Rework `src/pages/Welcome.tsx` into a richer, more motion-forward landing surface while keeping the current green glass theme and Google-only auth CTA.
 
-1. **Settings double-encoding.** `updateSetting` calls `JSON.stringify(newValue)` before writing, but the `value` column is already `jsonb`. Booleans get stored as the string `"\"true\""` and rendered as `"true"` (with quotes) on next load. Fix: send the raw JS value (`true`/`false`/`"text"`) and let PostgREST encode it. Also normalize on read so existing corrupted values display cleanly.
-2. **Settings reads are unsafe.** `SiteSetting.value` is typed as `string` but the DB returns any JSON. Coerce to string for the input, keep native type for booleans.
-3. **Report actions crash on missing session.** `resolved_by` is set to `session?.user?.id` which can be `undefined`; guard and abort with a toast if not signed in.
-4. **Stats "Live" label lies** — no realtime subscription. Either wire Realtime on `profiles`/`reports` or remove the label. I'll add Realtime subscriptions.
-5. **Sticky tab bar overlap** — `sticky top-16` sits under the fixed header but the bar is transparent above content on scroll. Add a solid backdrop and correct offset.
-6. **Users tab search** only matches `display_name`. Include user id substring so admins can find OAuth users without a display name.
-7. **Reports tab shows only `reason`** — reporter and reported users are opaque UUIDs. Join to profiles and show display names + a "View profile" popover.
-8. **Ban action doesn't check self-ban** — an admin can ban themselves and lose access. Block it.
-9. **`fetchAll` has no error handling** — a failed request silently leaves stale data. Add toast + retry.
+## New page structure
 
-### Visual redesign / layout polish
+1. **Hero band** (top)
+   - Live badge (kept, animated ping)
+   - Big display headline "Meet Strangers. Make Memories." with per-word stagger fade-in
+   - Sub-copy + primary CTA (Sign in with Google) + tiny trust line
+   - Floating decorative orbs using existing `ambient-bg` tokens + `animate-float`
 
-- Rework header: compact on mobile, larger gradient title on desktop, add "last refreshed" timestamp next to Refresh.
-- Replace `AdminStats` 3-card row with a 4-card row (Total Users, Active 24h, Pending Reports, Banned Users). Add sparkline-ish delta hint from last fetch.
-- Tabs: pill nav with icon+count badges (users count, pending reports count). Keep the sticky header working with a proper blurred background.
-- Tables: zebra rows, hover highlight, sticky header inside scroll container, empty-state illustrations.
-- Consistent skeletons while loading (instead of a single centered spinner).
+2. **Bento grid** (replaces the flat 2x2 feature grid)
+   - Asymmetric 4x3 grid on desktop, 2-col on mobile
+   - Tiles:
+     - Large: "HD Video Chat" with subtle animated gradient
+     - Tall: "Live stats" mini-panel (users online, chats today) - static illustrative numbers
+     - Wide: "Play together — Tic-Tac-Toe & more" with icon cluster
+     - Small: "One-tap Skip"
+     - Small: "Live text chat"
+     - Medium: "Global reach" with flag chips
+   - Each tile: `glass-card`, hover lift, icon in tinted square, motion `whileInView` fade+rise
 
-### New features
+3. **How it works — 3 steps**
+   - Horizontal timeline on desktop, vertical on mobile
+   - Steps: 1) Sign in with Google · 2) Get matched instantly · 3) Chat, play, skip
+   - Numbered circles with gradient ring, connecting divider line, staggered entry
 
-- **User detail drawer** (click a row): shows profile, points, chat stats, recent reports involving them, ban/unban, role toggle (grant/revoke admin via `user_roles`).
-- **Report detail dialog**: reporter + reported profile cards, full reason, quick "Ban reported user" + Resolve/Dismiss.
-- **Bulk actions on users**: multi-select rows → bulk ban/unban.
-- **CSV export** for users and reports (client-side).
-- **Global search bar** in the header that filters the active tab.
+4. **Safety & moderation**
+   - Two-column band (stacks on mobile)
+   - Left: heading "Safe by design" + copy
+   - Right: 3 pill cards — 18+ only, AI nudity detection, One-tap report — each with icon + short line
+   - Subtle green tinted background block using `bg-primary/5`
 
-### Performance & data loading
+5. **Final CTA strip**
+   - Recap headline + Google sign-in button (same style as hero)
+   - Footer trust row (moderated 24/7 · anonymous · free)
 
-- Paginate `profiles` and `reports` (25/page) with server-side `range()` + total count; keeps admin fast at scale.
-- Realtime subscriptions on `profiles`, `reports`, `site_settings` — incoming changes patch local state instead of full refetch.
-- Skeleton rows during initial + page loads.
-- Debounce search input (250ms).
-- Memoize sort/filter pipelines.
+## Motion additions
 
-### Files to change
+- `framer-motion` `whileInView` with `viewport={{ once: true, margin: "-80px" }}` on each section
+- Stagger children (0.08s) for bento tiles and step cards
+- Hover: bento tiles lift `-4px` + shadow bump (Tailwind transition, not JS)
+- Existing `animate-float`, `animate-pulse-glow`, `ambient-bg` reused for orbs
 
-- `src/pages/Admin.tsx` — data loading, pagination, realtime, error handling, self-ban guard, settings fix, layout tweaks.
-- `src/components/admin/AdminStats.tsx` — 4 cards, active-24h + banned counts, remove fake "Live" or wire it.
-- `src/components/admin/UsersTab.tsx` — multi-select, row click → drawer, id search, skeletons, CSV export.
-- `src/components/admin/ReportsTab.tsx` — join profile data, detail dialog, CSV export, skeletons.
-- `src/components/admin/SettingsTab.tsx` — fix value encoding/display.
-- New `src/components/admin/UserDetailDrawer.tsx`.
-- New `src/components/admin/ReportDetailDialog.tsx`.
-- New `src/hooks/useAdminData.ts` — encapsulates fetch + realtime + pagination.
+## Scope & constraints
 
-### Out of scope
+- Only edits `src/pages/Welcome.tsx` (single file)
+- No new deps, no route changes, no auth changes
+- Uses existing design tokens only (`glass-card`, `primary`, `accent`, `secondary`, `muted-foreground`, `border`)
+- Keeps Google-only auth CTA (no guest, no email)
+- Auth redirect logic (`useEffect` → `/chat` if session) preserved
+- Mobile-first, safe-area friendly, no horizontal scroll
 
-- No schema changes (existing tables/policies are sufficient).
-- No changes to auth flow, welcome page, or chat.
+## Out of scope
+
+Testimonials, live-stats section, dark hero variant, layout/color changes elsewhere, backend changes.
