@@ -515,4 +515,112 @@ const SafetyPill = ({
   </motion.div>
 );
 
+const FAQ_GROUPS: {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  items: { q: string; a: string }[];
+}[] = [
+  {
+    title: "How matching works",
+    icon: Zap,
+    items: [
+      {
+        q: "How does Mallu Monkey pair me with a stranger?",
+        a: "When you enter the lobby with your camera and mic on, our matchmaker looks for another user who's also waiting. Pairing is random and usually takes less than 3 seconds. Once matched, a peer-to-peer WebRTC video call opens directly between the two browsers.",
+      },
+      {
+        q: "Can I pick who I get matched with?",
+        a: "No — matches are fully random by design. That's what keeps every conversation fresh and anonymous. You can skip anytime and be re-matched instantly.",
+      },
+      {
+        q: "Why do I need to grant camera and mic access?",
+        a: "Both are required to enter the matching queue. Without an active camera and mic, we can't verify you're a real person on the other end, which keeps the experience safe for everyone.",
+      },
+      {
+        q: "What happens when I tap Skip?",
+        a: "The current call ends immediately, the stranger is notified, and you're put back into the queue. You'll usually be matched with someone new within a few seconds.",
+      },
+      {
+        q: "Can I get matched with the same person twice?",
+        a: "It's rare but possible. With thousands online at any moment, the odds are low — and skipping again puts you right back in the queue.",
+      },
+    ],
+  },
+  {
+    title: "Safety & moderation",
+    icon: ShieldCheck,
+    items: [
+      {
+        q: "Is Mallu Monkey safe to use?",
+        a: "Yes. We enforce a strict 18+ policy, run AI-based nudity detection on every video stream every few seconds, and moderators review reports 24/7. Calls are peer-to-peer and not recorded by us.",
+      },
+      {
+        q: "Do you record video or audio?",
+        a: "No. Video and audio flow directly between users over encrypted WebRTC. We don't store call content on our servers.",
+      },
+      {
+        q: "How does nudity detection work?",
+        a: "A frame from your video is sampled every few seconds and analyzed by an on-platform AI classifier. If explicit content is detected, the call ends instantly and the offending account is flagged for moderator review.",
+      },
+      {
+        q: "How do I report someone?",
+        a: "Tap the flag icon during any call. Pick a reason (nudity, harassment, minor, spam, other) and submit. Reports reach our moderators in real time and are usually actioned within minutes.",
+      },
+      {
+        q: "Is my identity shared with strangers?",
+        a: "No. Strangers only see an auto-generated display name and a country flag based on IP geolocation. Your Google email, real name, and account details are never shown.",
+      },
+    ],
+  },
+  {
+    title: "Bans & account issues",
+    icon: Flag,
+    items: [
+      {
+        q: "What can get me banned?",
+        a: "Nudity or sexual content, harassment, hate speech, threats, sharing another person's private info, appearing under 18, or repeated abuse reports. Serious violations result in an immediate permanent ban.",
+      },
+      {
+        q: "How long do bans last?",
+        a: "First-time minor violations can be temporary (24h–7 days). Repeated or serious violations — especially nudity, minors on camera, or threats — are permanent and cannot be appealed.",
+      },
+      {
+        q: "I was banned by mistake. Can I appeal?",
+        a: "Yes. Use the Contact page to submit an appeal with your account name and the approximate time of the ban. A human moderator will review the flagged evidence and respond.",
+      },
+      {
+        q: "Can I create a new account after a ban?",
+        a: "No. Ban evasion is against our terms. We detect and re-ban new accounts that appear to belong to previously banned users.",
+      },
+      {
+        q: "What if a stranger did something illegal?",
+        a: "Report them immediately using the flag icon and, for serious matters, contact your local authorities. We cooperate with valid law-enforcement requests.",
+      },
+    ],
+  },
+  {
+    title: "Account & privacy",
+    icon: HelpCircle,
+    items: [
+      {
+        q: "Why do I need to sign in with Google?",
+        a: "Google sign-in lets us block ban evasion and enforce the 18+ rule without collecting passwords. We only use your Google profile to create your account — never to post or read anything on your behalf.",
+      },
+      {
+        q: "Is Mallu Monkey free?",
+        a: "Yes, 100% free. No hidden fees, no premium tier, no ads inside calls.",
+      },
+      {
+        q: "Can I delete my account?",
+        a: "Yes. Head to the Contact page and request account deletion — we'll remove your profile, points, and chat stats within a few days.",
+      },
+      {
+        q: "Do you work on mobile?",
+        a: "Yes. Mallu Monkey works in any modern mobile browser (Chrome, Safari, Firefox) with a camera and mic. No app install needed.",
+      },
+    ],
+  },
+];
+
 export default Welcome;
+
