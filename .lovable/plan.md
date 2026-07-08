@@ -1,57 +1,54 @@
-# Welcome Page Redesign
+## Scope
 
-Rework `src/pages/Welcome.tsx` into a richer, more motion-forward landing surface while keeping the current green glass theme and Google-only auth CTA.
+Four small, focused changes. No new dependencies, no schema changes.
 
-## New page structure
+## 1. Mirror the stranger's video
 
-1. **Hero band** (top)
-   - Live badge (kept, animated ping)
-   - Big display headline "Meet Strangers. Make Memories." with per-word stagger fade-in
-   - Sub-copy + primary CTA (Sign in with Google) + tiny trust line
-   - Floating decorative orbs using existing `ambient-bg` tokens + `animate-float`
+**File:** `src/pages/Chat.tsx`
 
-2. **Bento grid** (replaces the flat 2x2 feature grid)
-   - Asymmetric 4x3 grid on desktop, 2-col on mobile
-   - Tiles:
-     - Large: "HD Video Chat" with subtle animated gradient
-     - Tall: "Live stats" mini-panel (users online, chats today) - static illustrative numbers
-     - Wide: "Play together — Tic-Tac-Toe & more" with icon cluster
-     - Small: "One-tap Skip"
-     - Small: "Live text chat"
-     - Medium: "Global reach" with flag chips
-   - Each tile: `glass-card`, hover lift, icon in tinted square, motion `whileInView` fade+rise
+Add `scale-x-[-1]` to the remote `<video>` element so the stranger's feed is mirrored to match the local preview style.
 
-3. **How it works — 3 steps**
-   - Horizontal timeline on desktop, vertical on mobile
-   - Steps: 1) Sign in with Google · 2) Get matched instantly · 3) Chat, play, skip
-   - Numbered circles with gradient ring, connecting divider line, staggered entry
+## 2. Terms & Privacy links in mobile profile drawer
 
-4. **Safety & moderation**
-   - Two-column band (stacks on mobile)
-   - Left: heading "Safe by design" + copy
-   - Right: 3 pill cards — 18+ only, AI nudity detection, One-tap report — each with icon + short line
-   - Subtle green tinted background block using `bg-primary/5`
+**File:** `src/components/layout/ProfileDrawer.tsx`
 
-5. **Final CTA strip**
-   - Recap headline + Google sign-in button (same style as hero)
-   - Footer trust row (moderated 24/7 · anonymous · free)
+Add a "Legal" section at the bottom of the drawer with two `Link` rows:
+- Terms of Service → `/terms`
+- Privacy Policy → `/privacy`
 
-## Motion additions
+Uses existing drawer row styling (icon + label). Visible on all sizes but primary target is mobile where the footer is hidden.
 
-- `framer-motion` `whileInView` with `viewport={{ once: true, margin: "-80px" }}` on each section
-- Stagger children (0.08s) for bento tiles and step cards
-- Hover: bento tiles lift `-4px` + shadow bump (Tailwind transition, not JS)
-- Existing `animate-float`, `animate-pulse-glow`, `ambient-bg` reused for orbs
+## 3. Leaderboards: real name + chat time
 
-## Scope & constraints
+**File:** `src/pages/Leaderboards.tsx`
 
-- Only edits `src/pages/Welcome.tsx` (single file)
-- No new deps, no route changes, no auth changes
-- Uses existing design tokens only (`glass-card`, `primary`, `accent`, `secondary`, `muted-foreground`, `border`)
-- Keeps Google-only auth CTA (no guest, no email)
-- Auth redirect logic (`useEffect` → `/chat` if session) preserved
-- Mobile-first, safe-area friendly, no horizontal scroll
+- Show `display_name` from `chat_stats` / `user_points` (already stored via `sync_display_name`) as the primary label instead of any anonymous fallback.
+- Add a "Chat Time" column (or badge under the name) formatted as `Hh Mm` from `chat_stats.total_seconds`.
+- Keep existing points ranking; add a secondary tab or column so users see both points and total chat time.
+
+Data source: existing `chat_stats` table (`user_id`, `display_name`, `total_seconds`, `chats_completed`) — no migration needed.
+
+## 4. Welcome page improvements
+
+**File:** `src/pages/Welcome.tsx` (single-file edit, add 4 new sections between existing bento and FAQ)
+
+### 4a. Live stats strip
+Row of 3 animated counters (users online, chats today, countries). Illustrative values, `framer-motion` count-up on `whileInView`. Green glass cards.
+
+### 4b. Product preview carousel
+Horizontal snap-scroll of 4 screenshot-style mock cards (Video match, Text chat, Games, Skip flow). Built with pure divs + gradients + lucide icons — no real screenshots, no new assets. Auto-advance every 4s with dots indicator.
+
+### 4c. Testimonials section
+3-card grid (stacks on mobile) with quote, name, country flag emoji, star rating. Uses `glass-card`, staggered `whileInView` fade-up. Content is illustrative.
+
+### 4d. Comparison table
+Responsive table: rows = features (HD video, AI moderation, Free, No sign-up friction, Games, Global reach), columns = Mallu Monkey / Omegle / Chatroulette. Check/X icons with green highlight on the Mallu Monkey column. Collapses to stacked cards on mobile.
+
+All new sections reuse existing tokens (`glass-card`, `primary`, `accent`, `SectionEyebrow`, `SectionTitle`) and `framer-motion` patterns already in the file.
 
 ## Out of scope
 
-Testimonials, live-stats section, dark hero variant, layout/color changes elsewhere, backend changes.
+- No changes to matching, WebRTC, or moderation logic
+- No new tables or migrations
+- No real analytics wiring for the live stats (illustrative only)
+- No changes to desktop footer legal links (already present)

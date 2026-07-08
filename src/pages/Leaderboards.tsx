@@ -34,18 +34,28 @@ const rankColors = [
 
 const rankIcons = ["🥇", "🥈", "🥉"];
 
+const formatChatTime = (seconds: number) => {
+  if (!seconds || seconds < 60) return `${seconds || 0}s`;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+};
+
 const LeaderboardRow = ({
   name,
   level,
   totalPoints,
   rank,
   valueLabel,
+  chatSeconds,
 }: {
   name: string;
   level: number;
   totalPoints: number;
   rank: number;
   valueLabel: string;
+  chatSeconds?: number;
 }) => {
   const isTop3 = rank < 3;
   const levelInfo = getLevelInfo(totalPoints);
@@ -84,7 +94,16 @@ const LeaderboardRow = ({
         <p className={`text-sm font-semibold truncate ${isTop3 ? "text-foreground" : "text-foreground/80"}`}>
           {name || "Anonymous"}
         </p>
-        <p className="text-[10px] text-muted-foreground">{levelInfo.current.name}</p>
+        <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+          <span>{levelInfo.current.name}</span>
+          {chatSeconds !== undefined && chatSeconds > 0 && (
+            <>
+              <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+              <Clock className="w-2.5 h-2.5" />
+              <span>{formatChatTime(chatSeconds)}</span>
+            </>
+          )}
+        </p>
       </div>
 
       <div className={`text-right shrink-0 ${isTop3 ? "text-primary font-bold" : "text-muted-foreground font-medium"}`}>
@@ -93,6 +112,7 @@ const LeaderboardRow = ({
     </motion.div>
   );
 };
+
 
 const Leaderboards = () => {
   const [stats, setStats] = useState<PointsStat[]>([]);
@@ -242,16 +262,20 @@ const Leaderboards = () => {
             <>
               {["points", "wins", "streak"].map((t) => (
                 <TabsContent key={t} value={t} className="space-y-1 mt-0">
-                  {sortedPoints.map((stat, i) => (
-                    <LeaderboardRow
-                      key={stat.id}
-                      name={stat.display_name || "Anonymous"}
-                      level={stat.level}
-                      totalPoints={stat.total_points}
-                      rank={i}
-                      valueLabel={getValueLabel(stat)}
-                    />
-                  ))}
+                  {sortedPoints.map((stat, i) => {
+                    const chat = chatStats.find((c) => c.user_id === stat.user_id);
+                    return (
+                      <LeaderboardRow
+                        key={stat.id}
+                        name={stat.display_name || "Anonymous"}
+                        level={stat.level}
+                        totalPoints={stat.total_points}
+                        rank={i}
+                        valueLabel={getValueLabel(stat)}
+                        chatSeconds={chat?.total_chat_seconds}
+                      />
+                    );
+                  })}
                 </TabsContent>
               ))}
               {["chats", "chattime"].map((t) => (
@@ -264,10 +288,12 @@ const Leaderboards = () => {
                       totalPoints={0}
                       rank={i}
                       valueLabel={getChatValueLabel(stat)}
+                      chatSeconds={stat.total_chat_seconds}
                     />
                   ))}
                 </TabsContent>
               ))}
+
             </>
           )}
         </Tabs>
