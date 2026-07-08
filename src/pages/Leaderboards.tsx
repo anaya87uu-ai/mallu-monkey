@@ -262,16 +262,20 @@ const Leaderboards = () => {
             <>
               {["points", "wins", "streak"].map((t) => (
                 <TabsContent key={t} value={t} className="space-y-1 mt-0">
-                  {sortedPoints.map((stat, i) => (
-                    <LeaderboardRow
-                      key={stat.id}
-                      name={stat.display_name || "Anonymous"}
-                      level={stat.level}
-                      totalPoints={stat.total_points}
-                      rank={i}
-                      valueLabel={getValueLabel(stat)}
-                    />
-                  ))}
+                  {sortedPoints.map((stat, i) => {
+                    const chat = chatStats.find((c) => c.user_id === stat.user_id);
+                    return (
+                      <LeaderboardRow
+                        key={stat.id}
+                        name={stat.display_name || "Anonymous"}
+                        level={stat.level}
+                        totalPoints={stat.total_points}
+                        rank={i}
+                        valueLabel={getValueLabel(stat)}
+                        chatSeconds={chat?.total_chat_seconds}
+                      />
+                    );
+                  })}
                 </TabsContent>
               ))}
               {["chats", "chattime"].map((t) => (
@@ -284,10 +288,12 @@ const Leaderboards = () => {
                       totalPoints={0}
                       rank={i}
                       valueLabel={getChatValueLabel(stat)}
+                      chatSeconds={stat.total_chat_seconds}
                     />
                   ))}
                 </TabsContent>
               ))}
+
             </>
           )}
         </Tabs>
