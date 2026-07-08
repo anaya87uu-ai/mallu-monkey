@@ -721,5 +721,208 @@ const FAQ_GROUPS: {
   },
 ];
 
+/* ---------- Live Stats ---------- */
+
+const AnimatedNumber = ({ value }: { value: number }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const mv = useMotionValue(0);
+  const spring = useSpring(mv, { duration: 1400, bounce: 0 });
+  const rounded = useTransform(spring, (v) => Math.round(v).toLocaleString());
+  useEffect(() => {
+    if (inView) mv.set(value);
+  }, [inView, value, mv]);
+  return <motion.span ref={ref}>{rounded}</motion.span>;
+};
+
+const LiveStat = ({
+  icon: Icon,
+  value,
+  suffix,
+  label,
+  tint,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  value: number;
+  suffix?: string;
+  label: string;
+  tint: "primary" | "accent" | "secondary";
+}) => {
+  const tintCls =
+    tint === "primary"
+      ? "bg-primary/10 text-primary"
+      : tint === "accent"
+      ? "bg-accent/20 text-accent-foreground"
+      : "bg-secondary/40 text-secondary-foreground";
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      className="glass-card p-5 md:p-6 flex items-center gap-4"
+    >
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${tintCls}`}>
+        <Icon className="w-6 h-6" />
+      </div>
+      <div className="min-w-0">
+        <div className="font-display text-2xl md:text-3xl font-extrabold text-foreground leading-none">
+          <AnimatedNumber value={value} />
+          {suffix}
+        </div>
+        <div className="text-xs text-muted-foreground mt-1">{label}</div>
+      </div>
+      <span className="ml-auto flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-primary">
+        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+        Live
+      </span>
+    </motion.div>
+  );
+};
+
+/* ---------- Preview Carousel ---------- */
+
+const PREVIEWS = [
+  { title: "Video match", subtitle: "HD peer-to-peer video with a real person", icon: Video, accent: "from-primary/30 to-accent/20" },
+  { title: "Live text chat", subtitle: "Side chat while you're on video", icon: MessageCircle, accent: "from-accent/30 to-primary/10" },
+  { title: "Mini-games", subtitle: "Play Tic-Tac-Toe with your match", icon: Gamepad2, accent: "from-secondary/40 to-primary/20" },
+  { title: "One-tap skip", subtitle: "Next stranger in under 3 seconds", icon: SkipForward, accent: "from-primary/25 to-secondary/30" },
+];
+
+const PreviewCarousel = () => {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setIndex((i) => (i + 1) % PREVIEWS.length), 4000);
+    return () => clearInterval(id);
+  }, []);
+  const p = PREVIEWS[index];
+  const Icon = p.icon;
+  return (
+    <div className="mt-8">
+      <motion.div
+        key={index}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="glass-card-lg p-4 md:p-6"
+      >
+        <div className={`relative rounded-2xl overflow-hidden bg-gradient-to-br ${p.accent} aspect-[16/9] md:aspect-[21/9]`}>
+          <div className="absolute top-3 left-3 flex gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-background/40" />
+            <span className="w-2.5 h-2.5 rounded-full bg-background/40" />
+            <span className="w-2.5 h-2.5 rounded-full bg-background/40" />
+          </div>
+          <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-background/50 backdrop-blur-sm text-[10px] font-bold">
+            <Wifi className="w-3 h-3 text-primary" /> Connected
+          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-background/70 backdrop-blur-md text-primary flex items-center justify-center shadow-xl mb-4">
+              <Icon className="w-8 h-8 md:w-10 md:h-10" />
+            </div>
+            <h3 className="font-display text-xl md:text-2xl font-extrabold text-foreground">{p.title}</h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-sm">{p.subtitle}</p>
+          </div>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 px-2 py-1 rounded-full bg-background/60 backdrop-blur-sm border border-border/50">
+            <span className="w-7 h-7 rounded-full bg-background/70 flex items-center justify-center">
+              <Mic className="w-3.5 h-3.5 text-foreground/70" />
+            </span>
+            <span className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+              <SkipForward className="w-3.5 h-3.5" />
+            </span>
+            <span className="w-7 h-7 rounded-full bg-destructive/80 text-destructive-foreground flex items-center justify-center">
+              <Phone className="w-3.5 h-3.5 rotate-[135deg]" />
+            </span>
+          </div>
+        </div>
+        <div className="mt-5 flex items-center justify-center gap-2">
+          {PREVIEWS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIndex(i)}
+              aria-label={`Show preview ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all ${
+                i === index ? "w-8 bg-primary" : "w-1.5 bg-border hover:bg-muted-foreground/50"
+              }`}
+            />
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+/* ---------- Testimonials ---------- */
+
+const TESTIMONIALS = [
+  { quote: "Way better than the old random chat sites — actually feels safe and the video is crystal clear.", name: "Aarav", country: "🇮🇳", rating: 5 },
+  { quote: "The mini-games make it so easy to break the ice. Made real friends across three continents already.", name: "Sofia", country: "🇧🇷", rating: 5 },
+  { quote: "One-tap skip is genius. Moderation is legit — I reported someone once and they were gone in minutes.", name: "Kenji", country: "🇯🇵", rating: 5 },
+];
+
+const Testimonial = ({
+  quote,
+  name,
+  country,
+  rating,
+}: {
+  quote: string;
+  name: string;
+  country: string;
+  rating: number;
+}) => (
+  <motion.div
+    variants={{
+      hidden: { opacity: 0, y: 20 },
+      show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    }}
+    className="glass-card p-5 md:p-6 flex flex-col h-full"
+  >
+    <Quote className="w-6 h-6 text-primary/40 mb-3" />
+    <p className="text-sm md:text-base text-foreground/90 leading-relaxed flex-1">"{quote}"</p>
+    <div className="mt-5 flex items-center justify-between pt-4 border-t border-border/40">
+      <div className="flex items-center gap-2">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground flex items-center justify-center font-bold text-sm">
+          {name[0]}
+        </div>
+        <div>
+          <div className="text-sm font-bold text-foreground flex items-center gap-1.5">
+            {name} <span className="text-base leading-none">{country}</span>
+          </div>
+          <div className="flex gap-0.5">
+            {Array.from({ length: rating }).map((_, i) => (
+              <Star key={i} className="w-3 h-3 fill-primary text-primary" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+/* ---------- Comparison Table ---------- */
+
+type CompareValue = boolean | string;
+
+const COMPARISON: { feature: string; us: CompareValue; omegle: CompareValue; chatroulette: CompareValue }[] = [
+  { feature: "HD video chat", us: true, omegle: false, chatroulette: true },
+  { feature: "AI nudity moderation", us: true, omegle: false, chatroulette: false },
+  { feature: "Free forever, no ads in calls", us: true, omegle: true, chatroulette: false },
+  { feature: "Instant sign-in (no forms)", us: true, omegle: true, chatroulette: false },
+  { feature: "Built-in mini-games", us: true, omegle: false, chatroulette: false },
+  { feature: "24/7 human moderation", us: true, omegle: false, chatroulette: false },
+  { feature: "Works on mobile browsers", us: true, omegle: true, chatroulette: true },
+  { feature: "18+ enforced entry", us: true, omegle: false, chatroulette: false },
+];
+
+const CompareCell = ({ value, highlight = false }: { value: CompareValue; highlight?: boolean }) => {
+  if (typeof value === "boolean") {
+    return value ? (
+      <Check className={`w-5 h-5 ${highlight ? "text-primary" : "text-primary/70"}`} strokeWidth={3} />
+    ) : (
+      <X className="w-5 h-5 text-muted-foreground/50" strokeWidth={2.5} />
+    );
+  }
+  return <span className={`text-xs font-semibold ${highlight ? "text-primary" : "text-muted-foreground"}`}>{value}</span>;
+};
+
 export default Welcome;
 
