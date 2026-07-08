@@ -339,7 +339,98 @@ const Welcome = () => {
         </div>
       </section>
 
+      {/* ============ LIVE STATS STRIP ============ */}
+      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <LiveStat icon={Users} value={2481} suffix="" label="online right now" tint="primary" />
+          <LiveStat icon={MessageCircle} value={18420} suffix="" label="chats today" tint="accent" />
+          <LiveStat icon={Globe2} value={127} suffix="+" label="countries connected" tint="secondary" />
+        </div>
+      </section>
+
+      {/* ============ PRODUCT PREVIEW CAROUSEL ============ */}
+      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+        <div className="text-center md:text-left">
+          <SectionEyebrow>Product tour</SectionEyebrow>
+          <SectionTitle>See it in action</SectionTitle>
+          <p className="mt-3 text-muted-foreground text-sm md:text-base max-w-xl">
+            A peek at the interface — video matching, live text, mini-games, and one-tap skip.
+          </p>
+        </div>
+        <PreviewCarousel />
+      </section>
+
+      {/* ============ TESTIMONIALS ============ */}
+      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+        <div className="text-center md:text-left">
+          <SectionEyebrow>Loved by users</SectionEyebrow>
+          <SectionTitle>What people are saying</SectionTitle>
+        </div>
+
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+          className="mt-8 grid md:grid-cols-3 gap-5"
+        >
+          {TESTIMONIALS.map((t) => (
+            <Testimonial key={t.name} {...t} />
+          ))}
+        </motion.div>
+      </section>
+
+      {/* ============ COMPARISON TABLE ============ */}
+      <section className="relative z-10 px-5 pb-20 max-w-5xl mx-auto w-full">
+        <div className="text-center md:text-left">
+          <SectionEyebrow>Why Mallu Monkey</SectionEyebrow>
+          <SectionTitle>Better than the rest</SectionTitle>
+          <p className="mt-3 text-muted-foreground text-sm md:text-base max-w-xl">
+            A side-by-side look at what makes us different from other random chat sites.
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          className="mt-8 glass-card-lg overflow-hidden"
+        >
+          <div className="hidden md:grid grid-cols-4 border-b border-border/50 bg-primary/5">
+            <div className="p-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Feature</div>
+            <div className="p-4 text-center text-sm font-display font-extrabold text-primary">
+              Mallu Monkey
+            </div>
+            <div className="p-4 text-center text-sm font-semibold text-muted-foreground">Omegle</div>
+            <div className="p-4 text-center text-sm font-semibold text-muted-foreground">Chatroulette</div>
+          </div>
+          {COMPARISON.map((row, i) => (
+            <div
+              key={row.feature}
+              className={`md:grid md:grid-cols-4 border-b border-border/30 last:border-0 p-4 md:p-0 ${
+                i % 2 === 1 ? "md:bg-muted/20" : ""
+              }`}
+            >
+              <div className="md:p-4 text-sm font-semibold text-foreground">{row.feature}</div>
+              <div className="md:p-4 flex md:justify-center items-center gap-2 mt-2 md:mt-0 bg-primary/5 md:bg-primary/10 rounded-lg md:rounded-none px-3 py-2 md:px-4">
+                <span className="md:hidden text-[10px] font-bold uppercase text-primary">Mallu</span>
+                <CompareCell value={row.us} highlight />
+              </div>
+              <div className="md:p-4 flex md:justify-center items-center gap-2 mt-1 md:mt-0 px-3 py-2 md:px-4">
+                <span className="md:hidden text-[10px] font-bold uppercase text-muted-foreground">Omegle</span>
+                <CompareCell value={row.omegle} />
+              </div>
+              <div className="md:p-4 flex md:justify-center items-center gap-2 mt-1 md:mt-0 px-3 py-2 md:px-4">
+                <span className="md:hidden text-[10px] font-bold uppercase text-muted-foreground">Chatroulette</span>
+                <CompareCell value={row.chatroulette} />
+              </div>
+            </div>
+          ))}
+        </motion.div>
+      </section>
+
       {/* ============ FAQ ============ */}
+
       <section id="faq" className="relative z-10 px-5 pb-20 max-w-4xl mx-auto w-full">
         <div className="text-center md:text-left">
           <SectionEyebrow>FAQ</SectionEyebrow>
