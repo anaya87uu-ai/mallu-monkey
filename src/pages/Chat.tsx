@@ -243,8 +243,9 @@ const Chat = () => {
               ref={remoteVideoRef}
               autoPlay
               playsInline
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
             />
+
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
               <div className="text-center px-4">
