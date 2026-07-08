@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Video,
   Gamepad2,
@@ -16,8 +16,15 @@ import {
   Zap,
   PlayCircle,
   HelpCircle,
+  Check,
+  X,
+  Star,
+  Quote,
+  Mic,
+  Phone,
+  Wifi,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Accordion,
@@ -25,6 +32,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
 
 const Welcome = () => {
   const navigate = useNavigate();
