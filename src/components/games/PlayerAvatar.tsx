@@ -25,7 +25,7 @@ const PlayerAvatar = ({ name, symbol, isActive, score }: PlayerAvatarProps) => {
         </div>
         {isActive && (
           <motion.div
-            className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-background"
+            className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary border-2 border-background"
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ repeat: Infinity, duration: 1.5 }}
           />

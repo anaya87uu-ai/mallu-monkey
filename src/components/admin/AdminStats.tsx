@@ -11,7 +11,7 @@ interface AdminStatsProps {
 const AdminStats = ({ userCount, activeCount, pendingReports, bannedCount }: AdminStatsProps) => {
   const stats = [
     { label: "Total Users", value: userCount, icon: Users, iconBg: "from-primary to-accent" },
-    { label: "Active 24h", value: activeCount, icon: Activity, iconBg: "from-emerald-500 to-teal-500" },
+    { label: "Active 24h", value: activeCount, icon: Activity, iconBg: "from-primary to-accent" },
     { label: "Pending Reports", value: pendingReports, icon: Flag, iconBg: "from-destructive to-orange-500" },
     { label: "Banned", value: bannedCount, icon: ShieldOff, iconBg: "from-slate-500 to-slate-700" },
   ];

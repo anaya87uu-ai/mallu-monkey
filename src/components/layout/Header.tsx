@@ -26,7 +26,7 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-background/75 backdrop-blur-2xl border-b border-primary/15 shadow-[0_8px_32px_-12px_hsl(152_70%_38%/0.15)]"
+          ? "bg-background/75 backdrop-blur-2xl border-b border-primary/15 shadow-[0_8px_32px_-12px_hsl(0_0%_0%/0.6)]"
           : "bg-background/40 backdrop-blur-xl border-b border-transparent"
       }`}
       style={{ paddingTop: "env(safe-area-inset-top)" }}
