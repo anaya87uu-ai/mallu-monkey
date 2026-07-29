@@ -1,54 +1,31 @@
-## Scope
+# Black & white theme (dark base)
 
-Four small, focused changes. No new dependencies, no schema changes.
+Swap the emerald/green theme for a monochrome dark palette: near-black backgrounds, white text and buttons, grayscale surfaces. Red is kept only for destructive actions (ban, report, errors, timer critical states).
 
-## 1. Mirror the stranger's video
+## Palette
 
-**File:** `src/pages/Chat.tsx`
+| Token | Value |
+| --- | --- |
+| background | near-black `#0A0A0A` |
+| card / popover | `#141414` |
+| foreground | `#F5F5F5` |
+| primary | white, with black text on it |
+| secondary / muted | `#1F1F1F`, muted text `#A3A3A3` |
+| accent | light gray `#D4D4D4` |
+| border / input | `#2A2A2A` |
+| destructive | red (kept) |
 
-Add `scale-x-[-1]` to the remote `<video>` element so the stranger's feed is mirrored to match the local preview style.
+## What changes
 
-## 2. Terms & Privacy links in mobile profile drawer
+- **`src/index.css`** — rewrite the token block to the monochrome values above. Update the themed component classes that currently hardcode green: `gradient-text` (becomes white-to-gray), `glow-primary` / `glow-cyan` (become neutral white glows), `glass-*` panel shadows and borders (neutral), and the `ambient-bg` aurora blobs (green radial gradients become soft white/gray).
+- **`tailwind.config.ts`** — keep the token mapping; repoint the `mint` and `forest` custom colors to dark gray shades so existing `bg-mint` / `text-forest` usages read correctly instead of green.
+- **Green literals in components** — replace remaining hardcoded green/emerald utility classes with tokens. Known spots: online/active dot in `PlayerAvatar` and status indicators, `text-emerald-*` in Leaderboards, gradient CTAs using `from-primary to-accent`, Admin stat card tints, Chat video panel accents, and the watermark pill's primary dot.
+- **Contrast pass** — because `primary` becomes white, buttons using `text-primary-foreground` need black foreground (handled by the token) and any `bg-primary/15` soft states become subtle white tints.
 
-**File:** `src/components/layout/ProfileDrawer.tsx`
+## Kept as-is
 
-Add a "Legal" section at the bottom of the drawer with two `Link` rows:
-- Terms of Service → `/terms`
-- Privacy Policy → `/privacy`
+Red destructive styling, all layout, motion, copy, and business logic. No schema or backend changes.
 
-Uses existing drawer row styling (icon + label). Visible on all sizes but primary target is mobile where the footer is hidden.
+## Technical notes
 
-## 3. Leaderboards: real name + chat time
-
-**File:** `src/pages/Leaderboards.tsx`
-
-- Show `display_name` from `chat_stats` / `user_points` (already stored via `sync_display_name`) as the primary label instead of any anonymous fallback.
-- Add a "Chat Time" column (or badge under the name) formatted as `Hh Mm` from `chat_stats.total_seconds`.
-- Keep existing points ranking; add a secondary tab or column so users see both points and total chat time.
-
-Data source: existing `chat_stats` table (`user_id`, `display_name`, `total_seconds`, `chats_completed`) — no migration needed.
-
-## 4. Welcome page improvements
-
-**File:** `src/pages/Welcome.tsx` (single-file edit, add 4 new sections between existing bento and FAQ)
-
-### 4a. Live stats strip
-Row of 3 animated counters (users online, chats today, countries). Illustrative values, `framer-motion` count-up on `whileInView`. Green glass cards.
-
-### 4b. Product preview carousel
-Horizontal snap-scroll of 4 screenshot-style mock cards (Video match, Text chat, Games, Skip flow). Built with pure divs + gradients + lucide icons — no real screenshots, no new assets. Auto-advance every 4s with dots indicator.
-
-### 4c. Testimonials section
-3-card grid (stacks on mobile) with quote, name, country flag emoji, star rating. Uses `glass-card`, staggered `whileInView` fade-up. Content is illustrative.
-
-### 4d. Comparison table
-Responsive table: rows = features (HD video, AI moderation, Free, No sign-up friction, Games, Global reach), columns = Mallu Monkey / Omegle / Chatroulette. Check/X icons with green highlight on the Mallu Monkey column. Collapses to stacked cards on mobile.
-
-All new sections reuse existing tokens (`glass-card`, `primary`, `accent`, `SectionEyebrow`, `SectionTitle`) and `framer-motion` patterns already in the file.
-
-## Out of scope
-
-- No changes to matching, WebRTC, or moderation logic
-- No new tables or migrations
-- No real analytics wiring for the live stats (illustrative only)
-- No changes to desktop footer legal links (already present)
+All colors stay HSL in `index.css` and continue to flow through the existing semantic tokens, so pages that already use tokens update automatically. Files touched: `src/index.css`, `tailwind.config.ts`, plus targeted class swaps in Leaderboards, Games, Chat, Welcome, Admin components, `PlayerAvatar`, `TurnTimer`, `Header`, `BottomNav`, and `Footer`.
