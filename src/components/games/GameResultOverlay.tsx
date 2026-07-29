@@ -148,7 +148,7 @@ const GameResultOverlay = ({ result, onPlayAgain, onLeave, pointsEarned }: GameR
           >
             <Button
               onClick={onPlayAgain}
-              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 glow-primary"
+              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 glow-primary"
             >
               <RotateCcw className="w-4 h-4 mr-1" /> Play Again
             </Button>

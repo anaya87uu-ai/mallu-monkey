@@ -237,7 +237,7 @@ const Chat = () => {
       {/* Video area */}
       <div className="flex-1 flex flex-col md:flex-row gap-1.5 md:gap-3 p-1.5 md:p-3 relative min-h-0">
         {/* Stranger video */}
-        <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden relative min-h-0 border border-primary/30 shadow-[0_8px_32px_-8px_hsl(0_0%_0%/0.6)]">
+        <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden relative min-h-0 border border-primary/30 shadow-[0_8px_32px_-8px_hsl(152_70%_38%/0.25)]">
           {isConnected && rtc.remoteStream && rtc.remoteStream.getTracks().length > 0 ? (
             <video
               ref={remoteVideoRef}
@@ -335,7 +335,7 @@ const Chat = () => {
             )}
           </div>
           <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-10 select-none pointer-events-none">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full bg-background/30 backdrop-blur-md border border-white/15 shadow-[0_4px_16px_-4px_hsl(0_0%_0%/0.6)]">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full bg-background/30 backdrop-blur-md border border-white/15 shadow-[0_4px_16px_-4px_hsl(152_70%_38%/0.4)]">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsl(var(--primary))]" />
               <span className="text-[10px] md:text-xs font-display font-semibold tracking-wider text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                 mallumonkey<span className="text-primary">.xyz</span>
@@ -345,7 +345,7 @@ const Chat = () => {
         </div>
 
         {/* Your video */}
-        <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden relative min-h-0 border border-primary/30 shadow-[0_8px_32px_-8px_hsl(0_0%_0%/0.6)]">
+        <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden relative min-h-0 border border-primary/30 shadow-[0_8px_32px_-8px_hsl(152_70%_38%/0.25)]">
           <video
             ref={localVideoRef}
             autoPlay

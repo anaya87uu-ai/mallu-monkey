@@ -37,8 +37,8 @@ const Index = () => {
   };
 
   const quickActions = [
-    { to: "/chat", icon: MessageCircle, label: "Start Chat", gradient: "from-primary to-accent", desc: "Meet someone new" },
-    { to: "/games", icon: Gamepad2, label: "Play Games", gradient: "from-primary to-accent", desc: "Earn points" },
+    { to: "/chat", icon: MessageCircle, label: "Start Chat", gradient: "from-primary to-secondary", desc: "Meet someone new" },
+    { to: "/games", icon: Gamepad2, label: "Play Games", gradient: "from-emerald-500 to-teal-500", desc: "Earn points" },
     { to: "/leaderboards", icon: Trophy, label: "Leaderboards", gradient: "from-amber-500 to-orange-500", desc: "View rankings" },
     { to: "/games?tab=daily", icon: Gift, label: "Daily Reward", gradient: "from-pink-500 to-rose-500", desc: "Claim bonus" },
   ];
