@@ -129,36 +129,69 @@ const Welcome = () => {
             </motion.div>
           </div>
 
-          {/* Hero visual */}
+          {/* Hero visual — mock call UI */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.95, rotate: -1.5 }}
+            animate={{ opacity: 1, scale: 1, rotate: -1.5 }}
             transition={{ delay: 0.15 }}
             className="relative hidden md:block"
           >
-            <div className="glass-card-lg p-5 aspect-[4/5] max-w-sm mx-auto relative overflow-hidden">
-              <div className="absolute inset-5 rounded-2xl bg-gradient-to-br from-primary/30 via-accent/20 to-secondary/40" />
-              <div className="absolute top-8 left-8 flex items-center gap-2 px-2.5 py-1 rounded-full bg-background/70 backdrop-blur-sm border border-border">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Live</span>
+            <div className="absolute -inset-6 bg-gradient-to-tr from-primary/25 via-accent/15 to-transparent blur-3xl rounded-full" />
+            <div className="glass-card-lg p-3 aspect-[4/5] max-w-sm mx-auto relative overflow-hidden">
+              {/* stranger feed */}
+              <div className="absolute inset-3 rounded-2xl bg-gradient-to-br from-forest via-primary/50 to-accent/40 overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,hsl(var(--primary)/0.45),transparent_60%)]" />
+                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-background/25 backdrop-blur-sm border border-background/40 flex items-center justify-center">
+                  <Users className="w-9 h-9 text-primary-foreground" />
+                </div>
               </div>
+
+              {/* top row */}
+              <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+                <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-md border border-border shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Live</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-md border border-border shadow-sm">
+                  <Wifi className="w-3 h-3 text-primary" />
+                  <span className="text-[10px] font-semibold">🇧🇷 Brazil</span>
+                </div>
+              </div>
+
               {/* PiP local cam */}
-              <div className="absolute bottom-8 right-8 w-24 h-32 rounded-xl bg-gradient-to-br from-forest to-primary/60 border-2 border-background/80 shadow-xl" />
-              {/* Floating chat bubble */}
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute bottom-24 right-6 w-24 h-32 rounded-xl bg-gradient-to-br from-primary/70 to-forest border-2 border-background/90 shadow-xl overflow-hidden"
+              >
+                <div className="absolute bottom-1 left-1 text-[9px] font-bold text-primary-foreground/90 px-1.5 py-0.5 rounded bg-foreground/25">
+                  You
+                </div>
+              </motion.div>
+
+              {/* chat bubble */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="absolute bottom-10 left-8 px-3 py-2 rounded-2xl rounded-bl-sm bg-background/90 backdrop-blur-sm border border-border text-xs font-medium max-w-[60%] shadow-md"
+                transition={{ delay: 0.7 }}
+                className="absolute bottom-28 left-6 px-3 py-2 rounded-2xl rounded-bl-sm bg-background/92 backdrop-blur-md border border-border text-xs font-medium max-w-[58%] shadow-lg"
               >
                 Hey! Where are you from? 👋
               </motion.div>
-              {/* Sparkle */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-primary/30 flex items-center justify-center animate-pulse-glow">
-                <Sparkles className="w-8 h-8 text-primary-foreground" />
+
+              {/* control dock */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full bg-background/85 backdrop-blur-md border border-border shadow-lg">
+                <MockCtrl icon={Mic} />
+                <MockCtrl icon={Video} />
+                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md shadow-primary/40">
+                  <SkipForward className="w-4 h-4" />
+                </div>
+                <MockCtrl icon={MessageCircle} />
+                <MockCtrl icon={Phone} danger />
               </div>
             </div>
           </motion.div>
+
         </div>
       </section>
 
@@ -511,11 +544,39 @@ const Welcome = () => {
           </div>
         </motion.div>
       </section>
+
+      {/* Sticky mobile CTA */}
+      <div className="md:hidden sticky bottom-0 z-30 px-4 pb-4 pt-3 bg-gradient-to-t from-background via-background/95 to-transparent">
+        <Link to="/auth" className="block">
+          <button className="w-full px-6 py-3.5 bg-primary text-primary-foreground rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] transition-transform">
+            Start chatting free
+            <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };
 
 /* ---------- helpers ---------- */
+
+const MockCtrl = ({
+  icon: Icon,
+  danger,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  danger?: boolean;
+}) => (
+  <div
+    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+      danger ? "bg-destructive/15 text-destructive" : "bg-muted text-muted-foreground"
+    }`}
+  >
+    <Icon className="w-3.5 h-3.5" />
+  </div>
+);
+
+
 
 const SectionEyebrow = ({ children }: { children: React.ReactNode }) => (
   <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
