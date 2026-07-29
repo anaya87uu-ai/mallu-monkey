@@ -191,13 +191,13 @@
     position: absolute;
     border-radius: 9999px;
     filter: blur(120px);
-    opacity: 0.55;
+    opacity: 0.4;
   }
 
   .ambient-bg::before {
     width: 60vw;
     height: 60vw;
-    background: radial-gradient(circle, hsl(152 70% 55% / 0.45), transparent 60%);
+    background: radial-gradient(circle, hsl(0 0% 100% / 0.10), transparent 60%);
     top: -20vw;
     right: -15vw;
     animation: aurora 22s ease-in-out infinite;
@@ -206,11 +206,12 @@
   .ambient-bg::after {
     width: 55vw;
     height: 55vw;
-    background: radial-gradient(circle, hsl(150 60% 80% / 0.55), transparent 60%);
+    background: radial-gradient(circle, hsl(0 0% 100% / 0.07), transparent 60%);
     bottom: -20vw;
     left: -15vw;
     animation: aurora 26s ease-in-out infinite reverse;
   }
+
 
   /* Floating dock used by Chat controls */
   .floating-dock {
