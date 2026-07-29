@@ -35,7 +35,7 @@ const AgeGate = ({ children }: { children: React.ReactNode }) => {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="relative glass-card p-8 md:p-10 max-w-md w-full text-center"
           >
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-5 glow-primary">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-5 glow-primary">
               <ShieldCheck className="w-8 h-8 text-primary-foreground" />
             </div>
 
@@ -49,7 +49,7 @@ const AgeGate = ({ children }: { children: React.ReactNode }) => {
             <div className="flex flex-col gap-3">
               <Button
                 onClick={handleAgree}
-                className="w-full h-12 bg-gradient-to-r from-primary to-secondary hover:opacity-90 glow-primary text-base font-semibold"
+                className="w-full h-12 bg-gradient-to-r from-primary to-accent hover:opacity-90 glow-primary text-base font-semibold"
               >
                 I am 18+ — Enter
               </Button>

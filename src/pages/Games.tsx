@@ -47,7 +47,7 @@ const MultiplayerTicTacToeGame = ({ userId, userName }: { userId: string; userNa
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-20 h-20 rounded-2xl bg-mint border border-primary/30 flex items-center justify-center mx-auto shadow-[0_8px_24px_-8px_hsl(152_70%_38%/0.25)]"
+          className="w-20 h-20 rounded-2xl bg-mint border border-primary/30 flex items-center justify-center mx-auto shadow-[0_8px_24px_-8px_hsl(0_0%_0%/0.6)]"
         >
           <Users className="w-10 h-10 text-primary" />
         </motion.div>
@@ -462,7 +462,7 @@ const Games = () => {
                       whileHover={{ scale: 1.03 }}
                       className={`p-3 rounded-xl border text-center transition-all ${
                         earned
-                          ? "border-primary/40 bg-mint/50 shadow-[0_4px_16px_-6px_hsl(152_70%_38%/0.3)]"
+                          ? "border-primary/40 bg-mint/50 shadow-[0_4px_16px_-6px_hsl(0_0%_0%/0.6)]"
                           : "border-border/20 opacity-50 grayscale"
                       }`}
                     >
