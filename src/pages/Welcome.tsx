@@ -544,11 +544,39 @@ const Welcome = () => {
           </div>
         </motion.div>
       </section>
+
+      {/* Sticky mobile CTA */}
+      <div className="md:hidden sticky bottom-0 z-30 px-4 pb-4 pt-3 bg-gradient-to-t from-background via-background/95 to-transparent">
+        <Link to="/auth" className="block">
+          <button className="w-full px-6 py-3.5 bg-primary text-primary-foreground rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] transition-transform">
+            Start chatting free
+            <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };
 
 /* ---------- helpers ---------- */
+
+const MockCtrl = ({
+  icon: Icon,
+  danger,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  danger?: boolean;
+}) => (
+  <div
+    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+      danger ? "bg-destructive/15 text-destructive" : "bg-muted text-muted-foreground"
+    }`}
+  >
+    <Icon className="w-3.5 h-3.5" />
+  </div>
+);
+
+
 
 const SectionEyebrow = ({ children }: { children: React.ReactNode }) => (
   <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
