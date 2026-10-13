@@ -1,54 +1,49 @@
-## Scope
+# Modern Black & White UI — Entire App
 
-Four small, focused changes. No new dependencies, no schema changes.
+## Direction
+Replace the green-and-white appearance with a permanent, modern monochrome design across every page.
 
-## 1. Mirror the stranger's video
+- Background: near-black `#090909`.
+- Surfaces: charcoal `#191919`, subtle gray borders, minimal shadows.
+- Main text and primary buttons: off-white `#FAFAFA`; supporting text uses accessible gray tones.
+- Keep Space Grotesk headings and Inter body text. Use clear hierarchy, consistent spacing, and restrained motion.
+- No theme toggle, colored decorative gradients, glowing orbs, or washed-out glass panels. Keep semantic warning and error colors only where needed for safety.
 
-**File:** `src/pages/Chat.tsx`
+## What Will Change
 
-Add `scale-x-[-1]` to the remote `<video>` element so the stranger's feed is mirrored to match the local preview style.
+### 1. Shared appearance and navigation
+- Replace the global green tokens and glass effects with solid black/charcoal surfaces and monochrome controls.
+- Restyle the header, footer, mobile bottom navigation, profile drawer, age gate, dialogs, form fields, and notifications.
+- Use white active states, subtle borders, visible keyboard focus, and consistent compact corners.
+- Keep the bottom navigation limited to signed-in users and retain Terms and Privacy links.
 
-## 2. Terms & Privacy links in mobile profile drawer
+### 2. Welcome and sign-in
+- Redesign the Welcome page with prominent Mallu Monkey branding, a full-width visual introduction, a clear Google sign-in button, and tighter section hierarchy.
+- Replace the current gradient mock-call illustration and floating orbs with relevant visual imagery; avoid a split text-and-card introduction.
+- Restyle the existing feature, safety, FAQ, and supporting sections as clean, unframed layouts.
+- Give Google sign-in and the age confirmation screen the same monochrome styling.
 
-**File:** `src/components/layout/ProfileDrawer.tsx`
+### 3. Home, video chat, games, and leaderboards
+- Update Home shortcuts and progress displays to eliminate colored gradient tiles.
+- Give video chat neutral black video surfaces, clear feed labels and watermark, monochrome controls, and distinct incoming/outgoing message bubbles.
+- Preserve video mirroring and existing camera, microphone, skip, report, and messaging behavior.
+- Restyle game boards, player information, timers, results, rewards, and leaderboard rows without changing gameplay, point rules, names, or chat-time data.
 
-Add a "Legal" section at the bottom of the drawer with two `Link` rows:
-- Terms of Service → `/terms`
-- Privacy Policy → `/privacy`
+### 4. Admin and information pages
+- Apply the same design to admin tables, tabs, statistics, settings, report dialogs, and user drawers.
+- Update About, Contact, Terms, Privacy, and the not-found screen for consistent typography and surfaces.
+- Preserve all existing permissions and actions.
 
-Uses existing drawer row styling (icon + label). Visible on all sizes but primary target is mobile where the footer is hidden.
+## Technical Approach
+- Define HSL semantic color and shadow tokens in `src/index.css` and expose any additional roles in `tailwind.config.ts`.
+- Replace page-specific hardcoded colors, colored gradients, and green-specific styling with semantic tokens.
+- Reuse the existing design-system controls; keep changes in presentation code and leave authentication, matching, moderation, database, and scoring logic untouched.
+- Load the existing fonts without a remote CSS import.
 
-## 3. Leaderboards: real name + chat time
+## Validation
+- Review representative pages at narrow and wide sizes for text contrast, overflow, navigation clearance, and consistent states.
+- Check navigation, drawers, sign-in entry, chat controls, and game/leaderboard views; verify authenticated screens with an available session.
+- Check build diagnostics and browser errors before completing the redesign.
 
-**File:** `src/pages/Leaderboards.tsx`
-
-- Show `display_name` from `chat_stats` / `user_points` (already stored via `sync_display_name`) as the primary label instead of any anonymous fallback.
-- Add a "Chat Time" column (or badge under the name) formatted as `Hh Mm` from `chat_stats.total_seconds`.
-- Keep existing points ranking; add a secondary tab or column so users see both points and total chat time.
-
-Data source: existing `chat_stats` table (`user_id`, `display_name`, `total_seconds`, `chats_completed`) — no migration needed.
-
-## 4. Welcome page improvements
-
-**File:** `src/pages/Welcome.tsx` (single-file edit, add 4 new sections between existing bento and FAQ)
-
-### 4a. Live stats strip
-Row of 3 animated counters (users online, chats today, countries). Illustrative values, `framer-motion` count-up on `whileInView`. Green glass cards.
-
-### 4b. Product preview carousel
-Horizontal snap-scroll of 4 screenshot-style mock cards (Video match, Text chat, Games, Skip flow). Built with pure divs + gradients + lucide icons — no real screenshots, no new assets. Auto-advance every 4s with dots indicator.
-
-### 4c. Testimonials section
-3-card grid (stacks on mobile) with quote, name, country flag emoji, star rating. Uses `glass-card`, staggered `whileInView` fade-up. Content is illustrative.
-
-### 4d. Comparison table
-Responsive table: rows = features (HD video, AI moderation, Free, No sign-up friction, Games, Global reach), columns = Mallu Monkey / Omegle / Chatroulette. Check/X icons with green highlight on the Mallu Monkey column. Collapses to stacked cards on mobile.
-
-All new sections reuse existing tokens (`glass-card`, `primary`, `accent`, `SectionEyebrow`, `SectionTitle`) and `framer-motion` patterns already in the file.
-
-## Out of scope
-
-- No changes to matching, WebRTC, or moderation logic
-- No new tables or migrations
-- No real analytics wiring for the live stats (illustrative only)
-- No changes to desktop footer legal links (already present)
+## Out of Scope
+New features, business-rule changes, backend changes, and publishing.
