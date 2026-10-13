@@ -84,7 +84,7 @@ const UserDetailDrawer = ({ profile, currentUserId, open, onOpenChange, onToggle
       <SheetContent className="glass overflow-y-auto w-full sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center text-xl">
+            <div className="w-12 h-12 rounded-full bg-muted border border-primary/20 flex items-center justify-center text-xl">
               {profile.gender === "girl" ? "👧" : "👦"}
             </div>
             <div className="min-w-0">
@@ -141,8 +141,8 @@ const UserDetailDrawer = ({ profile, currentUserId, open, onOpenChange, onToggle
 };
 
 const StatBox = ({ icon, label, value, highlight }: { icon: React.ReactNode; label: string; value: React.ReactNode; highlight?: boolean }) => (
-  <div className={`glass-panel rounded-xl p-3 ${highlight ? "border-destructive/40" : ""}`}>
-    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+  <div className={`glass-panel rounded-lg p-3 ${highlight ? "border-destructive/40" : ""}`}>
+    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-normalr text-muted-foreground mb-1">
       {icon} {label}
     </div>
     <div className="font-display text-xl font-bold">{value}</div>

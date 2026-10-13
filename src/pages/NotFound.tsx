@@ -20,7 +20,7 @@ const NotFound = () => {
         className="glass-panel p-10 md:p-14 text-center max-w-md w-full"
       >
         <p className="font-display text-[8rem] md:text-[10rem] font-bold leading-none gradient-text">404</p>
-        <h1 className="font-display text-2xl font-bold text-foreground mb-2 tracking-tight">Page not found</h1>
+        <h1 className="font-display text-2xl font-bold text-foreground mb-2 tracking-normal">Page not found</h1>
         <p className="text-muted-foreground mb-8 text-sm">
           The page you're looking for doesn't exist or has been moved.
         </p>

@@ -1,3 +1,5 @@
+import welcomePeople from "@/assets/welcome-people.jpg";
+import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
@@ -46,157 +48,26 @@ const Welcome = () => {
 
   return (
     <div className="relative overflow-hidden">
-      {/* Floating decorative orbs */}
-      <div className="pointer-events-none absolute -top-24 -right-16 w-72 h-72 rounded-full bg-primary/20 blur-3xl animate-float" />
-      <div className="pointer-events-none absolute top-96 -left-16 w-64 h-64 rounded-full bg-accent/20 blur-3xl animate-float-delayed" />
-      <div className="pointer-events-none absolute top-[140vh] right-0 w-80 h-80 rounded-full bg-primary/10 blur-3xl animate-float" />
-
-      {/* ============ HERO ============ */}
-      <section className="relative z-10 px-5 pt-8 pb-16 max-w-6xl mx-auto w-full">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-3 py-1 bg-card border border-primary/25 rounded-full shadow-sm mb-6"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-          </span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
-            2,481 Live Now
-          </span>
-        </motion.div>
-
-        <div className="grid md:grid-cols-[1.15fr_1fr] gap-10 items-center">
-          <div>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="display-xl font-display font-extrabold text-foreground"
-            >
-              Meet Strangers.
-              <br />
-              <span className="gradient-text">Make Memories.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12 }}
-              className="mt-5 text-muted-foreground text-base md:text-lg leading-relaxed font-medium max-w-xl"
-            >
-              Video chat with random people from around the world. Anonymous,
-              instant, and unforgettable connections — right in your browser.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center"
-            >
-              <Link to="/auth" className="block">
-                <button className="w-full sm:w-auto px-7 py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] hover:scale-[1.02] transition-transform">
-                  Sign in with Google
-                  <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
-                </button>
-              </Link>
-              <a
-                href="#how"
-                className="w-full sm:w-auto px-6 py-4 rounded-2xl font-semibold text-sm text-foreground/80 hover:text-foreground border border-border bg-card/60 hover:bg-card flex items-center justify-center gap-2 transition-colors"
-              >
-                <PlayCircle className="w-4 h-4" />
-                See how it works
-              </a>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-muted-foreground"
-            >
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> 18+ only
-              </span>
-              <span className="w-px h-3 bg-border" />
-              <span>Moderated 24/7</span>
-              <span className="w-px h-3 bg-border" />
-              <span>Anonymous</span>
-              <span className="w-px h-3 bg-border" />
-              <span>Free forever</span>
-            </motion.div>
-          </div>
-
-          {/* Hero visual — mock call UI */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, rotate: -1.5 }}
-            animate={{ opacity: 1, scale: 1, rotate: -1.5 }}
-            transition={{ delay: 0.15 }}
-            className="relative hidden md:block"
-          >
-            <div className="absolute -inset-6 bg-gradient-to-tr from-primary/25 via-accent/15 to-transparent blur-3xl rounded-full" />
-            <div className="glass-card-lg p-3 aspect-[4/5] max-w-sm mx-auto relative overflow-hidden">
-              {/* stranger feed */}
-              <div className="absolute inset-3 rounded-2xl bg-gradient-to-br from-forest via-primary/50 to-accent/40 overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,hsl(var(--primary)/0.45),transparent_60%)]" />
-                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-background/25 backdrop-blur-sm border border-background/40 flex items-center justify-center">
-                  <Users className="w-9 h-9 text-primary-foreground" />
-                </div>
-              </div>
-
-              {/* top row */}
-              <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
-                <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-md border border-border shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Live</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-md border border-border shadow-sm">
-                  <Wifi className="w-3 h-3 text-primary" />
-                  <span className="text-[10px] font-semibold">🇧🇷 Brazil</span>
-                </div>
-              </div>
-
-              {/* PiP local cam */}
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute bottom-24 right-6 w-24 h-32 rounded-xl bg-gradient-to-br from-primary/70 to-forest border-2 border-background/90 shadow-xl overflow-hidden"
-              >
-                <div className="absolute bottom-1 left-1 text-[9px] font-bold text-primary-foreground/90 px-1.5 py-0.5 rounded bg-foreground/25">
-                  You
-                </div>
-              </motion.div>
-
-              {/* chat bubble */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="absolute bottom-28 left-6 px-3 py-2 rounded-2xl rounded-bl-sm bg-background/92 backdrop-blur-md border border-border text-xs font-medium max-w-[58%] shadow-lg"
-              >
-                Hey! Where are you from? 👋
-              </motion.div>
-
-              {/* control dock */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full bg-background/85 backdrop-blur-md border border-border shadow-lg">
-                <MockCtrl icon={Mic} />
-                <MockCtrl icon={Video} />
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md shadow-primary/40">
-                  <SkipForward className="w-4 h-4" />
-                </div>
-                <MockCtrl icon={MessageCircle} />
-                <MockCtrl icon={Phone} danger />
-              </div>
+      <section className="welcome-hero">
+        <img src={welcomePeople} alt="People connecting over video chat" width={1536} height={1024} fetchPriority="high" className="welcome-hero-image" />
+        <div className="w-full max-w-6xl mx-auto px-5 md:px-8 pt-48 pb-10 md:pb-14">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+            <div className="flex items-center gap-2 mb-5 text-xs text-foreground/80">
+              <span className="w-2 h-2 rounded-full bg-foreground" /> Real people. New connections.
             </div>
+            <h1 className="display-xl max-w-3xl">Mallu Monkey<span className="block mt-2 text-foreground/65 text-2xl md:text-4xl font-medium">A stranger. A conversation. A connection.</span></h1>
+            <p className="mt-5 text-sm md:text-base text-foreground/75 max-w-lg leading-relaxed">Meet someone new through video, share a laugh, and break the ice with a game.</p>
+            <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
+              <Button asChild size="lg" className="h-12 px-6 text-sm font-semibold"><Link to="/auth">Sign in with Google <ArrowRight className="w-4 h-4" /></Link></Button>
+              <Button asChild variant="outline" size="lg" className="h-12 bg-background/40 border-foreground/30"><a href="#how">Explore Mallu Monkey <ArrowRight className="w-4 h-4" /></a></Button>
+            </div>
+            <div className="mt-6 flex items-center gap-4 text-[11px] text-foreground/65"><span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" />18+ only</span><span>AI moderated</span><Link to="/terms" className="hover:text-foreground">Terms</Link><Link to="/privacy" className="hover:text-foreground">Privacy</Link></div>
           </motion.div>
-
         </div>
       </section>
 
       {/* ============ BENTO GRID ============ */}
-      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+      <section className="welcome-section relative z-10 px-5 max-w-6xl mx-auto w-full">
         <SectionEyebrow>What you get</SectionEyebrow>
         <SectionTitle>Everything for a great chat</SectionTitle>
 
@@ -211,9 +82,9 @@ const Welcome = () => {
           className="mt-8 grid grid-cols-2 md:grid-cols-4 auto-rows-[130px] md:auto-rows-[150px] gap-3 md:gap-4"
         >
           {/* Large: HD video */}
-          <BentoTile className="col-span-2 row-span-2 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent">
+          <BentoTile className="col-span-2 row-span-2 bg-muted">
             <div className="flex flex-col h-full justify-between">
-              <div className="w-12 h-12 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
                 <Video className="w-6 h-6" />
               </div>
               <div>
@@ -249,9 +120,9 @@ const Welcome = () => {
           </BentoTile>
 
           {/* Wide: Games */}
-          <BentoTile className="col-span-2 md:col-span-2 bg-gradient-to-r from-accent/15 to-transparent">
+          <BentoTile className="col-span-2 md:col-span-2 bg-muted">
             <div className="flex items-center gap-4 h-full">
-              <div className="w-12 h-12 rounded-xl bg-accent/20 text-accent-foreground flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-accent/20 text-accent-foreground flex items-center justify-center shrink-0">
                 <Gamepad2 className="w-6 h-6" />
               </div>
               <div>
@@ -273,7 +144,7 @@ const Welcome = () => {
           {/* Medium: Global */}
           <BentoTile className="col-span-2 md:col-span-2">
             <div className="flex items-center gap-4 h-full">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 <Globe2 className="w-6 h-6" />
               </div>
               <div className="flex-1 min-w-0">
@@ -297,7 +168,7 @@ const Welcome = () => {
       </section>
 
       {/* ============ HOW IT WORKS ============ */}
-      <section id="how" className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+      <section id="how" className="welcome-section relative z-10 px-5 max-w-6xl mx-auto w-full">
         <SectionEyebrow>How it works</SectionEyebrow>
         <SectionTitle>Three taps to your first chat</SectionTitle>
 
@@ -309,7 +180,7 @@ const Welcome = () => {
           className="mt-10 grid md:grid-cols-3 gap-6 md:gap-4 relative"
         >
           {/* connecting line (desktop) */}
-          <div className="hidden md:block absolute top-8 left-[16%] right-[16%] h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+          <div className="hidden md:block absolute top-8 left-[16%] right-[16%] h-px bg-muted" />
 
           <Step
             n="1"
@@ -333,8 +204,8 @@ const Welcome = () => {
       </section>
 
       {/* ============ SAFETY ============ */}
-      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
-        <div className="glass-card-lg p-6 md:p-10 bg-primary/5">
+      <section className="welcome-section relative z-10 px-5 max-w-6xl mx-auto w-full">
+        <div className="py-4">
           <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
             <div>
               <SectionEyebrow>Safety first</SectionEyebrow>
@@ -373,7 +244,7 @@ const Welcome = () => {
       </section>
 
       {/* ============ LIVE STATS STRIP ============ */}
-      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+      <section className="welcome-section relative z-10 px-5 max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <LiveStat icon={Users} value={2481} suffix="" label="online right now" tint="primary" />
           <LiveStat icon={MessageCircle} value={18420} suffix="" label="chats today" tint="accent" />
@@ -382,7 +253,7 @@ const Welcome = () => {
       </section>
 
       {/* ============ PRODUCT PREVIEW CAROUSEL ============ */}
-      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+      <section className="welcome-section relative z-10 px-5 max-w-6xl mx-auto w-full">
         <div className="text-center md:text-left">
           <SectionEyebrow>Product tour</SectionEyebrow>
           <SectionTitle>See it in action</SectionTitle>
@@ -394,7 +265,7 @@ const Welcome = () => {
       </section>
 
       {/* ============ TESTIMONIALS ============ */}
-      <section className="relative z-10 px-5 pb-20 max-w-6xl mx-auto w-full">
+      <section className="welcome-section relative z-10 px-5 max-w-6xl mx-auto w-full">
         <div className="text-center md:text-left">
           <SectionEyebrow>Loved by users</SectionEyebrow>
           <SectionTitle>What people are saying</SectionTitle>
@@ -414,7 +285,7 @@ const Welcome = () => {
       </section>
 
       {/* ============ COMPARISON TABLE ============ */}
-      <section className="relative z-10 px-5 pb-20 max-w-5xl mx-auto w-full">
+      <section className="welcome-section relative z-10 px-5 max-w-5xl mx-auto w-full">
         <div className="text-center md:text-left">
           <SectionEyebrow>Why Mallu Monkey</SectionEyebrow>
           <SectionTitle>Better than the rest</SectionTitle>
@@ -427,10 +298,10 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          className="mt-8 glass-card-lg overflow-hidden"
+          className="mt-8 border-y border-border overflow-hidden"
         >
           <div className="hidden md:grid grid-cols-4 border-b border-border/50 bg-primary/5">
-            <div className="p-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Feature</div>
+            <div className="p-4 text-xs font-bold uppercase tracking-normalr text-muted-foreground">Feature</div>
             <div className="p-4 text-center text-sm font-display font-extrabold text-primary">
               Mallu Monkey
             </div>
@@ -464,7 +335,7 @@ const Welcome = () => {
 
       {/* ============ FAQ ============ */}
 
-      <section id="faq" className="relative z-10 px-5 pb-20 max-w-4xl mx-auto w-full">
+      <section id="faq" className="welcome-section relative z-10 px-5 max-w-4xl mx-auto w-full">
         <div className="text-center md:text-left">
           <SectionEyebrow>FAQ</SectionEyebrow>
           <SectionTitle>Questions, answered</SectionTitle>
@@ -487,7 +358,7 @@ const Welcome = () => {
                 </div>
                 <h3 className="font-display text-base font-bold">{group.title}</h3>
               </div>
-              <Accordion type="single" collapsible className="glass-card px-4 md:px-5">
+              <Accordion type="single" collapsible className="border-t border-border">
                 {group.items.map((item, i) => (
                   <AccordionItem
                     key={item.q}
@@ -530,10 +401,10 @@ const Welcome = () => {
             Join thousands online right now. No downloads, no signups beyond Google.
           </p>
           <Link to="/auth" className="inline-block mt-8">
-            <button className="px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] hover:scale-[1.02] transition-transform">
+            <Button className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-bold text-base flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] hover:scale-[1.02] transition-transform">
               Sign in with Google
               <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
-            </button>
+            </Button>
           </Link>
           <div className="mt-6 flex items-center justify-center gap-4 text-[11px] text-muted-foreground">
             <span>Moderated 24/7</span>
@@ -546,12 +417,12 @@ const Welcome = () => {
       </section>
 
       {/* Sticky mobile CTA */}
-      <div className="md:hidden sticky bottom-0 z-30 px-4 pb-4 pt-3 bg-gradient-to-t from-background via-background/95 to-transparent">
+      <div className="md:hidden sticky bottom-0 z-30 px-4 pb-4 pt-3 bg-background border-t border-border">
         <Link to="/auth" className="block">
-          <button className="w-full px-6 py-3.5 bg-primary text-primary-foreground rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] transition-transform">
+          <Button className="w-full px-6 py-3.5 bg-primary text-primary-foreground rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-primary/30 active:scale-[0.98] transition-transform">
             Start chatting free
             <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
-          </button>
+          </Button>
         </Link>
       </div>
     </div>
@@ -579,7 +450,7 @@ const MockCtrl = ({
 
 
 const SectionEyebrow = ({ children }: { children: React.ReactNode }) => (
-  <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
+  <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-normalr text-primary">
     <span className="w-6 h-px bg-primary/60" />
     {children}
   </div>
@@ -612,7 +483,7 @@ const Stat = ({ number, label }: { number: string; label: string }) => (
     <div className="font-display text-lg font-extrabold text-foreground leading-none">
       {number}
     </div>
-    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+    <div className="text-[10px] uppercase tracking-normalr text-muted-foreground mt-0.5">
       {label}
     </div>
   </div>
@@ -637,7 +508,7 @@ const Step = ({
     className="relative text-center md:text-left"
   >
     <div className="relative inline-flex items-center justify-center">
-      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30">
+      <div className="w-16 h-16 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30">
         <Icon className="w-7 h-7" />
       </div>
       <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-card border-2 border-primary text-primary font-display font-bold text-sm flex items-center justify-center shadow">
@@ -663,7 +534,7 @@ const SafetyPill = ({
       hidden: { opacity: 0, x: 20 },
       show: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
     }}
-    className="flex items-start gap-3 p-4 rounded-2xl bg-card border border-border/60 hover:border-primary/40 transition-colors"
+    className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border/60 hover:border-primary/40 transition-colors"
   >
     <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
       <Icon className="w-5 h-5" />
@@ -822,7 +693,7 @@ const LiveStat = ({
       viewport={{ once: true, margin: "-80px" }}
       className="glass-card p-5 md:p-6 flex items-center gap-4"
     >
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${tintCls}`}>
+      <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${tintCls}`}>
         <Icon className="w-6 h-6" />
       </div>
       <div className="min-w-0">
@@ -832,7 +703,7 @@ const LiveStat = ({
         </div>
         <div className="text-xs text-muted-foreground mt-1">{label}</div>
       </div>
-      <span className="ml-auto flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-primary">
+      <span className="ml-auto flex items-center gap-1 text-[10px] font-bold uppercase tracking-normalr text-primary">
         <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
         Live
       </span>
@@ -866,7 +737,7 @@ const PreviewCarousel = () => {
         transition={{ duration: 0.5 }}
         className="glass-card-lg p-4 md:p-6"
       >
-        <div className={`relative rounded-2xl overflow-hidden bg-gradient-to-br ${p.accent} aspect-[16/9] md:aspect-[21/9]`}>
+        <div className={`relative rounded-lg overflow-hidden bg-muted aspect-[16/9] md:aspect-[21/9]`}>
           <div className="absolute top-3 left-3 flex gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-background/40" />
             <span className="w-2.5 h-2.5 rounded-full bg-background/40" />
@@ -876,7 +747,7 @@ const PreviewCarousel = () => {
             <Wifi className="w-3 h-3 text-primary" /> Connected
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-background/70 backdrop-blur-md text-primary flex items-center justify-center shadow-xl mb-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg bg-background/70 backdrop-blur-md text-primary flex items-center justify-center shadow-xl mb-4">
               <Icon className="w-8 h-8 md:w-10 md:h-10" />
             </div>
             <h3 className="font-display text-xl md:text-2xl font-extrabold text-foreground">{p.title}</h3>
@@ -896,7 +767,7 @@ const PreviewCarousel = () => {
         </div>
         <div className="mt-5 flex items-center justify-center gap-2">
           {PREVIEWS.map((_, i) => (
-            <button
+            <Button
               key={i}
               onClick={() => setIndex(i)}
               aria-label={`Show preview ${i + 1}`}
@@ -941,7 +812,7 @@ const Testimonial = ({
     <p className="text-sm md:text-base text-foreground/90 leading-relaxed flex-1">"{quote}"</p>
     <div className="mt-5 flex items-center justify-between pt-4 border-t border-border/40">
       <div className="flex items-center gap-2">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground flex items-center justify-center font-bold text-sm">
+        <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
           {name[0]}
         </div>
         <div>

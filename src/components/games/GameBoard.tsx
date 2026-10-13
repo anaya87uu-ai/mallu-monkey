@@ -14,7 +14,7 @@ const GameBoard = ({ board, winLine, disabled, canPlay, onCellClick }: GameBoard
   return (
     <div className="relative p-3">
       {/* Glow backdrop */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5 blur-xl" />
+
 
       <div className="relative grid grid-cols-3 gap-2.5 max-w-[260px] mx-auto">
         {board.map((cell, i) => {
@@ -30,9 +30,9 @@ const GameBoard = ({ board, winLine, disabled, canPlay, onCellClick }: GameBoard
               whileHover={isPlayable ? { scale: 1.05 } : {}}
               onClick={() => onCellClick(i)}
               disabled={disabled || !!cell || !canPlay}
-              className={`aspect-square rounded-xl text-3xl font-bold flex items-center justify-center transition-all duration-200 ${
+              className={`aspect-square rounded-lg text-3xl font-bold flex items-center justify-center transition-all duration-200 ${
                 isWinCell
-                  ? "bg-primary/25 border-2 border-primary shadow-[0_0_15px_hsl(var(--primary)/0.3)]"
+                  ? "bg-primary/25 border-2 border-primary shadow-none"
                   : cell
                   ? "glass-card border border-border/30"
                   : isPlayable
@@ -45,7 +45,7 @@ const GameBoard = ({ board, winLine, disabled, canPlay, onCellClick }: GameBoard
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: "spring", damping: 12 }}
-                  className="text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
+                  className="text-primary shadow-none"
                 >
                   ✕
                 </motion.span>
@@ -55,7 +55,7 @@ const GameBoard = ({ board, winLine, disabled, canPlay, onCellClick }: GameBoard
                   initial={{ scale: 0, rotate: 180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: "spring", damping: 12 }}
-                  className="text-secondary drop-shadow-[0_0_8px_hsl(var(--secondary)/0.5)]"
+                  className="text-secondary-foreground shadow-none"
                 >
                   ○
                 </motion.span>

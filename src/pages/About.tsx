@@ -37,7 +37,7 @@ const About = () => (
     <section className="relative py-12 px-4">
       <div className="container max-w-5xl">
         <div className="text-center mb-12">
-          <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3">How it works</p>
+          <p className="text-xs font-semibold text-primary uppercase tracking-normal mb-3">How it works</p>
           <h2 className="display-lg text-foreground">Three taps to <span className="gradient-text">connect</span></h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -54,7 +54,7 @@ const About = () => (
               <div className="absolute top-4 right-5 font-display text-5xl font-bold text-primary/10">
                 {i + 1}
               </div>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-5 glow-primary">
+              <div className="w-14 h-14 rounded-lg bg-primary flex items-center justify-center mx-auto mb-5 glow-primary">
                 <s.icon className="w-7 h-7 text-primary-foreground" />
               </div>
               <h3 className="font-display font-semibold text-xl mb-2 text-foreground">{s.title}</h3>
@@ -68,7 +68,7 @@ const About = () => (
     <section className="relative py-16 px-4">
       <div className="container max-w-5xl">
         <div className="text-center mb-12">
-          <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3">Community</p>
+          <p className="text-xs font-semibold text-primary uppercase tracking-normal mb-3">Community</p>
           <h2 className="display-lg text-foreground">Be a <span className="gradient-text">good human</span></h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -82,7 +82,7 @@ const About = () => (
               whileHover={{ y: -4 }}
               className="glass-card-lg p-8"
             >
-              <div className="w-12 h-12 rounded-2xl bg-mint border border-primary/20 flex items-center justify-center mb-4">
+              <div className="w-12 h-12 rounded-lg bg-mint border border-primary/20 flex items-center justify-center mb-4">
                 <g.icon className="w-6 h-6 text-primary" />
               </div>
               <h3 className="font-display font-semibold text-lg mb-2 text-foreground">{g.title}</h3>

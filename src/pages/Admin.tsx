@@ -110,13 +110,13 @@ const Admin = () => {
               initial={{ scale: 0, rotate: -30 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.1, type: "spring", stiffness: 180 }}
-              className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shrink-0"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-lg bg-primary flex items-center justify-center shadow-lg shrink-0"
             >
               <Shield className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
             </motion.div>
             <div className="min-w-0">
-              <p className="text-[10px] md:text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-0.5">Control panel</p>
-              <h1 className="font-display text-xl md:text-3xl font-bold gradient-text tracking-tight truncate">Admin Dashboard</h1>
+              <p className="text-[10px] md:text-xs font-semibold text-primary uppercase tracking-normal mb-0.5">Control panel</p>
+              <h1 className="font-display text-xl md:text-3xl font-bold gradient-text tracking-normal truncate">Admin Dashboard</h1>
               <p className="text-muted-foreground text-xs md:text-sm truncate">
                 {lastFetched ? `Updated ${new Date(lastFetched).toLocaleTimeString()}` : "Manage users, reports & settings"}
               </p>
@@ -135,7 +135,7 @@ const Admin = () => {
         </div>
 
         {error && (
-          <div className="glass-panel border-destructive/40 rounded-xl px-4 py-3 text-sm text-destructive">
+          <div className="glass-panel border-destructive/40 rounded-lg px-4 py-3 text-sm text-destructive">
             {error} · <button className="underline" onClick={() => fetchAll()}>Retry</button>
           </div>
         )}

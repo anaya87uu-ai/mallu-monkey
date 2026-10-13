@@ -15,13 +15,7 @@ interface GameResultOverlayProps {
   pointsEarned?: number;
 }
 
-const confettiColors = [
-  "hsl(270 80% 65%)",
-  "hsl(190 90% 55%)",
-  "hsl(45 100% 60%)",
-  "hsl(340 80% 60%)",
-  "hsl(120 60% 50%)",
-];
+const confettiColors = ["hsl(var(--foreground))", "hsl(var(--muted-foreground))", "hsl(var(--secondary-foreground))"];
 
 const ConfettiPiece = ({ index }: { index: number }) => {
   const color = confettiColors[index % confettiColors.length];
@@ -63,7 +57,7 @@ const GameResultOverlay = ({ result, onPlayAgain, onLeave, pointsEarned }: GameR
       icon: Trophy,
       title: "Victory! 🎉",
       subtitle: "You crushed it!",
-      iconColor: "text-yellow-400",
+      iconColor: "text-foreground",
     },
     lose: {
       icon: Frown,
@@ -148,7 +142,7 @@ const GameResultOverlay = ({ result, onPlayAgain, onLeave, pointsEarned }: GameR
           >
             <Button
               onClick={onPlayAgain}
-              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 glow-primary"
+              className="bg-primary hover:opacity-90 glow-primary"
             >
               <RotateCcw className="w-4 h-4 mr-1" /> Play Again
             </Button>

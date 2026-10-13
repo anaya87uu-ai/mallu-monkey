@@ -76,6 +76,8 @@ const ReportDialog = ({ strangerSessionId }: ReportDialogProps) => {
       <DialogTrigger asChild>
         <Button
           variant="outline"
+          aria-label="Report user"
+          title="Report user"
           size="icon"
           className="rounded-full w-11 h-11 md:w-12 md:h-12 glass border-border/50 text-destructive hover:bg-destructive/20 hover:border-destructive/50"
         >
@@ -91,7 +93,7 @@ const ReportDialog = ({ strangerSessionId }: ReportDialogProps) => {
         </DialogHeader>
         <div className="grid gap-2 py-2">
           {REPORT_REASONS.map((reason) => (
-            <button
+            <Button variant="outline"
               key={reason}
               onClick={() => setSelectedReason(reason)}
               className={`text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
@@ -101,7 +103,7 @@ const ReportDialog = ({ strangerSessionId }: ReportDialogProps) => {
               }`}
             >
               {reason}
-            </button>
+            </Button>
           ))}
           {selectedReason === "Other" && (
             <Textarea

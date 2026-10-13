@@ -45,7 +45,7 @@ const Terms = () => (
       className="container max-w-4xl mx-auto"
     >
       <div className="text-center mb-10">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-5 glow-primary">
+        <div className="w-14 h-14 rounded-lg bg-primary flex items-center justify-center mx-auto mb-5 glow-primary">
           <ScrollText className="w-7 h-7 text-primary-foreground" />
         </div>
         <h1 className="display-lg text-foreground mb-2">Terms & Conditions</h1>
@@ -55,7 +55,7 @@ const Terms = () => (
       <div className="grid lg:grid-cols-[200px_1fr] gap-8">
         <aside className="hidden lg:block">
           <div className="sticky top-24 glass-panel p-4">
-            <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground mb-3">Sections</p>
+            <p className="text-[10px] uppercase tracking-normalst font-semibold text-muted-foreground mb-3">Sections</p>
             <nav className="flex flex-col gap-1">
               {sections.map((s) => (
                 <a key={s.id} href={`#sec-${s.id}`} className="text-xs text-muted-foreground hover:text-primary py-1.5 px-2 rounded-md hover:bg-mint/40 transition-colors">

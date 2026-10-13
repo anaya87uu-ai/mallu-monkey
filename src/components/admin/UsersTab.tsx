@@ -101,7 +101,7 @@ const UsersTab = ({ profiles, loading, currentUserId, onToggleBan, onBulkBan, on
       </div>
 
       {selectedProfiles.length > 0 && (
-        <div className="glass-panel rounded-xl px-4 py-2 flex items-center justify-between text-sm">
+        <div className="glass-panel rounded-lg px-4 py-2 flex items-center justify-between text-sm">
           <span>{selectedProfiles.length} selected</span>
           <div className="flex gap-2">
             <Button size="sm" variant="destructive" onClick={() => { onBulkBan(selectedProfiles, true); setSelected(new Set()); }}>
@@ -171,7 +171,7 @@ const UsersTab = ({ profiles, loading, currentUserId, onToggleBan, onBulkBan, on
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center text-sm shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-muted border border-primary/20 flex items-center justify-center text-sm shrink-0">
                           {profile.gender === "girl" ? "👧" : "👦"}
                         </div>
                         <div className="min-w-0">
