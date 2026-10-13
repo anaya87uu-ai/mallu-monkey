@@ -26,17 +26,17 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-background/75 backdrop-blur-2xl border-b border-primary/15 shadow-[0_8px_32px_-12px_hsl(152_70%_38%/0.15)]"
+          ? "bg-background/75 backdrop-blur-2xl border-b border-primary/15 shadow-none"
           : "bg-background/40 backdrop-blur-xl border-b border-transparent"
       }`}
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="container flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center glow-primary transition-all group-hover:scale-110 group-hover:rotate-3">
+          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center glow-primary transition-all group-hover:scale-110 group-hover:rotate-3">
             <Cat className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-display font-bold text-lg gradient-text tracking-tight">Mallu Monkey</span>
+          <span className="font-display font-bold text-lg gradient-text tracking-normal">Mallu Monkey</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 glass-panel py-1 px-1 rounded-full">

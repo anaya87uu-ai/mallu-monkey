@@ -11,9 +11,9 @@ interface AdminStatsProps {
 const AdminStats = ({ userCount, activeCount, pendingReports, bannedCount }: AdminStatsProps) => {
   const stats = [
     { label: "Total Users", value: userCount, icon: Users, iconBg: "from-primary to-accent" },
-    { label: "Active 24h", value: activeCount, icon: Activity, iconBg: "from-emerald-500 to-teal-500" },
-    { label: "Pending Reports", value: pendingReports, icon: Flag, iconBg: "from-destructive to-orange-500" },
-    { label: "Banned", value: bannedCount, icon: ShieldOff, iconBg: "from-slate-500 to-slate-700" },
+    { label: "Active 24h", value: activeCount, icon: Activity, iconBg: "from-muted to-muted" },
+    { label: "Pending Reports", value: pendingReports, icon: Flag, iconBg: "from-destructive to-muted" },
+    { label: "Banned", value: bannedCount, icon: ShieldOff, iconBg: "from-video to-video" },
   ];
 
   return (
@@ -27,13 +27,13 @@ const AdminStats = ({ userCount, activeCount, pendingReports, bannedCount }: Adm
           whileHover={{ y: -3 }}
           className="glass-card-lg p-4 sm:p-5 relative overflow-hidden group"
         >
-          <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-primary/8 blur-2xl group-hover:bg-primary/15 transition-colors" />
+
           <div className="relative flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 truncate">{stat.label}</p>
-              <p className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight">{stat.value}</p>
+              <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-normalr text-muted-foreground mb-1 truncate">{stat.label}</p>
+              <p className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-normal">{stat.value}</p>
             </div>
-            <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br ${stat.iconBg} flex items-center justify-center text-white shadow-lg shrink-0`}>
+            <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-secondary flex items-center justify-center text-foreground shadow-lg shrink-0`}>
               <stat.icon className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
           </div>

@@ -50,11 +50,11 @@ const Auth = () => {
             initial={{ scale: 0, rotate: -45 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.15, type: "spring", stiffness: 180 }}
-            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-5 glow-primary"
+            className="w-16 h-16 rounded-lg bg-primary flex items-center justify-center mx-auto mb-5 glow-primary"
           >
             <Cat className="w-8 h-8 text-primary-foreground" />
           </motion.div>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">Sign in to continue</h1>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-normal">Sign in to continue</h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Use your Google account to start chatting
           </p>
@@ -64,7 +64,7 @@ const Auth = () => {
           <Button
             type="button"
             variant="outline"
-            className="w-full h-12 rounded-xl gap-3 bg-background/60 border-border/60 hover:bg-mint/40 hover:border-primary/40 hover:-translate-y-0.5 transition-all"
+            className="w-full h-12 rounded-lg gap-3 bg-background/60 border-border/60 hover:bg-mint/40 hover:border-primary/40 hover:-translate-y-0.5 transition-all"
             onClick={handleGoogleSignIn}
             disabled={googleLoading}
           >

@@ -38,16 +38,16 @@ const Index = () => {
 
   const quickActions = [
     { to: "/chat", icon: MessageCircle, label: "Start Chat", gradient: "from-primary to-secondary", desc: "Meet someone new" },
-    { to: "/games", icon: Gamepad2, label: "Play Games", gradient: "from-emerald-500 to-teal-500", desc: "Earn points" },
-    { to: "/leaderboards", icon: Trophy, label: "Leaderboards", gradient: "from-amber-500 to-orange-500", desc: "View rankings" },
-    { to: "/games?tab=daily", icon: Gift, label: "Daily Reward", gradient: "from-pink-500 to-rose-500", desc: "Claim bonus" },
+    { to: "/games", icon: Gamepad2, label: "Play Games", gradient: "from-muted to-muted", desc: "Earn points" },
+    { to: "/leaderboards", icon: Trophy, label: "Leaderboards", gradient: "from-muted to-muted", desc: "View rankings" },
+    { to: "/games?tab=daily", icon: Gift, label: "Daily Reward", gradient: "from-muted to-muted", desc: "Claim bonus" },
   ];
 
   return (
     <div className="min-h-[calc(100vh-4rem)] px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto space-y-8 md:space-y-10">
       {/* Greeting */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
-        <p className="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-1">Welcome back</p>
+        <p className="text-xs font-semibold text-primary uppercase tracking-normal mb-1">Welcome back</p>
         <h1 className="display-lg text-foreground">
           Hey, <span className="gradient-text">{userName}</span> 👋
         </h1>
@@ -57,11 +57,11 @@ const Index = () => {
       {/* Hero CTA */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <Link to="/chat">
-          <div className="glass-panel relative overflow-hidden p-6 md:p-8 group cursor-pointer">
-            <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-primary/20 blur-3xl group-hover:bg-primary/30 transition-colors" />
+          <div className="relative overflow-hidden py-7 border-y border-border group cursor-pointer">
+
             <div className="relative flex items-center justify-between gap-4">
               <div>
-                <h2 className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight mb-1">Start a video chat</h2>
+                <h2 className="font-display text-xl md:text-2xl font-bold text-foreground tracking-normal mb-1">Start a video chat</h2>
                 <p className="text-sm text-muted-foreground">Meet someone new in seconds</p>
               </div>
               <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground glow-primary h-12 px-6 group-hover:scale-105 transition-transform">
@@ -77,10 +77,10 @@ const Index = () => {
         {quickActions.map((action, i) => (
           <Link key={action.to} to={action.to}>
             <motion.div whileHover={{ y: -4 }} transition={{ delay: i * 0.03 }} className="glass-card-lg p-5 group cursor-pointer h-full">
-              <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg`}>
-                <action.icon className="w-5 h-5 text-white" />
+              <div className={`w-11 h-11 rounded-lg bg-secondary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg`}>
+                <action.icon className="w-5 h-5 text-secondary-foreground" />
               </div>
-              <p className="font-display font-semibold text-sm text-foreground tracking-tight">{action.label}</p>
+              <p className="font-display font-semibold text-sm text-foreground tracking-normal">{action.label}</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">{action.desc}</p>
             </motion.div>
           </Link>
@@ -93,7 +93,7 @@ const Index = () => {
         <div className="glass-panel p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center glow-primary">
+              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center glow-primary">
                 <Star className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
@@ -113,7 +113,7 @@ const Index = () => {
               initial={{ width: 0 }}
               animate={{ width: `${level.progress}%` }}
               transition={{ duration: 0.9, delay: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-              className="h-full rounded-full bg-gradient-to-r from-primary to-accent shadow-[0_0_12px_hsl(var(--primary))]"
+              className="h-full rounded-full bg-primary shadow-none"
             />
           </div>
           <p className="text-[10px] text-muted-foreground mt-2 text-right">{level.current}/{level.needed} XP</p>
@@ -121,7 +121,7 @@ const Index = () => {
 
         {/* Stats Grid */}
         <div>
-          <h2 className="font-display font-semibold text-lg mb-3 text-foreground tracking-tight">Your Stats</h2>
+          <h2 className="font-display font-semibold text-lg mb-3 text-foreground tracking-normal">Your Stats</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: "Total Chats", value: chatStats?.total_chats ?? 0, icon: MessageCircle },
@@ -132,7 +132,7 @@ const Index = () => {
               <motion.div key={stat.label} whileHover={{ y: -2 }} className="glass-card-lg p-5 text-center">
                 <stat.icon className="w-5 h-5 text-primary mx-auto mb-2" />
                 <p className="font-display font-bold text-2xl text-foreground">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">{stat.label}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-normalr mt-0.5">{stat.label}</p>
               </motion.div>
             ))}
           </div>

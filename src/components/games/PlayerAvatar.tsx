@@ -18,14 +18,14 @@ const PlayerAvatar = ({ name, symbol, isActive, score }: PlayerAvatarProps) => {
           className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
             symbol === "X"
               ? "bg-primary/20 text-primary border-2 border-primary/50"
-              : "bg-secondary/20 text-secondary border-2 border-secondary/50"
+              : "bg-secondary/20 text-secondary-foreground border-2 border-secondary/50"
           } ${isActive ? "ring-2 ring-offset-2 ring-offset-background ring-primary/60" : ""}`}
         >
           {name.charAt(0).toUpperCase()}
         </div>
         {isActive && (
           <motion.div
-            className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-background"
+            className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-muted border-2 border-background"
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ repeat: Infinity, duration: 1.5 }}
           />
@@ -35,7 +35,7 @@ const PlayerAvatar = ({ name, symbol, isActive, score }: PlayerAvatarProps) => {
         <p className={`font-semibold text-xs leading-tight truncate max-w-[80px] ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
           {name}
         </p>
-        <span className={`text-[10px] font-bold ${symbol === "X" ? "text-primary" : "text-secondary"}`}>
+        <span className={`text-[10px] font-bold ${symbol === "X" ? "text-primary" : "text-secondary-foreground"}`}>
           {symbol === "X" ? "✕" : "○"}
         </span>
         {score !== undefined && (

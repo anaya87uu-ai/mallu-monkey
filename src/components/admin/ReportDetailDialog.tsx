@@ -39,8 +39,8 @@ const ReportDetailDialog = ({ report, profiles, open, onOpenChange, onResolve, o
           <UserCard label="Reporter" profile={reporter} fallbackId={report.reporter_id} />
 
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Reason</div>
-            <div className="glass-panel rounded-xl p-3 text-sm whitespace-pre-wrap">{report.reason}</div>
+            <div className="text-[10px] uppercase tracking-normalr text-muted-foreground mb-1">Reason</div>
+            <div className="glass-panel rounded-lg p-3 text-sm whitespace-pre-wrap">{report.reason}</div>
           </div>
 
           <div className="text-xs text-muted-foreground">
@@ -73,9 +73,9 @@ const ReportDetailDialog = ({ report, profiles, open, onOpenChange, onResolve, o
 
 const UserCard = ({ label, profile, fallbackId }: { label: string; profile: AdminProfile | null; fallbackId: string | null }) => (
   <div>
-    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{label}</div>
-    <div className="glass-panel rounded-xl p-3 flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center text-lg shrink-0">
+    <div className="text-[10px] uppercase tracking-normalr text-muted-foreground mb-1">{label}</div>
+    <div className="glass-panel rounded-lg p-3 flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-muted border border-primary/20 flex items-center justify-center text-lg shrink-0">
         {profile?.gender === "girl" ? "👧" : "👦"}
       </div>
       <div className="min-w-0 flex-1">

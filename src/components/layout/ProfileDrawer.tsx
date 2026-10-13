@@ -35,7 +35,7 @@ const ProfileDrawer = ({ open, onOpenChange }: Props) => {
       <DrawerContent className="bg-background/80 backdrop-blur-2xl border-t border-primary/20 max-h-[85vh]">
         <DrawerHeader className="pb-2">
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-display font-bold text-xl glow-primary shrink-0">
+            <div className="w-14 h-14 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-display font-bold text-xl glow-primary shrink-0">
               {isLoggedIn ? initial : <UserCircle className="w-7 h-7" />}
             </div>
             <div className="text-left min-w-0">
@@ -54,7 +54,7 @@ const ProfileDrawer = ({ open, onOpenChange }: Props) => {
             <DrawerClose asChild key={l.to}>
               <Link
                 to={l.to}
-                className="flex items-center gap-2.5 px-3 py-3 rounded-xl glass border border-border/40 hover:border-primary/40 hover:bg-mint/30 transition-all text-sm font-medium text-foreground"
+                className="flex items-center gap-2.5 px-3 py-3 rounded-lg glass border border-border/40 hover:border-primary/40 hover:bg-mint/30 transition-all text-sm font-medium text-foreground"
               >
                 <l.icon className="w-4 h-4 text-primary" /> {l.label}
               </Link>
@@ -64,7 +64,7 @@ const ProfileDrawer = ({ open, onOpenChange }: Props) => {
             <DrawerClose asChild>
               <Link
                 to="/admin"
-                className="col-span-2 flex items-center gap-2.5 px-3 py-3 rounded-xl glass border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-all text-sm font-semibold text-primary"
+                className="col-span-2 flex items-center gap-2.5 px-3 py-3 rounded-lg glass border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-all text-sm font-semibold text-primary"
               >
                 <Shield className="w-4 h-4" /> Admin Dashboard
               </Link>
@@ -80,14 +80,14 @@ const ProfileDrawer = ({ open, onOpenChange }: Props) => {
                 onOpenChange(false);
                 logout();
               }}
-              className="w-full h-12 rounded-xl border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="w-full h-12 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
             >
               <LogOut className="w-4 h-4 mr-2" /> Log Out
             </Button>
           ) : (
             <DrawerClose asChild>
               <Link to="/auth" className="block">
-                <Button className="w-full h-12 rounded-xl bg-primary text-primary-foreground glow-primary">
+                <Button className="w-full h-12 rounded-lg bg-primary text-primary-foreground glow-primary">
                   <LogIn className="w-4 h-4 mr-2" /> Sign In
                 </Button>
               </Link>

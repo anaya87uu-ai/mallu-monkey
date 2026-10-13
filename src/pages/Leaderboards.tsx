@@ -27,9 +27,9 @@ interface ChatStat {
 }
 
 const rankColors = [
-  "from-yellow-400 to-amber-500",
-  "from-slate-300 to-slate-400",
-  "from-orange-400 to-orange-600",
+  "from-muted to-muted",
+  "from-video to-video",
+  "from-muted to-muted",
 ];
 
 const rankIcons = ["🥇", "🥈", "🥉"];
@@ -65,13 +65,13 @@ const LeaderboardRow = ({
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: rank * 0.05 }}
-      className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+      className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
         isTop3 ? "glass-card border border-primary/30 bg-mint/30" : "hover:bg-mint/40"
       }`}
     >
       <div className="w-8 h-8 flex items-center justify-center shrink-0">
         {isTop3 ? (
-          <span className="text-xl">{rankIcons[rank]}</span>
+          <span className="text-sm font-semibold text-foreground">{String(rank + 1).padStart(2, "0")}</span>
         ) : (
           <span className="text-sm font-bold text-muted-foreground">#{rank + 1}</span>
         )}
@@ -80,7 +80,7 @@ const LeaderboardRow = ({
       <div
         className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 relative ${
           isTop3
-            ? `bg-gradient-to-br ${rankColors[rank]} text-white`
+            ? "bg-primary text-primary-foreground"
             : "bg-muted/50 text-muted-foreground"
         }`}
       >
@@ -193,7 +193,7 @@ const Leaderboards = () => {
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 180 }}
-            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 glow-primary"
+            className="w-16 h-16 rounded-lg bg-primary flex items-center justify-center mx-auto mb-4 glow-primary"
           >
             <Trophy className="w-8 h-8 text-primary-foreground" />
           </motion.div>
@@ -216,7 +216,7 @@ const Leaderboards = () => {
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {LEVELS.map((l) => (
               <div key={l.level} className="flex flex-col items-center shrink-0 min-w-[48px]">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[10px] font-bold text-primary-foreground">
+                <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-primary-foreground">
                   {l.level}
                 </div>
                 <span className="text-[8px] text-muted-foreground mt-0.5">{l.name}</span>

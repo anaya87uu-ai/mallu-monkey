@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { UserCircle, Gamepad2, Trophy, MessageCircle, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import ProfileDrawer from "./ProfileDrawer";
 
 const navItems = [
@@ -21,14 +22,14 @@ const BottomNav = () => {
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
       >
 
-        <div className="glass-panel flex items-stretch justify-around h-16 rounded-2xl px-1">
+        <div className="glass-panel flex items-stretch justify-around h-16 rounded-lg px-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center justify-center gap-0.5 flex-1 rounded-xl transition-all min-w-0 ${
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 rounded-lg transition-all min-w-0 ${
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground active:text-foreground"
@@ -36,12 +37,12 @@ const BottomNav = () => {
               >
                 <div
                   className={`flex items-center justify-center w-10 h-7 rounded-full transition-all ${
-                    isActive ? "bg-primary/15 shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.25)]" : ""
+                    isActive ? "bg-primary/15 shadow-none" : ""
                   }`}
                 >
                   <item.icon
                     className={`w-5 h-5 transition-transform ${
-                      isActive ? "scale-110 drop-shadow-[0_0_6px_hsl(var(--primary))]" : ""
+                      isActive ? "scale-110 shadow-none" : ""
                     }`}
                   />
                 </div>
@@ -49,22 +50,22 @@ const BottomNav = () => {
               </Link>
             );
           })}
-          <button
+          <Button variant="ghost"
             onClick={() => setMeOpen(true)}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-1 rounded-xl transition-all min-w-0 ${
+            className={`h-full p-0 flex flex-col items-center justify-center gap-0.5 flex-1 rounded-lg transition-all min-w-0 ${
               meOpen ? "text-primary" : "text-muted-foreground active:text-foreground"
             }`}
             aria-label="Profile menu"
           >
             <div
               className={`flex items-center justify-center w-10 h-7 rounded-full transition-all ${
-                meOpen ? "bg-primary/15 shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.25)]" : ""
+                meOpen ? "bg-primary/15 shadow-none" : ""
               }`}
             >
               <UserCircle className="w-5 h-5" />
             </div>
             <span className="text-[10px] font-medium leading-none">Me</span>
-          </button>
+          </Button>
         </div>
       </nav>
       <ProfileDrawer open={meOpen} onOpenChange={setMeOpen} />

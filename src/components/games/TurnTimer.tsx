@@ -29,7 +29,7 @@ const TurnTimer = ({ seconds, total }: TurnTimerProps) => {
           <motion.circle
             cx="26" cy="26" r={radius}
             fill="none"
-            stroke={isCritical ? "hsl(var(--destructive))" : isLow ? "hsl(350 80% 60%)" : "hsl(var(--primary))"}
+            stroke={isCritical ? "hsl(var(--destructive))" : isLow ? "hsl(var(--warning))" : "hsl(var(--primary))"}
             strokeWidth="3"
             strokeLinecap="round"
             strokeDasharray={circumference}
@@ -39,7 +39,7 @@ const TurnTimer = ({ seconds, total }: TurnTimerProps) => {
         </svg>
         <motion.div
           className={`absolute inset-0 flex items-center justify-center font-display font-bold text-lg ${
-            isCritical ? "text-destructive" : isLow ? "text-orange-400" : "text-foreground"
+            isCritical ? "text-destructive" : isLow ? "text-warning" : "text-foreground"
           }`}
           animate={isCritical ? { scale: [1, 1.15, 1] } : {}}
           transition={{ repeat: Infinity, duration: 0.5 }}

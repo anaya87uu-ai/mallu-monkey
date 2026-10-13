@@ -29,7 +29,7 @@ const Contact = () => {
             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
             className="text-center mb-10"
           >
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6 glow-primary">
+            <div className="w-16 h-16 rounded-lg bg-primary flex items-center justify-center mx-auto mb-6 glow-primary">
               <MessageCircle className="w-8 h-8 text-primary-foreground" />
             </div>
             <h1 className="display-lg text-foreground mb-3">
@@ -47,22 +47,22 @@ const Contact = () => {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">Name</label>
-                <Input required placeholder="Your name" className="h-12 rounded-xl bg-background/60 border-border/60 focus:border-primary" />
+                <label className="text-xs font-semibold uppercase tracking-normalr text-muted-foreground mb-2 block">Name</label>
+                <Input required placeholder="Your name" className="h-12 rounded-lg bg-background/60 border-border/60 focus:border-primary" />
               </div>
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">Email</label>
-                <Input required type="email" placeholder="you@example.com" className="h-12 rounded-xl bg-background/60 border-border/60 focus:border-primary" />
+                <label className="text-xs font-semibold uppercase tracking-normalr text-muted-foreground mb-2 block">Email</label>
+                <Input required type="email" placeholder="you@example.com" className="h-12 rounded-lg bg-background/60 border-border/60 focus:border-primary" />
               </div>
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">Message</label>
-              <Textarea required placeholder="Tell us what's on your mind..." rows={5} className="rounded-xl bg-background/60 border-border/60 focus:border-primary resize-none" />
+              <label className="text-xs font-semibold uppercase tracking-normalr text-muted-foreground mb-2 block">Message</label>
+              <Textarea required placeholder="Tell us what's on your mind..." rows={5} className="rounded-lg bg-background/60 border-border/60 focus:border-primary resize-none" />
             </div>
             <Button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-base glow-primary transition-all hover:-translate-y-0.5"
+              className="w-full rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-base glow-primary transition-all hover:-translate-y-0.5"
             >
               {loading ? "Sending..." : <>Send Message <Send className="ml-2 w-4 h-4" /></>}
             </Button>

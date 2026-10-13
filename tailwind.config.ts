@@ -53,6 +53,9 @@ export default {
         },
         mint: "hsl(var(--mint))",
         forest: "hsl(var(--forest))",
+        video: "hsl(var(--video))",
+        overlay: "hsl(var(--overlay))",
+        warning: "hsl(var(--warning))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
